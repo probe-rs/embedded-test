@@ -3,7 +3,7 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use proc_macro2::Span;
-use quote::{format_ident, quote, quote_spanned};
+use quote::{format_ident, quote};
 use syn::{parse, spanned::Spanned, Attribute, Item, ItemFn, ItemMod, ReturnType, Type};
 
 #[proc_macro_attribute]
@@ -274,7 +274,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         (None, None)
     };
 
-    let (before_each_fn, before_each_call) = if let Some(before_each) = before_each {
+    let (before_each_fn, _before_each_call) = if let Some(before_each) = before_each {
         let before_each_func = &before_each.func;
         let before_each_ident = &before_each.func.sig.ident;
         let span = before_each.func.sig.ident.span();
@@ -307,7 +307,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         (None, None)
     };
 
-    let (after_each_fn, after_each_call) = if let Some(after_each) = after_each {
+    let (after_each_fn, _after_each_call) = if let Some(after_each) = after_each {
         let after_each_func = &after_each.func;
         let after_each_ident = &after_each.func.sig.ident;
         let span = after_each.func.sig.ident.span();
@@ -345,77 +345,19 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         let should_error = test.should_error;
         let ignore = test.ignore;
         let ident = &test.func.sig.ident;
-        let span = test.func.sig.ident.span();
-        let call = if let Some(input) = test.input.as_ref() {
-            if let Some(state) = &state_ty {
-                if input.ty != **state {
-                    return Err(parse::Error::new(
-                        input.ty.span(),
-                        format!(
-                            "this type must match `#[init]`s return type: {}",
-                            type_ident(state)
-                        ),
-                    ));
-                }
-            } else {
-                return Err(parse::Error::new(
-                    span,
-                    "no state was initialized by `#[init]`; signature must be `fn()`",
-                ));
-            }
+        //let span = test.func.sig.ident.span();
+        let function = quote!(#ident);
+        let ident = ident.to_string();
 
-            quote!()
-            //quote!(#ident(&mut state)) // TODO
-        } else {
-            quote!(#ident)
-        };
-        if ignore { //TODO
-            unit_test_calls.push(quote!(let _ = #call;));
-        } else {
-            unit_test_calls.push(quote!{
-                test_funcs[active_tests] = Some(#call);
-                active_tests += 1;
-            });
-            /*unit_test_calls.push(quote!(
-                #before_each_call;
-                #krate::export::check_outcome(#call, #should_error);
-                #after_each_call;
-            ));*/
-        }
+        unit_test_calls.push(quote!{
+            test_funcs[active_tests] = Some(#krate::export::Test{name: #ident, ignored: #ignore, should_error: #should_error, function: #function});
+            active_tests += 1;
+        });
+
     }
 
     let test_functions = tests.iter().map(|test| &test.func);
     let test_cfgs = tests.iter().map(|test| &test.cfgs);
-    /*let declare_test_count = {
-        let test_cfgs = test_cfgs.clone();
-        quote!(
-            // We can't evaluate `#[cfg]`s in the macro, but this works too.
-            // Below value can be used to read the number of tests from the produced ELF.
-            #[used]
-            #[no_mangle]
-            static DEFMT_TEST_COUNT: usize = {
-                let mut counter = 0;
-                #(
-                    #(#test_cfgs)*
-                    { counter += 1; }
-                )*
-                counter
-            };
-        )
-    };*/
-    /*let unit_test_progress = tests
-        .iter()
-        .map(|test| {
-            let message = format!(
-                "({{=usize}}/{{=usize}}) {} `{}`...",
-                if test.ignore { "ignoring" } else { "running" },
-                test.func.sig.ident
-            );
-            quote_spanned! {
-                test.func.sig.ident.span() => ()//defmt::println!(#message, __defmt_test_number, DEFMT_TEST_COUNT);
-            }
-        })
-        .collect::<Vec<_>>();*/
     let maximal_number_tests = tests.len();
 
     Ok(quote!(
@@ -428,22 +370,17 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
             //#declare_test_count
             #init_expr
 
-            let mut test_funcs : [Option<fn() -> ()>; #maximal_number_tests] = [None; #maximal_number_tests];
+            let mut test_funcs : [Option<#krate::export::Test>; #maximal_number_tests] = [None; #maximal_number_tests]; //fn() -> ()
             let mut active_tests = 0;
-
-           // let mut __defmt_test_number: usize = 1;
             #(
                 #(#test_cfgs)*
                 {
-                    //#unit_test_progress
-                    #unit_test_calls
-                   // __defmt_test_number += 1;
-                    //active_tests += 1;
+                    #unit_test_calls // pushes Test to test_funcs and increments active_tests
                 }
             )*
 
-            //defmt::println!("all tests passed!");
-            #krate::export::exit()
+            esp_println::logger::init_logger_from_env();
+            #krate::export::run_tests(&test_funcs[..active_tests]);
         }
 
         #init_fn
