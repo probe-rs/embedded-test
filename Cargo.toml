@@ -1,0 +1,25 @@
+[package]
+name = "embedded-test"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# Dependencies when this crate is used as library
+[target.'cfg(target_os = "none")'.dependencies]
+semihosting = "0.1.4"
+embedded-test-macros = { path = "macros" }
+defmt = { version = "0.3.5", optional = true }
+log = { version = "0.4.20", optional = true}
+cfg-if = "1.0.0"
+
+# Dependencies when this crate is used as binary (the test runner)
+[target.'cfg(not(target_os = "none"))'.dependencies]
+cfg-if = "1.0.0"
+libtest-mimic = {git="https://github.com/t-moe/libtest-mimic/", branch = "format-json-and-intellij"}
+log = "0.4.20"
+env_logger = "0.10.1"
+
+[features]
+defmt = ["dep:defmt"]
+log = ["dep:log"]
