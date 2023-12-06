@@ -73,6 +73,16 @@ pub fn run_tests(tests: &mut [Test]) -> !{
 
             semihosting::process::exit(0);
         },
+        "run" => {
+            let test_name = args.next().unwrap().unwrap();
+            let test = tests.iter_mut().find(|t| t.name == test_name).unwrap();
+            log::info!("Running test: {:?}", test);
+
+            (test.function)(); // TODO: handle outcome
+
+            log::info!("OK");
+            semihosting::process::exit(0);
+        }
         _ => {
             log::error!("Unknown command: {}", command);
             semihosting::process::abort();
