@@ -347,11 +347,10 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         let ident = &test.func.sig.ident;
         //let span = test.func.sig.ident.span();
         let function = quote!(#ident);
-        let ident = ident.to_string();
 
         unit_test_calls.push(quote!{
-            test_funcs[active_tests] = Some(#krate::export::Test{name: #ident, ignored: #ignore, should_error: #should_error, function: #function});
-            active_tests += 1;
+            const FULLY_QUALIFIED_FN_NAME: &str = concat!(module_path!(), "::", stringify!(#ident));
+            test_funcs.push(#krate::export::Test{name: FULLY_QUALIFIED_FN_NAME, ignored: #ignore, should_error: #should_error, function: #function}).unwrap();
         });
 
     }
@@ -367,20 +366,18 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         // TODO use `cortex-m-rt::entry` here to get the `static mut` transform
         #[export_name = "main"]
         unsafe extern "C" fn __defmt_test_entry() -> ! {
-            //#declare_test_count
             #init_expr
 
-            let mut test_funcs : [Option<#krate::export::Test>; #maximal_number_tests] = [None; #maximal_number_tests]; //fn() -> ()
-            let mut active_tests = 0;
+            let mut test_funcs: #krate::export::Vec<#krate::export::Test, #maximal_number_tests> = #krate::export::Vec::new();
             #(
                 #(#test_cfgs)*
                 {
-                    #unit_test_calls // pushes Test to test_funcs and increments active_tests
+                    #unit_test_calls // pushes Test to test_funcs
                 }
             )*
 
             esp_println::logger::init_logger_from_env();
-            #krate::export::run_tests(&test_funcs[..active_tests]);
+            #krate::export::run_tests(&mut test_funcs[..]);
         }
 
         #init_fn

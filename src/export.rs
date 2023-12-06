@@ -1,6 +1,7 @@
 
 use crate::TestOutcome;
 
+
 #[cfg(all(feature = "defmt", feature = "log"))]
 compile_error!("You may not enable both `defmt` and `log` features.");
 
@@ -23,16 +24,30 @@ pub fn abort() -> ! {
     }
 }
 
+pub use heapless::Vec;
+use crate::semihosting_ext::{ParamRegR, syscall_readonly};
+
 #[derive(Debug, Copy, Clone)]
+#[derive(serde::Serialize)]
 pub struct Test {
     pub name: &'static str,
+    //#[musli(skip)]
+    #[serde(skip)]
     pub function: fn() -> (),
     pub should_error: bool,
     pub ignored: bool,
 }
 
-pub fn run_tests(tests: &[Option<Test>]) -> !{
-    //let tests = tests.iter().filter_map(|t| t.as_ref());
+
+
+
+
+pub fn run_tests(tests: &mut [Test]) -> !{
+    for test in tests.iter_mut() {
+        test.name = &test.name[test.name.find("::").unwrap()+2 ..];
+    }
+
+
     let mut args = &semihosting::experimental::env::args::<1024>().unwrap(); //TODO: handle error
     let command = match args.next() {
         Some(c) => c.unwrap(),
@@ -45,9 +60,17 @@ pub fn run_tests(tests: &[Option<Test>]) -> !{
     match command
     {
         "list" => {
-            log::info!("tests available {:?}", tests);
-            /*for test in tests {
-            }*/
+            log::info!("tests available: {:?}", tests);
+
+            let mut buf = [0u8; 1024];
+            let size = serde_json_core::to_slice(&tests, &mut buf).unwrap();
+            let args = [ParamRegR::ptr(buf.as_ptr()), ParamRegR::usize(size)];
+            let ret = unsafe {syscall_readonly(0x100, ParamRegR::block(&args))};
+            if ret.usize() != 0 {
+                log::error!("syscall failed: {}", ret.usize());
+                semihosting::process::abort();
+            }
+
             semihosting::process::exit(0);
         },
         _ => {

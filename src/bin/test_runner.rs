@@ -73,39 +73,70 @@ fn run_until_semihosting(core: &mut Core) -> Result<SemihostingCommand>
 }
 
 
-/// Asks the target for the tests, and create closures to run the tests later
-fn create_tests(core: &mut Core) -> Result<Vec<Trial>>
+fn run_until_exact_semihosting(core: &mut Core, operation: u32) -> Result<u32>
 {
-    const SYS_GET_CMDLINE: u32 = 0x15;
     match run_until_semihosting(core)? {
         SemihostingCommand::ExitSuccess |
         SemihostingCommand::ExitError { .. } => { bail!("Unexpected exit of target at program start")}
-        SemihostingCommand::Unknown { operation, parameter } => {
-            if operation == SYS_GET_CMDLINE {
-                info!("Got semihosting operation SYS_GET_CMDLINE with block addr {:x}", parameter);
-                let mut block : [u32; 2] = [0,0];
-                core.read_32(parameter as u64, &mut block)?;
-                let buf_ptr = block[0];
-                let buf_size = &mut block[1];
-                info!("Cmd Line buffer Size {} Ptr {:x}", buf_size, buf_ptr);
-
-                let msg = b"list\0";
-                core.write_8(buf_ptr as u64, msg)?;
-                *buf_size = msg.len() as u32 -1; // String length without zero termination
-                core.write_32(parameter as u64, &mut block)?;
-                core.write_core_reg(core.registers().get_argument_register(0).unwrap(), 0u32)?; // write status = success
-                info!("wrote cmdline");
+        SemihostingCommand::Unknown { operation: op, parameter } => {
+            if op == operation {
+                Ok(parameter)
             } else {
                 bail!("Unexpected semihosting operation: {:x}", operation)
             }
-
         }
     }
-
-    run_until_semihosting(core)?;
-    Ok(vec![])
+}
 
 
+/// Asks the target for the tests, and create closures to run the tests later
+fn create_tests(core: &mut Core) -> Result<Vec<Trial>>
+{
+    {
+        const SYS_GET_CMDLINE: u32 = 0x15;
+        let parameter = run_until_exact_semihosting(core, SYS_GET_CMDLINE)?;
+        let mut block: [u32; 2] = [0, 0];
+        core.read_32(parameter as u64, &mut block)?;
+        let buf_ptr = block[0];
+        let buf_size = &mut block[1];
+
+        let msg = b"list\0";
+        core.write_8(buf_ptr as u64, msg)?;
+        *buf_size = msg.len() as u32 - 1; // String length without zero termination
+        core.write_32(parameter as u64, &mut block)?;
+        core.write_core_reg(core.registers().get_argument_register(0).unwrap(), 0u32)?;
+        // write status = success
+        info!("wrote cmdline");
+    }
+
+
+    {
+        //TODO: Dedup this struct
+        #[derive(Debug, Copy, Clone)]
+        #[derive(serde::Deserialize)]
+        pub struct Test<'a> {
+            pub name: &'a str,
+            pub should_error: bool,
+            pub ignored: bool,
+        }
+
+        const USER_LIST: u32 = 0x100;
+        let parameter = run_until_exact_semihosting(core, USER_LIST)?;
+        let mut block: [u32; 2] = [0, 0];
+        core.read_32(parameter as u64, &mut block)?;
+        let buf_ptr = block[0];
+        let buf_size = block[1] as usize;
+        let mut buf = vec![0u8; buf_size];
+        core.read(buf_ptr as u64, &mut buf[..])?;
+        let list: Vec<Test> = serde_json::from_slice(&buf[..])?;
+        info!("got list: {:?}", list);
+
+        let mut tests = Vec::<Trial>::new();
+        for t in &list {
+            tests.push(Trial::test(t.name, || { Ok(()) }).with_ignored_flag(t.ignored))
+        }
+        Ok(tests)
+    }
 }
 
 fn main() -> Result<()>{
@@ -129,15 +160,6 @@ fn main() -> Result<()>{
     let mut core = session.core(0)?;
 
     let tests = create_tests(&mut core)?;
-
-
-    let tests = vec![
-        Trial::test("check_toph", check_toph),
-        Trial::test("check_sokka", check_sokka),
-        Trial::test("long_computation", long_computation).with_ignored_flag(true),
-        Trial::test("foo", compile_fail_dummy).with_kind("compile-fail"),
-        Trial::test("check_katara", check_katara),
-    ];
 
     libtest_mimic::run(&args, tests).exit();
 }

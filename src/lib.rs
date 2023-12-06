@@ -7,7 +7,7 @@
 cfg_if::cfg_if! {
     if #[cfg(target_os ="none")]
     {
-
+mod semihosting_ext;
 
 pub use embedded_test_macros::tests;
 
