@@ -223,8 +223,7 @@ fn run_test(test: Test, core: &mut Core) -> core::result::Result<(), Failed> {
 static SESSION: StaticCell<Session> = StaticCell::new();
 
 fn main() -> Result<()> {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("test_runner=info")).init();
-
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("embedded_test=info")).init();
 
     // Get all command-line arguments, including the program name
     let args: Vec<String> = env::args().collect();
