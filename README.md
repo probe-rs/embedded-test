@@ -22,6 +22,7 @@ This project is in pre-alpha state:
 TODOs:
 * [ ] Remove esp32c6 hardcoding, and make chip configurable (along with other probe-rs settings)
 * [ ] Receive RTT messages in the test runner
+* [ ] Add test case timeout
 * [ ] Add support for global setup/teardown and pass state to test cases (like the init functions in defmt-test)
 * [ ] Add support for async test functions
 * [ ] Add support for should_error attribute
@@ -44,7 +45,7 @@ panic-probe = {git = "https://github.com/t-moe/defmt"}  # the upstream create do
 
 Install the runner on your system:
 ```bash 
-cargo install embedded-test --git https://github.com/t-moe/embedded-test
+cargo install embedded-test --git https://github.com/probe-rs/embedded-test
 ```
 
 Add the following to your `.cargo/config.toml`:
@@ -57,7 +58,7 @@ runner = "embedded-test"
 
 ## Example Test
 
-[Example repo](https://github.com/t-moe/embedded-test-example)
+[Example repo](https://github.com/probe-rs/embedded-test-example)
 
 Example for `tests/example_test.rs`
 

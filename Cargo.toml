@@ -1,10 +1,10 @@
 [package]
 name = "embedded-test"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2021"
-repository = "https://github.com/t-moe/embedded-test"
+repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
-keywords = ["embedded", "testing", "harness", "test", "unit-test", "integration-test", "test-runner", "test-framework", "test-suite"]
+keywords = ["embedded", "test", "testing",  "test-runner", "test-framework"]
 description = "A test harness and runner for embedded devices"
 categories = ["embedded", "no-std", "development-tools::testing"]
 
@@ -13,7 +13,7 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 # Dependencies when this crate is used as library
 [target.'cfg(target_os = "none")'.dependencies]
 semihosting = { version ="0.1.4", features = ["args"] }
-embedded-test-macros = { path = "macros" }
+embedded-test-macros = {version = "0.1.0"}
 defmt = { version = "0.3.5", optional = true }
 log = { version = "0.4.20", optional = true}
 cfg-if = "1.0.0"
@@ -24,14 +24,19 @@ heapless = "0.8.0"
 # Dependencies when this crate is used as binary (the test runner)
 [target.'cfg(not(target_os = "none"))'.dependencies]
 cfg-if = "1.0.0"
-libtest-mimic = {git="https://github.com/t-moe/libtest-mimic/", branch = "format-json-and-intellij"}
+libtest-mimic = "0.6.1"
 log = "0.4.20"
 env_logger = "0.10.1"
-probe-rs = {git="https://github.com/t-moe/probe-rs", features = ["rtt" ], branch= "feature/semihosting_args"}
+probe-rs = { version = "0.21.1" , features = ["cli"]}
 anyhow="1.0.75"
 static_cell = "2.0.0"
 serde = { version = "1.0.193", features = ["derive"] }
 serde_json = "1.0.108"
+
+[patch.crates-io] # These are required for now, but must be removed, once we want to release to crates.io
+libtest-mimic = {git="https://github.com/t-moe/libtest-mimic/", branch="format-json-and-intellij"}
+probe-rs = {git="https://github.com/t-moe/probe-rs", branch="semihosting-args"}
+embedded-test-macros = {path = "macros"}
 
 [features]
 defmt = ["dep:defmt"]
