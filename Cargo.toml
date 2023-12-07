@@ -24,7 +24,7 @@ heapless = "0.8.0"
 # Dependencies when this crate is used as binary (the test runner)
 [target.'cfg(not(target_os = "none"))'.dependencies]
 cfg-if = "1.0.0"
-libtest-mimic = "0.6.1"
+libtest-mimic = { version="0.6.1", default-features = false }
 log = "0.4.20"
 env_logger = "0.10.1"
 probe-rs = { version = "0.21.1" , features = ["cli"]}
@@ -35,7 +35,7 @@ serde_json = "1.0.108"
 
 [patch.crates-io] # These are required for now, but must be removed, once we want to release to crates.io
 libtest-mimic = {git="https://github.com/t-moe/libtest-mimic/", branch="format-json-and-intellij"}
-probe-rs = {git="https://github.com/t-moe/probe-rs", branch="semihosting-args"}
+probe-rs = {git="https://github.com/t-moe/probe-rs", branch="feature/semihosting_args"}
 embedded-test-macros = {path = "macros"}
 
 [features]

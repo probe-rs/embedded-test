@@ -1,8 +1,8 @@
 extern crate libtest_mimic;
 
+use std::cell::RefCell;
 use std::env;
 use std::fs::File;
-use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use libtest_mimic::{Arguments, Trial, Failed};
 use log::*;
@@ -133,12 +133,6 @@ impl Buffer {
     }
 }
 
-// Since we'll never execute tests in parallel, it is safe to make Core sync with this hack
-struct CoreWrapper(Core<'static>);
-
-unsafe impl Sync for CoreWrapper {}
-
-unsafe impl Send for CoreWrapper {}
 
 //TODO: Dedup this struct
 #[derive(Debug, Clone)]
@@ -150,11 +144,10 @@ pub struct Test {
 }
 
 /// Asks the target for the tests, and create closures to run the tests later
-fn create_tests(core_mut: Arc<Mutex<CoreWrapper>>) -> Result<Vec<Trial>>
+fn create_tests(core_ref : &'static RefCell<Core<'static>>) -> Result<Vec<Trial>>
 {
-    let mut core = core_mut.lock().unwrap();
-    let core = &mut core.0;
-
+    let mut core = core_ref.borrow_mut();
+    let core = &mut *core;
     // Run target with arg "list", so that it lists all tests
     {
         const SYS_GET_CMDLINE: u32 = 0x15;
@@ -178,12 +171,10 @@ fn create_tests(core_mut: Arc<Mutex<CoreWrapper>>) -> Result<Vec<Trial>>
 
         let mut tests = Vec::<Trial>::new();
         for t in &list {
-            let core = core_mut.clone();
             let test = t.clone();
             tests.push(Trial::test(&t.name, move || {
-                let mut core = core.lock().unwrap();
-                let core = &mut core.0;
-                run_test(test, core)
+                let mut core = core_ref.borrow_mut();
+                run_test(test, &mut *core)
             }).with_ignored_flag(t.ignored))
         }
         Ok(tests)
@@ -221,6 +212,7 @@ fn run_test(test: Test, core: &mut Core) -> core::result::Result<(), Failed> {
 }
 
 static SESSION: StaticCell<Session> = StaticCell::new();
+static CORE: StaticCell<RefCell<Core<'static>>> = StaticCell::new();
 
 fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("embedded_test=info")).init();
@@ -235,13 +227,11 @@ fn main() -> Result<()> {
     // Create an iterator from the remaining arguments, skipping the first argument
     let mut args_for_libtest_mimic = vec![program_name];
     args_for_libtest_mimic.extend(args.into_iter().skip(2));
-    let mut args = Arguments::from_iter(args_for_libtest_mimic);
-    args.test_threads = Some(1); // we cannot run tests concurrently
+    let args = Arguments::from_iter(args_for_libtest_mimic);
 
     let session = SESSION.init(create_session()?);
     download(session, &elf)?;
-
-    let core = Arc::new(Mutex::new(CoreWrapper(session.core(0)?)));
+    let core = CORE.init(RefCell::new(session.core(0)?));
 
     let tests = create_tests(core)?;
 
