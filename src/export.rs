@@ -20,6 +20,7 @@ use crate::semihosting_ext::{ParamRegR, syscall_readonly};
 
 #[derive(Debug, Copy, Clone)]
 #[derive(serde::Serialize)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct Test {
     pub name: &'static str,
     //#[musli(skip)]

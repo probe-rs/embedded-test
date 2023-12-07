@@ -13,15 +13,12 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 # Dependencies when this crate is used as library
 [dependencies]
 semihosting = { version ="0.1.4", features = ["args"] }
-embedded-test-macros = {version = "0.1.0"}
+embedded-test-macros = {path = "./macros" } # Required for now, but must be removed, once we want to release to crates.io
 defmt = { version = "0.3.5", optional = true }
 log = { version = "0.4.20", optional = true}
 serde = { version = "1.0.193", default-features = false, features = ["derive"] }
 serde-json-core = { version = "0.5.1"  }
 heapless = "0.8.0"
-
-[patch.crates-io] # These are required for now, but must be removed, once we want to release to crates.io
-embedded-test-macros = {path = "macros"}
 
 [features]
 defmt = ["dep:defmt"]
