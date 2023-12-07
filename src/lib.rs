@@ -1,13 +1,10 @@
 // Copied from https://github.com/knurling-rs/defmt/blob/main/firmware/defmt-test/src/lib.rs
 
 #![feature(trait_alias)]
-#![cfg_attr(target_os ="none", no_std)]
+#![no_std]
 
-
-cfg_if::cfg_if! {
-    if #[cfg(target_os ="none")]
-    {
 mod semihosting_ext;
+mod fmt;
 
 pub use embedded_test_macros::tests;
 
@@ -15,9 +12,11 @@ pub use embedded_test_macros::tests;
 pub trait FormatOrDebug = defmt::Format;
 #[cfg(feature = "log")]
 pub trait FormatOrDebug = core::fmt::Debug;
-
+#[cfg(all(not(feature = "defmt"), not(feature = "log")))]
+pub trait FormatOrDebug = core::any::Any;
 
 /// Private implementation details used by the proc macro.
+/// WARNING: This API is not stable and may change at any time.
 #[doc(hidden)]
 pub mod export;
 
@@ -48,5 +47,3 @@ impl<T: FormatOrDebug, E: FormatOrDebug> TestOutcome for Result<T, E> {
     }
 }
 
-}
-}

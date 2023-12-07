@@ -376,7 +376,6 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                 }
             )*
 
-            esp_println::logger::init_logger_from_env();
             #krate::export::run_tests(&mut test_funcs[..]);
         }
 
