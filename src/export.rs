@@ -25,7 +25,7 @@ pub struct Test {
     pub name: &'static str,
     //#[musli(skip)]
     #[serde(skip)]
-    pub function: fn() -> (),
+    pub function: fn() -> !,
     pub should_error: bool,
     pub ignored: bool,
 }
@@ -48,7 +48,6 @@ pub fn run_tests(tests: &mut [Test]) -> !{
     {
         "list" => {
             info!("tests available: {:?}", tests);
-
             let mut buf = [0u8; 1024];
             let size = serde_json_core::to_slice(&tests, &mut buf).unwrap();
             let args = [ParamRegR::ptr(buf.as_ptr()), ParamRegR::usize(size)];
@@ -64,11 +63,7 @@ pub fn run_tests(tests: &mut [Test]) -> !{
             let test_name = args.next().unwrap().unwrap();
             let test = tests.iter_mut().find(|t| t.name == test_name).unwrap();
             info!("Running test: {:?}", test);
-
-            (test.function)(); // TODO: handle outcome
-
-            info!("OK");
-            semihosting::process::exit(0);
+            (test.function)();
         }
         _ => {
             error!("Unknown command: {}", command);
@@ -77,31 +72,12 @@ pub fn run_tests(tests: &mut [Test]) -> !{
     }
 }
 
-/// Fetches the command line arguments from the host via semihosting
-pub fn args<const BUF_SIZE: usize>() ->  semihosting::experimental::env::Args<BUF_SIZE> {
-    semihosting::experimental::env::args().unwrap() //TODO: handle error
-}
-
-#[cfg(feature = "defmt")]
-pub fn check_outcome<T: TestOutcome>(outcome: T, should_error: bool) {
-    if outcome.is_success() == should_error {
-        let note = if should_error {
-            defmt::intern!("`#[should_error]` ")
-        } else {
-            defmt::intern!("")
-        };
-        defmt::panic!("{}test failed with outcome: {}", note, outcome);
-    }
-}
-
-#[cfg(feature = "log")]
-pub fn check_outcome<T: TestOutcome>(outcome: T, should_error: bool) {
-    if outcome.is_success() == should_error {
-        let note = if should_error {
-            "`#[should_error]` "
-        } else {
-            ""
-        };
-        core::panic!("{}test failed with outcome: {:?}", note, outcome);
+pub fn check_outcome<T: TestOutcome>(outcome: T) -> !{
+    if outcome.is_success() {
+        info!("Test succeeded");
+        semihosting::process::exit(0);
+    } else {
+        info!("Test failed with outcome: {:?}", outcome);
+        semihosting::process::abort();
     }
 }
