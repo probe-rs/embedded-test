@@ -22,10 +22,9 @@ pub use heapless::Vec;
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct Test {
     pub name: &'static str,
-    //#[musli(skip)]
     #[serde(skip)]
     pub function: fn() -> !,
-    pub should_error: bool,
+    pub should_panic: bool,
     pub ignored: bool,
 }
 
@@ -72,10 +71,10 @@ pub fn run_tests(tests: &mut [Test]) -> ! {
 
 pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
     if outcome.is_success() {
-        info!("Test succeeded");
+        info!("Test exited with () or Ok(..)");
         semihosting::process::exit(0);
     } else {
-        info!("Test failed with outcome: {:?}", outcome);
+        info!("Test exited with Err(..): {:?}", outcome);
         semihosting::process::abort();
     }
 }
