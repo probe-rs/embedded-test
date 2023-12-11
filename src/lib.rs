@@ -3,8 +3,8 @@
 #![feature(trait_alias)]
 #![no_std]
 
-mod semihosting_ext;
 mod fmt;
+mod semihosting_ext;
 
 pub use embedded_test_macros::tests;
 
@@ -46,4 +46,3 @@ impl<T: FormatOrDebug, E: FormatOrDebug> TestOutcome for Result<T, E> {
         self.is_ok()
     }
 }
-

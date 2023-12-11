@@ -19,7 +19,10 @@ log = { version = "0.4.20", optional = true}
 serde = { version = "1.0.193", default-features = false, features = ["derive"] }
 serde-json-core = { version = "0.5.1"  }
 heapless = "0.8.0"
+embassy-executor = { version = "0.4.0", optional=true, default-features = false }
 
 [features]
 defmt = ["dep:defmt"]
 log = ["dep:log"]
+
+embassy = ["embedded-test-macros/embassy", "dep:embassy-executor"]

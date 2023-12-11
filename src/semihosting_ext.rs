@@ -8,7 +8,6 @@ use core::{
     marker::PhantomData,
 };
 
-
 /// PARAMETER REGISTER (read-write)
 #[repr(transparent)]
 pub(crate) struct ParamRegW<'a>(pub(crate) *mut c_void, PhantomData<&'a mut ()>);
@@ -45,10 +44,10 @@ impl<'a> ParamRegW<'a> {
     }
 }
 #[cfg(any(
-target_arch = "aarch64",
-target_arch = "arm",
-target_arch = "riscv32",
-target_arch = "riscv64",
+    target_arch = "aarch64",
+    target_arch = "arm",
+    target_arch = "riscv32",
+    target_arch = "riscv64",
 ))]
 impl<'a> ParamRegW<'a> {
     #[inline]
@@ -93,10 +92,10 @@ impl<'a> ParamRegR<'a> {
     }
 }
 #[cfg(any(
-target_arch = "aarch64",
-target_arch = "arm",
-target_arch = "riscv32",
-target_arch = "riscv64",
+    target_arch = "aarch64",
+    target_arch = "arm",
+    target_arch = "riscv32",
+    target_arch = "riscv64",
 ))]
 impl<'a> ParamRegR<'a> {
     #[inline]
@@ -149,10 +148,10 @@ impl RetReg {
     }*/
 }
 #[cfg(any(
-target_arch = "aarch64",
-target_arch = "arm",
-target_arch = "riscv32",
-target_arch = "riscv64",
+    target_arch = "aarch64",
+    target_arch = "arm",
+    target_arch = "riscv32",
+    target_arch = "riscv64",
 ))]
 impl RetReg {
     #[allow(clippy::cast_possible_truncation)]
@@ -164,10 +163,7 @@ impl RetReg {
     }
 }
 
-
-#[cfg(
-target_arch = "riscv32",
-)]
+#[cfg(target_arch = "riscv32")]
 pub(crate) unsafe fn syscall(number: usize, parameter: ParamRegW<'_>) -> RetReg {
     unsafe {
         let r;
@@ -189,9 +185,7 @@ pub(crate) unsafe fn syscall(number: usize, parameter: ParamRegW<'_>) -> RetReg 
     }
 }
 
-#[cfg(
-target_arch = "riscv32",
-)]
+#[cfg(target_arch = "riscv32")]
 pub(crate) unsafe fn syscall_readonly(number: usize, parameter: ParamRegR<'_>) -> RetReg {
     unsafe {
         let r;

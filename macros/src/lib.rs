@@ -97,7 +97,15 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                         if check_fn_sig(&f.sig).is_err() || !f.sig.inputs.is_empty() {
                             return Err(parse::Error::new(
                                 f.sig.ident.span(),
-                                "`#[init]` function must have signature `fn() [-> Type]` (the return type is optional)",
+                                "`#[init]` function must have signature `async fn() [-> Type]` (async/return type are optional)",
+                            ));
+                        }
+
+                        #[cfg(not(feature = "embassy"))]
+                        if f.sig.asyncness.is_some() {
+                            return Err(parse::Error::new(
+                                f.sig.ident.span(),
+                                "`#[init]` function can only be async if an async executor is enabled via feature",
                             ));
                         }
 
@@ -105,15 +113,27 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                             ReturnType::Default => None,
                             ReturnType::Type(.., ty) => Some(ty.clone()),
                         };
-
-                        init = Some(Init { func: f, state });
+                        let asyncness = f.sig.asyncness.is_some();
+                        init = Some(Init {
+                            func: f,
+                            state,
+                            asyncness,
+                        });
                     }
 
                     Attr::Test => {
                         if check_fn_sig(&f.sig).is_err() || f.sig.inputs.len() > 1 {
                             return Err(parse::Error::new(
                                 f.sig.ident.span(),
-                                "`#[test]` function must have signature `fn(state: &mut Type)` (parameter is optional)",
+                                "`#[test]` function must have signature `async fn(state: &mut Type)` (async/parameter are optional)",
+                            ));
+                        }
+
+                        #[cfg(not(feature = "embassy"))]
+                        if f.sig.asyncness.is_some() {
+                            return Err(parse::Error::new(
+                                f.sig.ident.span(),
+                                "`#[test]` function can only be async if an async executor is enabled via feature",
                             ));
                         }
 
@@ -135,13 +155,15 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                             None
                         };
 
+                        let asyncness = f.sig.asyncness.is_some();
                         tests.push(Test {
                             cfgs: extract_cfgs(&f.attrs),
                             func: f,
+                            asyncness,
                             input,
                             should_panic,
                             ignore,
-                        })
+                        });
                     }
                 }
             }
@@ -155,32 +177,34 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     let krate = format_ident!("embedded_test");
     let ident = module.ident;
     let mut state_ty = None;
-    let (init_fn, init_expr) = if let Some(init) = init {
+    let (init_fn, init_expr, init_is_async) = if let Some(ref init) = init {
         let init_func = &init.func;
         let init_ident = &init.func.sig.ident;
-        state_ty = init.state;
+        state_ty = init.state.clone();
 
         (
             Some(quote!(#init_func)),
-            Some(quote!(let state = #init_ident();)),
+            Some(invoke(init_ident, vec![], init.asyncness)),
+            init.asyncness,
         )
     } else {
-        (None, None)
+        (None, None, false)
     };
 
-
     let mut unit_test_calls = vec![];
+    let mut test_function_invokers = vec![];
+
     for test in &tests {
         let should_panic = test.should_panic;
         let ignore = test.ignore;
         let ident = &test.func.sig.ident;
+        let ident_invoker = format_ident!("__{}_invoker", ident);
         let span = test.func.sig.ident.span();
-        let function = quote!(#ident);
 
-        //TODO: if init func returns something, all functions must accept it as input
+        //TODO: if init func returns something, all functions must accept it as input?
+        let mut args = vec![];
 
-
-        let call = if let Some(input) = test.input.as_ref() {
+        if let Some(input) = test.input.as_ref() {
             if let Some(state) = &state_ty {
                 if input.ty != **state {
                     return Err(parse::Error::new(
@@ -191,32 +215,55 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                         ),
                     ));
                 }
+                args.push(quote!(state));
             } else {
                 return Err(parse::Error::new(
                     span,
                     "no state was initialized by `#[init]`; signature must be `fn()`",
                 ));
             }
+        }
 
-            quote!(
-                || {
-                    #init_expr
-                    let outcome = #ident(state);
-                    #krate::export::check_outcome(outcome);
-                }
-            )
-        } else {
-            quote!(||{
-                #init_expr
-                 let outcome = #ident();
+        let run_call = invoke(ident, args, test.asyncness);
+
+        let init_run_and_check = quote!(
+            {
+                 let state = #init_expr; // either init() or init().await
+                 let outcome = #run_call; // either test(state), test(state).await, test(), or test().await
                  #krate::export::check_outcome(outcome);
+            }
+        );
+
+        // The closure that will be called, if the test should be runned.
+        // This closure has the signature () -> !, so it will never return.
+        // The closure will signal the test result via semihosting exit/abort instead
+        let entrypoint = if test.asyncness || init_is_async {
+            // We need a utility function, so that embassy can create a task for us
+            let cfgs = &test.cfgs;
+            test_function_invokers.push(quote!(
+                  #(#cfgs)*
+                  #[embassy_executor::task]
+                  async fn #ident_invoker() {
+                      #init_run_and_check
+                  }
+            ));
+
+            quote!(|| {
+                let mut executor = ::embassy_executor::Executor::new();
+                let executor = unsafe { __make_static(&mut executor) };
+                executor.run(|spawner| {
+                    spawner.must_spawn(#ident_invoker());
+                })
+            })
+        } else {
+            quote!(|| {
+                #init_run_and_check
             })
         };
 
-
-        unit_test_calls.push(quote!{
+        unit_test_calls.push(quote! {
             const FULLY_QUALIFIED_FN_NAME: &str = concat!(module_path!(), "::", stringify!(#ident));
-            test_funcs.push(#krate::export::Test{name: FULLY_QUALIFIED_FN_NAME, ignored: #ignore, should_error: #should_panic, function: #call}).unwrap();
+            test_funcs.push(#krate::export::Test{name: FULLY_QUALIFIED_FN_NAME, ignored: #ignore, should_error: #should_panic, function: #entrypoint}).unwrap();
         });
     }
 
@@ -228,7 +275,11 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     #[cfg(test)]
     mod #ident {
         #(#untouched_tokens)*
-        // TODO use `cortex-m-rt::entry` here to get the `static mut` transform
+
+        unsafe fn __make_static<T>(t: &mut T) -> &'static mut T {
+            ::core::mem::transmute(t)
+        }
+
         #[export_name = "main"]
         unsafe extern "C" fn __defmt_test_entry() -> ! {
             let mut test_funcs: #krate::export::Vec<#krate::export::Test, #maximal_number_tests> = #krate::export::Vec::new();
@@ -247,6 +298,10 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         #(
             #test_functions
         )*
+
+        #(
+            #test_function_invokers
+        )*
     })
         .into())
 }
@@ -260,6 +315,7 @@ enum Attr {
 struct Init {
     func: ItemFn,
     state: Option<Box<Type>>,
+    asyncness: bool,
 }
 
 struct Test {
@@ -268,6 +324,7 @@ struct Test {
     input: Option<Input>,
     should_panic: bool,
     ignore: bool,
+    asyncness: bool,
 }
 
 struct Input {
@@ -277,7 +334,6 @@ struct Input {
 // NOTE doesn't check the parameters or the return type
 fn check_fn_sig(sig: &syn::Signature) -> Result<(), ()> {
     if sig.constness.is_none()
-        && sig.asyncness.is_none()
         && sig.unsafety.is_none()
         && sig.abi.is_none()
         && sig.generics.params.is_empty()
@@ -294,7 +350,7 @@ fn get_arg_type(arg: &syn::FnArg) -> Option<&Type> {
     if let syn::FnArg::Typed(pat) = arg {
         match &*pat.ty {
             syn::Type::Reference(_) => None,
-            _ => Some(&pat.ty)
+            _ => Some(&pat.ty),
         }
     } else {
         None
@@ -319,4 +375,16 @@ fn type_ident(ty: impl AsRef<syn::Type>) -> String {
     let ty = format!("{}", quote!(#ty));
     ty.split_whitespace().for_each(|t| ident.push_str(t));
     ident
+}
+
+fn invoke(
+    func: &proc_macro2::Ident,
+    args: Vec<proc_macro2::TokenStream>,
+    asyncness: bool,
+) -> proc_macro2::TokenStream {
+    if asyncness {
+        quote!(#func(#(#args),*).await)
+    } else {
+        quote!(#func(#(#args),*))
+    }
 }
