@@ -42,6 +42,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                 let mut test_kind = None;
                 let mut should_panic = false;
                 let mut ignore = false;
+                let mut timeout = None;
 
                 f.attrs.retain(|attr| {
                     if attr.path().is_ident("init") {
@@ -56,10 +57,27 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                     } else if attr.path().is_ident("ignore") {
                         ignore = true;
                         false
+                    } else if attr.path().is_ident("timeout") {
+                        timeout = Some(attr.clone());
+                        false
                     } else {
                         true
                     }
                 });
+
+                let timeout = if let Some(attr) = timeout {
+                    match attr.parse_args::<TimeoutAttribute>() {
+                        Ok(TimeoutAttribute { value }) => Some(value),
+                        Err(e) => {
+                            return Err(parse::Error::new(
+                                attr.span(),
+                                format!("failed to parse `timeout` attribute. Must be of the form #[timeout(10)] where 10 is the timeout in seconds. Error: {}", e)
+                            ));
+                        }
+                    }
+                } else {
+                    None
+                };
 
                 let attr = match test_kind {
                     Some(it) => it,
@@ -91,6 +109,13 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                             return Err(parse::Error::new(
                                 f.sig.ident.span(),
                                 "`#[ignore]` is not allowed on the `#[init]` function",
+                            ));
+                        }
+
+                        if timeout.is_some() {
+                            return Err(parse::Error::new(
+                                f.sig.ident.span(),
+                                "`#[timeout]` is not allowed on the `#[init]` function",
                             ));
                         }
 
@@ -163,6 +188,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                             input,
                             should_panic,
                             ignore,
+                            timeout,
                         });
                     }
                 }
@@ -200,6 +226,11 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         let ident = &test.func.sig.ident;
         let ident_invoker = format_ident!("__{}_invoker", ident);
         let span = test.func.sig.ident.span();
+
+        let timeout = match test.timeout {
+            Some(timeout) => quote!(Some(#timeout)),
+            None => quote!(None),
+        };
 
         //TODO: if init func returns something, all functions must accept it as input?
         let mut args = vec![];
@@ -263,7 +294,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         unit_test_calls.push(quote! {
             const FULLY_QUALIFIED_FN_NAME: &str = concat!(module_path!(), "::", stringify!(#ident));
-            test_funcs.push(#krate::export::Test{name: FULLY_QUALIFIED_FN_NAME, ignored: #ignore, should_panic: #should_panic, function: #entrypoint}).unwrap();
+            test_funcs.push(#krate::export::Test{name: FULLY_QUALIFIED_FN_NAME, ignored: #ignore, should_panic: #should_panic, function: #entrypoint, timeout: #timeout}).unwrap();
         });
     }
 
@@ -325,10 +356,24 @@ struct Test {
     should_panic: bool,
     ignore: bool,
     asyncness: bool,
+    timeout: Option<u32>,
 }
 
 struct Input {
     ty: Type,
+}
+
+struct TimeoutAttribute {
+    value: u32,
+}
+
+impl syn::parse::Parse for TimeoutAttribute {
+    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
+        let value_lit: syn::LitInt = input.parse()?;
+        let value = value_lit.base10_parse::<u32>()?;
+
+        Ok(TimeoutAttribute { value })
+    }
 }
 
 // NOTE doesn't check the parameters or the return type

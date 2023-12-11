@@ -26,6 +26,7 @@ pub struct Test {
     pub function: fn() -> !,
     pub should_panic: bool,
     pub ignored: bool,
+    pub timeout: Option<u32>,
 }
 
 pub fn run_tests(tests: &mut [Test]) -> ! {
