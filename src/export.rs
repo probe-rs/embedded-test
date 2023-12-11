@@ -18,7 +18,15 @@ pub fn abort() -> ! {
 use crate::semihosting_ext::{syscall_readonly, ParamRegR};
 pub use heapless::Vec;
 
-#[derive(Debug, Copy, Clone, serde::Serialize)]
+const VERSION: u32 = 1; //Format version of our protocol between probe-rs and target running embedded-test
+
+#[derive(Debug, serde::Serialize)]
+pub struct Tests<'a> {
+    pub version: u32,
+    pub tests: &'a [Test],
+}
+
+#[derive(Debug, serde::Serialize)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct Test {
     pub name: &'static str,
@@ -46,6 +54,11 @@ pub fn run_tests(tests: &mut [Test]) -> ! {
     match command {
         "list" => {
             info!("tests available: {:?}", tests);
+            let tests = Tests {
+                version: VERSION,
+                tests,
+            };
+
             let mut buf = [0u8; 1024];
             let size = serde_json_core::to_slice(&tests, &mut buf).unwrap();
             let args = [ParamRegR::ptr(buf.as_ptr()), ParamRegR::usize(size)];
