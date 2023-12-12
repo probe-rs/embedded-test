@@ -1,6 +1,6 @@
 # Embedded Test
 
-The embedded-test library provides a test hardness for embedded systems (riscv and arm). It is based on the idea of [defmt-test](https://crates.io/crates/defmt-test).
+The embedded-test library provides a test harness for embedded systems (riscv and arm). It is based on the idea of [defmt-test](https://crates.io/crates/defmt-test).
 
 `probe-rs test` provides a (libtest compatible) test runner, which will:
 1. Flash all the tests to the device in one go (via probe-rs)
