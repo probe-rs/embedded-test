@@ -16,16 +16,8 @@ Since the test runner (`probe-rs test`) is libtest compatible (using [libtest-mi
 ![](./demo.gif)
 
 
-## WARNING: Pre-Alpha !!
-This project is in pre-alpha state:
-
-TODOs:
-* [ ] Add test case timeout
-* [ ] Add support for global setup/teardown and pass state to test cases (like the init functions in defmt-test)
-* [ ] Add support for async test functions
-* [ ] Add support for should_error attribute
-* [ ] Add support for non-unit return types of tests
-
+## WARNING
+This project is development state. Don't rely on it for anything important yet.
 
 ## Usage
 
@@ -37,7 +29,7 @@ name = "example_test"
 harness = false
 
 [dev-dependencies]
-embedded-test = {git= "https://github.com/probe-rs/embedded-test", features = ["log"]} # enable log or defmt to see some debug output
+embedded-test = {version="0.2.0", features = ["log"]} # enable log or defmt to see some debug output
 panic-probe = {git = "https://github.com/t-moe/defmt"}  # the upstream create does not support riscv yet
 ```
 

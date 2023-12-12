@@ -1,6 +1,6 @@
 [package]
 name = "embedded-test"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
@@ -13,7 +13,7 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 # Dependencies when this crate is used as library
 [dependencies]
 semihosting = { version ="0.1.4", features = ["args"] }
-embedded-test-macros = {path = "./macros" } # Required for now, but must be removed, once we want to release to crates.io
+embedded-test-macros = {version="0.2.0",path = "./macros" }
 defmt = { version = "0.3.5", optional = true }
 log = { version = "0.4.20", optional = true}
 serde = { version = "1.0.193", default-features = false, features = ["derive"] }
