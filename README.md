@@ -36,7 +36,7 @@ harness = false
 
 [dev-dependencies]
 embedded-test = {version="0.2.0", features = ["log"]} # enable log or defmt to see some debug output
-panic-probe = {git = "https://github.com/t-moe/defmt"}  # the upstream create does not support riscv yet
+panic-probe = {git = "https://github.com/t-moe/defmt", features=["print-log"]}  # the upstream create does not support riscv yet
 ```
 
 Install the runner on your system:

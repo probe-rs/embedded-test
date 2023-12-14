@@ -259,9 +259,12 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         let init_run_and_check = quote!(
             {
-                 let state = #init_expr; // either init() or init().await
-                 let outcome = #run_call; // either test(state), test(state).await, test(), or test().await
-                 #krate::export::check_outcome(outcome);
+                let outcome;
+                {
+                    let state = #init_expr; // either init() or init().await
+                    outcome = #run_call; // either test(state), test(state).await, test(), or test().await
+                }
+                #krate::export::check_outcome(outcome);
             }
         );
 
