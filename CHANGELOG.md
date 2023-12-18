@@ -16,5 +16,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.1]
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/0.2.1...master
-[0.2.1]: https://github.com/probe-rs/embedded-test/releases/tag/0.2.1
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.2.1...master
+[0.2.1]: https://github.com/probe-rs/embedded-test/releases/tag/v0.2.1
