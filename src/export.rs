@@ -1,22 +1,8 @@
 use crate::TestOutcome;
 
-/// Terminates the application and makes a semihosting-capable debug tool exit
-/// with status code 0.
-pub fn exit() -> ! {
-    loop {
-        semihosting::process::exit(0);
-    }
-}
-
-/// Terminates the application and makes a semihosting-capable debug tool exit with error
-pub fn abort() -> ! {
-    loop {
-        semihosting::process::abort();
-    }
-}
-
-use crate::semihosting_ext::{syscall_readonly, ParamRegR};
 pub use heapless::Vec;
+use semihosting::sys::arm_compat::syscall::ParamRegR;
+use semihosting::sys::arm_compat::syscall::{syscall_readonly, OperationNumber};
 
 const VERSION: u32 = 1; //Format version of our protocol between probe-rs and target running embedded-test
 
@@ -62,7 +48,12 @@ pub fn run_tests(tests: &mut [Test]) -> ! {
             let mut buf = [0u8; 1024];
             let size = serde_json_core::to_slice(&tests, &mut buf).unwrap();
             let args = [ParamRegR::ptr(buf.as_ptr()), ParamRegR::usize(size)];
-            let ret = unsafe { syscall_readonly(0x100, ParamRegR::block(&args)) };
+            let ret = unsafe {
+                syscall_readonly(
+                    OperationNumber::user_defined(0x100),
+                    ParamRegR::block(&args),
+                )
+            };
             if ret.usize() != 0 {
                 error!("syscall failed: {}", ret.usize());
                 semihosting::process::abort();

@@ -4,7 +4,6 @@
 #![no_std]
 
 mod fmt;
-mod semihosting_ext;
 
 pub use embedded_test_macros::tests;
 
