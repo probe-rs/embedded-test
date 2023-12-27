@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Removed `#![feature(trait_alias)]` to allow usage of `embedded-test` in stable rust. 
 
 ### Fixed
 - Updated `semihosting` dependency to fix failing build for cortex-m targets.

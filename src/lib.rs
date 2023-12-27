@@ -1,18 +1,10 @@
 // Copied from https://github.com/knurling-rs/defmt/blob/main/firmware/defmt-test/src/lib.rs
 
-#![feature(trait_alias)]
 #![no_std]
 
 mod fmt;
 
 pub use embedded_test_macros::tests;
-
-#[cfg(feature = "defmt")]
-pub trait FormatOrDebug = defmt::Format;
-#[cfg(feature = "log")]
-pub trait FormatOrDebug = core::fmt::Debug;
-#[cfg(all(not(feature = "defmt"), not(feature = "log")))]
-pub trait FormatOrDebug = core::any::Any;
 
 /// Private implementation details used by the proc macro.
 /// WARNING: This API is not stable and may change at any time.
@@ -30,7 +22,28 @@ mod sealed {
 /// This is comparable to the `Termination` trait in libstd, except stable and tailored towards the
 /// needs of embedded-test. It is implemented for `()`, which always indicates success, and `Result`,
 /// where `Ok` indicates success.
-pub trait TestOutcome: FormatOrDebug + sealed::Sealed {
+#[cfg(feature = "defmt")]
+pub trait TestOutcome: defmt::Format + sealed::Sealed {
+    fn is_success(&self) -> bool;
+}
+
+/// Indicates whether a test succeeded or failed.
+///
+/// This is comparable to the `Termination` trait in libstd, except stable and tailored towards the
+/// needs of embedded-test. It is implemented for `()`, which always indicates success, and `Result`,
+/// where `Ok` indicates success.
+#[cfg(feature = "log")]
+pub trait TestOutcome: core::fmt::Debug + sealed::Sealed {
+    fn is_success(&self) -> bool;
+}
+
+/// Indicates whether a test succeeded or failed.
+///
+/// This is comparable to the `Termination` trait in libstd, except stable and tailored towards the
+/// needs of embedded-test. It is implemented for `()`, which always indicates success, and `Result`,
+/// where `Ok` indicates success.
+#[cfg(all(not(feature = "log"), not(feature = "defmt")))]
+pub trait TestOutcome: sealed::Sealed {
     fn is_success(&self) -> bool;
 }
 
@@ -40,7 +53,22 @@ impl TestOutcome for () {
     }
 }
 
-impl<T: FormatOrDebug, E: FormatOrDebug> TestOutcome for Result<T, E> {
+#[cfg(feature = "log")]
+impl<T: core::fmt::Debug, E: core::fmt::Debug> TestOutcome for Result<T, E> {
+    fn is_success(&self) -> bool {
+        self.is_ok()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl<T: defmt::Format, E: defmt::Format> TestOutcome for Result<T, E> {
+    fn is_success(&self) -> bool {
+        self.is_ok()
+    }
+}
+
+#[cfg(all(not(feature = "log"), not(feature = "defmt")))]
+impl<T, E> TestOutcome for Result<T, E> {
     fn is_success(&self) -> bool {
         self.is_ok()
     }
