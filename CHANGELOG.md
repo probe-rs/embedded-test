@@ -8,15 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Removed `#![feature(trait_alias)]` to allow usage of `embedded-test` in stable rust. 
+
+### Fixed
+
+### Removed
+
+## [0.2.2]
+
+### Changed
+- Removed `#![feature(trait_alias)]` to allow usage of `embedded-test` in stable rust.
 
 ### Fixed
 - Updated `semihosting` dependency to fix failing build for cortex-m targets.
 
-### Removed
-
 ## [0.2.1]
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.2.1...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.2.2...master
+[0.2.2]: https://github.com/probe-rs/embedded-test/releases/tag/v0.2.2
 [0.2.1]: https://github.com/probe-rs/embedded-test/releases/tag/v0.2.1
