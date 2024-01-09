@@ -35,8 +35,13 @@ name = "example_test"
 harness = false
 
 [dev-dependencies]
-embedded-test = {version="0.2.0", features = ["log"]} # enable log or defmt to see some debug output
-panic-probe = {git = "https://github.com/t-moe/defmt", features=["print-log"]}  # the upstream create does not support riscv yet
+embedded-test = {version="0.2.2", features = ["log"]} # enable log or defmt to see some debug output
+panic-probe = {git = "https://github.com/t-moe/defmt", features=["print-log"]}  # the upstream create does not use semihosting yet
+# NOTE: You need to provide your own exception handler, as panic_probe no longer provides this
+
+[patch.crates-io] # Patch defmt globally, as it is a native library.
+defmt = { git = "https://github.com/t-moe/defmt" }
+defmt-rtt = { git = "https://github.com/t-moe/defmt" }
 ```
 
 Install the runner on your system:
@@ -57,7 +62,8 @@ Then you can run your tests with `cargo test` or use the button in vscode/intell
 
 ## Example Test
 
-[Example repo](https://github.com/probe-rs/embedded-test-example)
+[Example repo](https://github.com/probe-rs/embedded-test-example)  
+[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/master/Cargo.toml)
 
 Example for `tests/example_test.rs`
 
@@ -86,7 +92,8 @@ mod unit_tests {
       #[cfg(feature = "log")]
       esp_println::logger::init_logger_from_env();
 
-      // The init function can return some state, which can be consumed by the testcases
+      // NOTE: The init function can return some state, which can be consumed by the testcases
+      // You can also implement a drop guard for the state, which enables you to run some cleanup code after the testcases
       io
    }
 
