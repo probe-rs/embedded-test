@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Macro produced invalid rust code when there was no #[init] function present.
 
 ### Removed
 

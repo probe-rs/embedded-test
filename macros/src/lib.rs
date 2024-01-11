@@ -210,11 +210,11 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         (
             Some(quote!(#init_func)),
-            Some(invoke(init_ident, vec![], init.asyncness)),
+            invoke(init_ident, vec![], init.asyncness),
             init.asyncness,
         )
     } else {
-        (None, None, false)
+        (None, quote!(()), false)
     };
 
     let mut unit_test_calls = vec![];
@@ -261,7 +261,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
             {
                 let outcome;
                 {
-                    let state = #init_expr; // either init() or init().await
+                    let state = #init_expr; // either init() or init().await or ()
                     outcome = #run_call; // either test(state), test(state).await, test(), or test().await
                 }
                 #krate::export::check_outcome(outcome);
