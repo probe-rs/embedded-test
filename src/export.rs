@@ -1,8 +1,15 @@
 use crate::TestOutcome;
 
 pub use heapless::Vec;
+
 use semihosting::sys::arm_compat::syscall::ParamRegR;
 use semihosting::sys::arm_compat::syscall::{syscall_readonly, OperationNumber};
+
+// Reexport the embassy stuff
+#[cfg(feature="embassy")]
+pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate!
+#[cfg(feature="embassy")]
+pub use embassy_executor::task;
 
 const VERSION: u32 = 1; //Format version of our protocol between probe-rs and target running embedded-test
 

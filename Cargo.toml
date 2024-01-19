@@ -13,7 +13,7 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 # Dependencies when this crate is used as library
 [dependencies]
 semihosting = { version ="0.1.5", features = ["args"] }
-embedded-test-macros = {version="0.2.0",path = "./macros" }
+embedded-test-macros = {version="0.3.0",path = "./macros" }
 defmt = { version = "0.3.5", optional = true }
 log = { version = "0.4.20", optional = true}
 serde = { version = "1.0.193", default-features = false, features = ["derive"] }

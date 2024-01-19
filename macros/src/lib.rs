@@ -276,14 +276,14 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
             let cfgs = &test.cfgs;
             test_function_invokers.push(quote!(
                   #(#cfgs)*
-                  #[embassy_executor::task]
+                  #[#krate::export::task]
                   async fn #ident_invoker() {
                       #init_run_and_check
                   }
             ));
 
             quote!(|| {
-                let mut executor = ::embassy_executor::Executor::new();
+                let mut executor = #krate::export::Executor::new();
                 let executor = unsafe { __make_static(&mut executor) };
                 executor.run(|spawner| {
                     spawner.must_spawn(#ident_invoker());

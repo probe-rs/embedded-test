@@ -1,7 +1,7 @@
 [package]
 name = "embedded-test-macros"
 description = "proc-macros for the embedded-test crate"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
