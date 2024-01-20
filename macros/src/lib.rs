@@ -303,7 +303,40 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
     let test_functions = tests.iter().map(|test| &test.func);
     let test_cfgs = tests.iter().map(|test| &test.cfgs);
-    let maximal_number_tests = tests.len();
+    let test_count = {
+        let test_cfgs = test_cfgs.clone();
+        quote!(
+            {
+                let mut counter = 0;
+                #(
+                    #(#test_cfgs)*
+                    { counter += 1; }
+                )*
+                counter
+            }
+        )
+    };
+
+    let test_names_strlen = {
+        let test_cfgs = test_cfgs.clone();
+        let test_names = tests.iter().map(|test| test.func.sig.ident.clone());
+        quote!(
+            {
+                // The idea of this code is to calculate the overall string length of all test names,
+                // so that inside `run_tests` we can allocate a json buffer of the right size,
+                // without doing a heap allocation (requiring a global allocator)
+                let mut counter = 0;
+                #(
+                    #(#test_cfgs)*
+                    {
+                        const FULLY_QUALIFIED_FN_NAME: &str = concat!(module_path!(), "::", stringify!(#test_names));
+                        counter += FULLY_QUALIFIED_FN_NAME.len();
+                    }
+                )*
+                counter
+            }
+        )
+    };
 
     Ok(quote!(
     #[cfg(test)]
@@ -316,7 +349,10 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         #[export_name = "main"]
         unsafe extern "C" fn __defmt_test_entry() -> ! {
-            let mut test_funcs: #krate::export::Vec<#krate::export::Test, #maximal_number_tests> = #krate::export::Vec::new();
+            const TEST_COUNT : usize = #test_count;
+            const TEST_NAMES_STRLEN : usize = #test_names_strlen;
+            let mut test_funcs: #krate::export::Vec<#krate::export::Test, TEST_COUNT> = #krate::export::Vec::new();
+
             #(
                 #(#test_cfgs)*
                 {
@@ -324,7 +360,10 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                 }
             )*
 
-            #krate::export::run_tests(&mut test_funcs[..]);
+            const JSON_SIZE_TOTAL : usize =  #krate::export::JSON_SIZE_HEADER + TEST_NAMES_STRLEN
+                + #krate::export::JSON_SIZE_PER_TEST_WITHOUT_TESTNAME * TEST_COUNT;
+
+            #krate::export::run_tests::<JSON_SIZE_TOTAL>(&mut test_funcs[..]);
         }
 
         #init_fn

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Show improved diagnostic when no executor feature is enabled on the embassy-executor crate.
+- Calculate the test list buffer size at compile time to avoid a too small buffer.
 
 ### Changed
 
