@@ -39,10 +39,15 @@ harness = false
 
 [dev-dependencies]
 embedded-test = {version="0.2.2", features = ["log"]} # enable log or defmt to see some debug output
-panic-probe = {git = "https://github.com/t-moe/defmt", features=["print-log"]}  # the upstream create does not use semihosting yet
-# NOTE: You need to provide your own exception handler, as panic_probe no longer provides this
 
-[patch.crates-io] # Patch defmt globally, as it is a native library.
+# You need a panic handler that invokes `semihosting::process::abort()` on exit.
+# For example: Use the patched panic-probe:
+panic-probe = {git = "https://github.com/t-moe/defmt", features=["print-log"]}  # the upstream create does not use semihosting yet
+# NOTE: When you use the patched panic-probe, you'll also need to:
+# * provide your own exception handler, as panic_probe no longer provides this
+# * patch defmt globally, as it is a native library (see below)
+
+[patch.crates-io]
 defmt = { git = "https://github.com/t-moe/defmt" }
 defmt-rtt = { git = "https://github.com/t-moe/defmt" }
 ```
