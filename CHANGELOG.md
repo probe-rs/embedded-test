@@ -6,14 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Added
-- Added Feature `rtt` to initialize logging via `rtt-target` crate.
 
 ### Changed
-- Breaking: Bump embassy-excecutor to 0.5.0
 
 ### Fixed
 
 ### Removed
+
+## [0.3.0]
+### Added
+- Added Feature `rtt` to initialize logging via `rtt-target` crate.
+
+### Changed
+- Breaking: Bump embassy-excecutor to 0.5.0
 
 ## [0.2.3]
 ### Added
@@ -33,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.1]
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/master...v0.2.3
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.3.0...master
+[0.3.0]: https://github.com/probe-rs/embedded-test/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/probe-rs/embedded-test/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/probe-rs/embedded-test/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/probe-rs/embedded-test/releases/tag/v0.2.1

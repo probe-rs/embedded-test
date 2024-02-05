@@ -38,7 +38,7 @@ name = "example_test"
 harness = false
 
 [dev-dependencies]
-embedded-test = {version="0.2.2", features = ["log"]} # enable log or defmt to see some debug output
+embedded-test = {version="0.3.0", features = ["log"]} # enable log or defmt to see some debug output
 
 # You need a panic handler that invokes `semihosting::process::abort()` on exit.
 # For example: Use the patched panic-probe:
