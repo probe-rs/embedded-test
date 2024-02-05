@@ -349,6 +349,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         #[export_name = "main"]
         unsafe extern "C" fn __defmt_test_entry() -> ! {
+            #krate::export::init_logging();
             const TEST_COUNT : usize = #test_count;
             const TEST_NAMES_STRLEN : usize = #test_names_strlen;
             let mut test_funcs: #krate::export::Vec<#krate::export::Test, TEST_COUNT> = #krate::export::Vec::new();
