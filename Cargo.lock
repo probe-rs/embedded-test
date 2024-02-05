@@ -126,13 +126,14 @@ dependencies = [
 
 [[package]]
 name = "embedded-test"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "defmt",
  "embassy-executor",
  "embedded-test-macros",
  "heapless 0.8.0",
  "log",
+ "rtt-target",
  "semihosting",
  "serde",
  "serde-json-core",
@@ -256,6 +257,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5267fca4496028628a95160fc423a33e8b2e6af8a5302579e322e4b520293cae"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "rtt-target"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10b34c9e6832388e45f3c01f1bb60a016384a0a4ad80cdd7d34913bed25037f0"
+dependencies = [
+ "critical-section",
+ "ufmt-write",
 ]
 
 [[package]]
@@ -383,6 +394,12 @@ dependencies = [
  "quote",
  "syn 2.0.39",
 ]
+
+[[package]]
+name = "ufmt-write"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e87a2ed6b42ec5e28cc3b94c09982969e9227600b2e3dcbc1db927a84c06bd69"
 
 [[package]]
 name = "unicode-ident"

@@ -98,3 +98,8 @@ pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
         semihosting::process::abort();
     }
 }
+
+pub fn init_logging() {
+    #[cfg(feature = "rtt")]
+    rtt_target::rtt_init_print!();
+}
