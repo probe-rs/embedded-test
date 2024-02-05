@@ -7,7 +7,7 @@ use semihosting::sys::arm_compat::syscall::{syscall_readonly, OperationNumber};
 
 // Reexport the embassy stuff
 #[cfg(feature="embassy")]
-pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate!
+pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.5.x)!
 #[cfg(feature="embassy")]
 pub use embassy_executor::task;
 
