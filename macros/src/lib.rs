@@ -343,12 +343,17 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     mod #ident {
         #(#untouched_tokens)*
 
+        // Used by probe-rs to detect that the binary runs embedded-test
+        #[used]
+        #[no_mangle]
+        static mut EMBEDDED_TEST_VERSION: usize = 0;
+
         unsafe fn __make_static<T>(t: &mut T) -> &'static mut T {
             ::core::mem::transmute(t)
         }
 
         #[export_name = "main"]
-        unsafe extern "C" fn __defmt_test_entry() -> ! {
+        unsafe extern "C" fn __embedded_test_entry() -> ! {
             #krate::export::init_logging();
             const TEST_COUNT : usize = #test_count;
             const TEST_NAMES_STRLEN : usize = #test_names_strlen;
