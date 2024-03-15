@@ -5,6 +5,15 @@ pub use heapless::Vec;
 use semihosting::sys::arm_compat::syscall::ParamRegR;
 use semihosting::sys::arm_compat::syscall::{syscall_readonly, OperationNumber};
 
+pub fn ensure_linker_file_was_added_to_rustflags() -> *const u8 {
+    // Try to access a symbol which we provide in the embedded-test.x linker file.
+    // This will trigger a linker error if the linker file has not been added to the rustflags
+    extern "C" {
+        static embedded_test_linker_file_not_added_to_rustflags: u8;
+    }
+    unsafe { &embedded_test_linker_file_not_added_to_rustflags }
+}
+
 // Reexport the embassy stuff
 #[cfg(feature="embassy")]
 pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.5.x)!

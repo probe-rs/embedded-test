@@ -54,6 +54,7 @@ Add the following to your `.cargo/config.toml`:
 ```toml
 [target.riscv32imac-unknown-none-elf]
 runner = "probe-rs run --chip esp32c6"
+rustflags = ["-C", "link-arg=-Tembedded-test.x"]
 ```
 
 Then you can run your tests with `cargo test --test example_test` or use the button in vscode/intellij.

@@ -346,7 +346,8 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         // Used by probe-rs to detect that the binary runs embedded-test
         #[used]
         #[no_mangle]
-        static mut EMBEDDED_TEST_VERSION: usize = 0;
+        #[link_section = ".embedded_test.meta"]
+        static EMBEDDED_TEST_VERSION: usize = 0;
 
         unsafe fn __make_static<T>(t: &mut T) -> &'static mut T {
             ::core::mem::transmute(t)
@@ -354,6 +355,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         #[export_name = "main"]
         unsafe extern "C" fn __embedded_test_entry() -> ! {
+            #krate::export::ensure_linker_file_was_added_to_rustflags();
             #krate::export::init_logging();
             const TEST_COUNT : usize = #test_count;
             const TEST_NAMES_STRLEN : usize = #test_names_strlen;
