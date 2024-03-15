@@ -4,7 +4,7 @@ version = "0.3.0"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
-keywords = ["embedded", "test", "testing",  "test-runner", "test-framework"]
+keywords = ["embedded", "test", "testing", "test-runner", "test-framework"]
 description = "A test harness and runner for embedded devices"
 categories = ["embedded", "no-std", "development-tools::testing"]
 
@@ -12,19 +12,29 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 
 # Dependencies when this crate is used as library
 [dependencies]
-rtt-target = { version = "0.5.0", optional = true }
-semihosting = { version ="0.1.5", features = ["args"] }
-embedded-test-macros = {version="0.4.0",path = "./macros" }
-defmt = { version = "0.3.5", optional = true }
-log = { version = "0.4.20", optional = true}
+semihosting = { version = "0.1.5", features = ["args"] }
+embedded-test-macros = { version = "0.4.0", path = "./macros" }
 serde = { version = "1.0.193", default-features = false, features = ["derive"] }
-serde-json-core = { version = "0.5.1"  }
+serde-json-core = { version = "0.5.1" }
 heapless = "0.8.0"
-embassy-executor = { version = "0.5.0", optional=true, default-features = false }
+
+# Optional dependencies
+rtt-target = { version = "0.5.0", optional = true }
+rtt-log = { version = "0.3.0", optional = true }
+defmt = { version = "0.3.5", optional = true }
+log = { version = "0.4.20", optional = true }
+embassy-executor = { version = "0.5.0", optional = true, default-features = false }
+
 
 [features]
-defmt = ["dep:defmt"]
-rtt = ["dep:rtt-target"]
-log = ["dep:log"]
+default = ["panic-handler"]
+
+panic-handler = [] # defines a panic-handler which will invoke `semihosting::process::abort()` on panic
+
+defmt = ["dep:defmt"] # prints testcase exit result to defmt
+log = ["dep:log"] # prints testcase exit result to log
+
+init-rtt = ["dep:rtt-target"] # calls `rtt_target::rtt_init_print!()` before starting any tests
+init-log = ["dep:rtt-log"] # calls `rtt_log::init();` before starting any tests
 
 embassy = ["embedded-test-macros/embassy", "dep:embassy-executor"] # Note: You need to enable at least one executor feature on embassy

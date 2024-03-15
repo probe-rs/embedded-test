@@ -6,6 +6,12 @@ mod fmt;
 
 pub use embedded_test_macros::tests;
 
+#[cfg(feature = "panic-handler")]
+#[panic_handler]
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    semihosting::process::abort()
+}
+
 /// Private implementation details used by the proc macro.
 /// WARNING: This API is not stable and may change at any time.
 #[doc(hidden)]
