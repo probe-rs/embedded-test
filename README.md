@@ -3,27 +3,28 @@
 [![Crates.io](https://img.shields.io/crates/v/embedded-test?labelColor=1C2C2E&color=C96329&logo=Rust&style=flat-square)](https://crates.io/crates/embedded-test)
 ![Crates.io](https://img.shields.io/crates/l/embedded-test?labelColor=1C2C2E&style=flat-square)
 
-The embedded-test library provides a test harness for embedded systems (riscv and arm). It is based on the idea of [defmt-test](https://crates.io/crates/defmt-test).
+The embedded-test library provides a test harness for embedded systems (riscv and arm). It is based on the idea
+of [defmt-test](https://crates.io/crates/defmt-test).
 
 `probe-rs test` provides a (libtest compatible) test runner, which will:
+
 1. Flash all the tests to the device in one go (via probe-rs)
 2. Request information about all tests from the device (via semihosting SYS_GET_CMDLINE)
-3. In turn for each testcase: 
-   - Reset the device
-   - Signal to the device (via semihosting SYS_GET_CMDLINE) which test to run
-   - Wait for the device to signal that the test completed successfully or with error (via semihosting SYS_EXIT)
+3. In turn for each testcase:
+    - Reset the device
+    - Signal to the device (via semihosting SYS_GET_CMDLINE) which test to run
+    - Wait for the device to signal that the test completed successfully or with error (via semihosting SYS_EXIT)
 4. Report the results
 
-Since the test runner (`probe-rs test`) is libtest compatible (using [libtest-mimic](https://crates.io/crates/libtest-mimic)), you can use intellij or vscode to run individual tests with the click of a button.
+Since the test runner (`probe-rs test`) is libtest compatible (
+using [libtest-mimic](https://crates.io/crates/libtest-mimic)), you can use intellij or vscode to run individual tests
+with the click of a button.
 
 ![](./demo.gif)
 
-
-## WARNING
-This project is in development state. Don't rely on it for anything important yet.
-
 ## Features
-* Runs each test case individually, and resets the device between each test case 
+
+* Runs each test case individually, and resets the device between each test case
 * Supports an init function which will be called before each test case and can pass state to the test cases
 * Supports async test and init functions (needs feature `embassy`)
 * Support `#[should_panic]`, `#[ignore]` and `#[timeout(<seconds>)]` attributes for each test case
@@ -33,45 +34,35 @@ This project is in development state. Don't rely on it for anything important ye
 Add the following to your `Cargo.toml`:
 
 ```toml
+[dev-dependencies]
+embedded-test = { git = "https://github.com/probe-rs/embedded-test", branch = "next", features = ["init-log", "log"] }
+
+
 [[test]]
 name = "example_test"
 harness = false
-
-[dev-dependencies]
-embedded-test = {version="0.3.0", features = ["log"]} # enable log or defmt to see some debug output
-
-# You need a panic handler that invokes `semihosting::process::abort()` on exit.
-# For example: Use the patched panic-probe:
-panic-probe = {git = "https://github.com/t-moe/defmt", features=["print-log"]}  # the upstream create does not use semihosting yet
-# NOTE: When you use the patched panic-probe, you'll also need to:
-# * provide your own exception handler, as panic_probe no longer provides this
-# * patch defmt globally, as it is a native library (see below)
-
-[patch.crates-io]
-defmt = { git = "https://github.com/t-moe/defmt" }
-defmt-rtt = { git = "https://github.com/t-moe/defmt" }
 ```
 
 Install the runner on your system:
+
 ```bash 
-cargo install probe-rs --git https://github.com/probe-rs/probe-rs --branch feature/testing --features cli --bin probe-rs
+cargo install probe-rs --git https://github.com/probe-rs/probe-rs --branch feature/testing-rebased --features cli --bin probe-rs
 ```
 
 Add the following to your `.cargo/config.toml`:
 
 ```toml
 [target.riscv32imac-unknown-none-elf]
-
-# Syntax is: probe-rs test <flash settings> -- <elf> <libtest args>
-runner = "probe-rs test --chip esp32c6 -- "
+runner = "probe-rs run --chip esp32c6"
 ```
 
-Then you can run your tests with `cargo test` or use the button in vscode/intellij.
+Then you can run your tests with `cargo test --test example_test` or use the button in vscode/intellij.
 
 ## Example Test
 
-[Example repo](https://github.com/probe-rs/embedded-test-example)  
-[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/master/Cargo.toml)
+[Example repo](https://github.com/probe-rs/embedded-test-example/blob/next)  
+[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/next/Cargo.toml)  
+[Async Test Example](https://github.com/probe-rs/embedded-test-example/blob/next/tests/async_test.rs)
 
 Example for `tests/example_test.rs`
 
@@ -82,99 +73,98 @@ Example for `tests/example_test.rs`
 #[cfg(test)]
 #[embedded_test::tests]
 mod unit_tests {
+    // import hal which provides exception handler
+    use esp_hal::{clock::ClockControl, peripherals::Peripherals, prelude::*, IO};
 
-   // import hal which provides exception handler
-   use esp32c6_hal::{clock::ClockControl, peripherals::Peripherals, prelude::*, IO};
+    // Optional: A init function which is called before every test
+    #[init]
+    fn init() -> IO {
+        let peripherals = Peripherals::take();
+        let system = peripherals.SYSTEM.split();
+        ClockControl::boot_defaults(system.clock_control).freeze();
+        let io = IO::new(peripherals.GPIO, peripherals.IO_MUX);
 
-   use panic_probe as _; // calls semihosting::process::abort on test failure, printing is done by probe-rs
+        // The init function can return some state, which can be consumed by the testcases
+        io
+    }
 
-   // Optional: A init function which is called before every test
-   // asyncness is optional and needs feature embassy
-   #[init]
-   async fn init() -> IO {
-      let peripherals = Peripherals::take();
-      let system = peripherals.SYSTEM.split();
-      ClockControl::boot_defaults(system.clock_control).freeze();
-      let io = IO::new(peripherals.GPIO, peripherals.IO_MUX);
+    // A test which takes the state returned by the init function (optional)
+    #[test]
+    fn takes_state(_state: IO) {
+        assert!(true)
+    }
 
-      #[cfg(feature = "log")]
-      esp_println::logger::init_logger_from_env();
+    // Example for a test which is conditionally enabled
+    #[test]
+    #[cfg(feature = "log")]
+    fn log() {
+        log::info!("Hello, log!"); // Prints via esp-println to rtt
+        assert!(true)
+    }
 
-      // NOTE: The init function can return some state, which can be consumed by the testcases
-      // You can also implement a drop guard for the state, which enables you to run some cleanup code after the testcases
-      io
-   }
+    // Another example for a conditionally enabled test
+    #[test]
+    #[cfg(feature = "defmt")]
+    fn defmt() {
+        use defmt_rtt as _;
+        defmt::info!("Hello, defmt!"); // Prints via defmt-rtt to rtt
+        assert!(true)
+    }
 
-   // A test which takes the state returned by the init function (optional)
-   // asyncness is optional and needs feature embassy
-   #[test]
-   async fn takes_state(_state: IO) {
-      assert!(true)
-   }
+    // A test which is cfg'ed out
+    #[test]
+    #[cfg(abc)]
+    fn it_works_disabled() {
+        assert!(false)
+    }
 
-   // Example for a test which is conditionally enabled
-   #[test]
-   #[cfg(feature = "log")]
-   fn log() {
-      log::info!("Hello, log!"); // Prints via esp-println to rtt
-      assert!(true)
-   }
+    // Tests can be ignored with the #[ignore] attribute
+    #[test]
+    #[ignore]
+    fn it_works_ignored() {
+        assert!(false)
+    }
 
-   // Another example for a conditionally enabled test
-   #[test]
-   #[cfg(feature = "defmt")]
-   fn defmt() {
-      use defmt_rtt as _;
-      defmt::info!("Hello, defmt!"); // Prints via defmt-rtt to rtt
-      assert!(true)
-   }
+    // A test that fails with a panic
+    #[test]
+    fn it_fails1() {
+        assert!(false)
+    }
 
-   // A test which is cfg'ed out
-   #[test]
-   #[cfg(abc)]
-   fn it_works_disabled() {
-      assert!(false)
-   }
+    // A test that fails with a returned Err(&str)
+    #[test]
+    fn it_fails2() -> Result<(), &'static str> {
+        Err("It failed because ...")
+    }
 
-   // Tests can be ignored with the #[ignore] attribute
-   #[test]
-   #[ignore]
-   fn it_works_ignored() {
-      assert!(false)
-   }
+    // Tests can be annotated with #[should_panic] if they are expected to panic
+    #[test]
+    #[should_panic]
+    fn it_passes() {
+        assert!(false)
+    }
 
-   // A test that fails with a panic
-   #[test]
-   fn it_fails1() {
-      assert!(false)
-   }
+    // This test should panic, but doesn't => it fails
+    #[test]
+    #[should_panic]
+    fn it_fails3() {}
 
-   // A test that fails with a returned Err()
-   #[test]
-   fn it_fails2() -> Result<(), ()> {
-      Err(())
-   }
-
-   // Tests can be annotated with #[should_panic] if they are expected to panic
-   #[test]
-   #[should_panic]
-   fn it_passes() {
-      assert!(false)
-   }
-
-   // This test should panic, but doesn't => it fails
-   #[test]
-   #[should_panic]
-   fn it_fails3() {}
-
-   // Tests can be annotated with #[timeout(<secs>)] to change the default timeout of 60s
-   #[test]
-   #[timeout(10)]
-   fn it_timeouts() {
-      loop {} // should run into the 60s timeout
-   }
+    // Tests can be annotated with #[timeout(<secs>)] to change the default timeout of 60s
+    #[test]
+    #[timeout(10)]
+    fn it_timeouts() {
+        loop {} // should run into the 10s timeout
+    }
 }
 ```
+
+## Configuration features
+
+* `panic-handler` (default): Defines a panic-handler which will invoke `semihosting::process::abort()` on panic
+* `defmt`: Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself.
+* `log`: Prints testcase exit result to log. You'll need to setup your logging sink yourself (or combine with the `init-log` feature).
+* `init-rtt`: Calls `rtt_target::rtt_init_print!()` before starting any tests
+* `init-log`: Calls `rtt_log::init();` before starting any tests.
 
 ## License
 
