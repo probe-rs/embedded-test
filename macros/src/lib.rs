@@ -38,7 +38,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     if macro_args.executor.is_some() {
         return Err(parse::Error::new(
             proc_macro2::Span::call_site(),
-            "`#[test]` attribute doesn't take an executor unless the features `embassy` and `external-executor` are enabled",
+            "`#[embedded_test::tests]` attribute doesn't take an executor unless the features `embassy` and `external-executor` are enabled",
         ));
     }
 
