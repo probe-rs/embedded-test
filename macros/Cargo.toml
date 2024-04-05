@@ -16,9 +16,11 @@ proc-macro = true
 proc-macro2 = "1.0.79"
 quote = "1.0.35"
 syn = { version = "2.0.52", features = ["extra-traits", "full"] }
+darling = "0.20.8"
 
 [features]
 embassy = []
+external-executor = []
 
 [dev-dependencies]
 trybuild = "1"

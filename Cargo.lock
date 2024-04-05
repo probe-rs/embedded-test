@@ -154,6 +154,7 @@ dependencies = [
 name = "embedded-test-macros"
 version = "0.4.0"
 dependencies = [
+ "darling",
  "proc-macro2",
  "quote",
  "syn 2.0.53",
