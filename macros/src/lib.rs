@@ -34,6 +34,14 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         }
     };
 
+    #[cfg(not(all(feature = "embassy", feature = "external-executor")))]
+    if macro_args.executor.is_some() {
+        return Err(parse::Error::new(
+            proc_macro2::Span::call_site(),
+            "`#[test]` attribute doesn't take an executor unless the features `embassy` and `external-executor` are enabled",
+        ));
+    }
+
     let module: ItemMod = syn::parse(input)?;
 
     let items = if let Some(content) = module.content {

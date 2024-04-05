@@ -20,6 +20,7 @@ darling = "0.20.8"
 
 [features]
 embassy = []
+external-executor = []
 
 [dev-dependencies]
 trybuild = "1"
