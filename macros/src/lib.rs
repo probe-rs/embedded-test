@@ -1,8 +1,8 @@
 // Copied from https://github.com/knurling-rs/defmt/blob/main/firmware/defmt-test/macros/src/lib.rs
 extern crate proc_macro;
 
+use darling::{ast::NestedMeta, FromMeta};
 use proc_macro::TokenStream;
-use proc_macro2::Span;
 use quote::{format_ident, quote};
 use syn::{parse, spanned::Spanned, Attribute, Item, ItemFn, ItemMod, ReturnType, Type};
 
@@ -15,12 +15,24 @@ pub fn tests(args: TokenStream, input: TokenStream) -> TokenStream {
 }
 
 fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStream> {
-    if !args.is_empty() {
-        return Err(parse::Error::new(
-            Span::call_site(),
-            "`#[test]` attribute takes no arguments",
-        ));
+    #[derive(Debug, FromMeta)]
+    struct MacroArgs {
+        executor: Option<syn::Expr>,
     }
+
+    let attr_args = match NestedMeta::parse_meta_list(args.into()) {
+        Ok(v) => v,
+        Err(e) => {
+            return Ok(TokenStream::from(darling::Error::from(e).write_errors()));
+        }
+    };
+
+    let macro_args = match MacroArgs::from_list(&attr_args) {
+        Ok(v) => v,
+        Err(e) => {
+            return Ok(TokenStream::from(e.write_errors()));
+        }
+    };
 
     let module: ItemMod = syn::parse(input)?;
 
@@ -282,8 +294,18 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                   }
             ));
 
+            let executor = if let Some(executor) = &macro_args.executor {
+                quote! {
+                    #executor
+                }
+            } else {
+                quote! {
+                    #krate::export::Executor::new()
+                }
+            };
+
             quote!(|| {
-                let mut executor = #krate::export::Executor::new();
+                let mut executor = #executor;
                 let executor = unsafe { __make_static(&mut executor) };
                 executor.run(|spawner| {
                     spawner.must_spawn(#ident_invoker());
