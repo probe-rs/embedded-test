@@ -8,7 +8,28 @@ pub use embedded_test_macros::tests;
 
 #[cfg(feature = "panic-handler")]
 #[panic_handler]
-fn panic(_info: &core::panic::PanicInfo) -> ! {
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    #[cfg(not(nightly))]
+    {
+        error!("!! A panic occured: {:#?}", info);
+    }
+
+    #[cfg(nightly)]
+    {
+        if let Some(location) = info.location() {
+            let (file, line, column) = (location.file(), location.line(), location.column());
+            error!(
+                "!! A panic occured in '{}', at line {}, column {}:",
+                file, line, column
+            );
+        } else {
+            error!("!! A panic occured at an unknown location:");
+        }
+        if let Some(message) = info.message() {
+            error!("{}", message);
+        }
+    }
+
     semihosting::process::abort()
 }
 
