@@ -5,13 +5,13 @@ pub use heapless::Vec;
 use semihosting::sys::arm_compat::syscall::ParamRegR;
 use semihosting::sys::arm_compat::syscall::{syscall_readonly, OperationNumber};
 
-pub fn ensure_linker_file_was_added_to_rustflags() -> *const u8 {
+pub fn ensure_linker_file_was_added_to_rustflags() -> ! {
     // Try to access a symbol which we provide in the embedded-test.x linker file.
     // This will trigger a linker error if the linker file has not been added to the rustflags
     extern "C" {
-        static embedded_test_linker_file_not_added_to_rustflags: u8;
+        fn embedded_test_linker_file_not_added_to_rustflags() -> !;
     }
-    unsafe { &embedded_test_linker_file_not_added_to_rustflags }
+    unsafe { embedded_test_linker_file_not_added_to_rustflags() }
 }
 
 // Reexport the embassy stuff

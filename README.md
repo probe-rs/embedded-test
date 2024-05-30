@@ -3,12 +3,13 @@
 [![Crates.io](https://img.shields.io/crates/v/embedded-test?labelColor=1C2C2E&color=C96329&logo=Rust&style=flat-square)](https://crates.io/crates/embedded-test)
 ![Crates.io](https://img.shields.io/crates/l/embedded-test?labelColor=1C2C2E&style=flat-square)
 
-The embedded-test library provides a test harness for embedded systems (riscv and arm). It is based on the idea
-of [defmt-test](https://crates.io/crates/defmt-test).
+The embedded-test library provides a test harness for embedded systems (riscv, arm and xtensa).
+Use this library on the target together with [probe-rs](https://probe.rs/) on the host to run integration tests on your
+embedded device.
 
-`probe-rs test` provides a (libtest compatible) test runner, which will:
+[probe-rs](https://probe.rs/)  together with embedded-test provide a (libtest compatible) test runner, which will:
 
-1. Flash all the tests to the device in one go (via probe-rs)
+1. Flash all the tests to the device in one go (via the `probe-rs run` command)
 2. Request information about all tests from the device (via semihosting SYS_GET_CMDLINE)
 3. In turn for each testcase:
     - Reset the device
@@ -16,7 +17,7 @@ of [defmt-test](https://crates.io/crates/defmt-test).
     - Wait for the device to signal that the test completed successfully or with error (via semihosting SYS_EXIT)
 4. Report the results
 
-Since the test runner (`probe-rs test`) is libtest compatible (
+Since the test runner (`probe-rs run`) is libtest compatible (
 using [libtest-mimic](https://crates.io/crates/libtest-mimic)), you can use intellij or vscode to run individual tests
 with the click of a button.
 
@@ -35,7 +36,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dev-dependencies]
-embedded-test = { git = "https://github.com/probe-rs/embedded-test", branch = "next", features = ["init-log", "log"] }
+embedded-test = { version = "0.4.0", features = ["init-log"] }
 
 
 [[test]]
@@ -46,7 +47,7 @@ harness = false
 Install the runner on your system:
 
 ```bash 
-cargo install probe-rs --git https://github.com/probe-rs/probe-rs --branch feature/testing-rebased --features cli --bin probe-rs
+cargo install probe-rs-tools
 ```
 
 Add the following to your `.cargo/config.toml`:
@@ -54,16 +55,27 @@ Add the following to your `.cargo/config.toml`:
 ```toml
 [target.riscv32imac-unknown-none-elf]
 runner = "probe-rs run --chip esp32c6"
-rustflags = ["-C", "link-arg=-Tembedded-test.x"]
+# `probe-rs run` will autodetect whether the elf to flash is a normal firmware or a test binary
+```
+
+Add the following to your `build.rs` file:
+
+```rust
+fn main() {
+    println!("cargo::rustc-link-arg-tests=-Tembedded-test.x");
+}
 ```
 
 Then you can run your tests with `cargo test --test example_test` or use the button in vscode/intellij.
 
+Having trouble setting up? Checkout out
+the [FAQ and common Errors](https://github.com/probe-rs/embedded-test/wiki/FAQ-and-common-Errors) Wiki page.
+
 ## Example Test
 
-[Example repo](https://github.com/probe-rs/embedded-test-example/blob/next)  
-[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/next/Cargo.toml)  
-[Async Test Example](https://github.com/probe-rs/embedded-test-example/blob/next/tests/async_test.rs)
+[Example repo](https://github.com/probe-rs/embedded-test-example)  
+[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/master/Cargo.toml)  
+[Async Test Example](https://github.com/probe-rs/embedded-test-example/blob/master/tests/async_test.rs)
 
 Example for `tests/example_test.rs`
 
@@ -73,25 +85,24 @@ Example for `tests/example_test.rs`
 
 #[cfg(test)]
 #[embedded_test::tests]
-mod unit_tests {
-    // import hal which provides exception handler
-    use esp_hal::{clock::ClockControl, peripherals::Peripherals, prelude::*, IO};
+mod tests {
+    use esp_hal::{clock::ClockControl, delay::Delay, peripherals::Peripherals, prelude::*};
 
     // Optional: A init function which is called before every test
     #[init]
-    fn init() -> IO {
+    fn init() -> Delay {
         let peripherals = Peripherals::take();
         let system = peripherals.SYSTEM.split();
-        ClockControl::boot_defaults(system.clock_control).freeze();
-        let io = IO::new(peripherals.GPIO, peripherals.IO_MUX);
+        let clocks = ClockControl::max(system.clock_control).freeze();
+        let delay = Delay::new(&clocks);
 
         // The init function can return some state, which can be consumed by the testcases
-        io
+        delay
     }
 
     // A test which takes the state returned by the init function (optional)
     #[test]
-    fn takes_state(_state: IO) {
+    fn takes_state(_state: Delay) {
         assert!(true)
     }
 
@@ -161,11 +172,16 @@ mod unit_tests {
 
 ## Configuration features
 
-* `panic-handler` (default): Defines a panic-handler which will invoke `semihosting::process::abort()` on panic
-* `defmt`: Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself.
-* `log`: Prints testcase exit result to log. You'll need to setup your logging sink yourself (or combine with the `init-log` feature).
-* `init-rtt`: Calls `rtt_target::rtt_init_print!()` before starting any tests
-* `init-log`: Calls `rtt_log::init();` before starting any tests.
+| Feature              | Default? | Description                                                                                                                                                                                   |
+|----------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `panic-handler`      | Yes      | Defines a panic-handler which will invoke `semihosting::process::abort()` on panic                                                                                                            |
+| `defmt`              | No       | Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself.                                                                                            |
+| `log`                | No       | Prints testcase exit result to log. You'll need to setup your logging sink yourself (or combine with the `init-log` feature).                                                                 |
+| `init-rtt`           | No       | Calls `rtt_target::rtt_init_print!()` before starting any tests                                                                                                                               |
+| `init-log`           | No       | Calls `rtt_log::init();` before starting any tests.                                                                                                                                           |
+| `embassy`            | No       | Enables async test and init functions. Note: You need to enable at least one executor feature on the embassy-executor crate unless you are using the `external-executor` feature.             |
+| `external-executor`  | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
+| `xtensa-semihosting` | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
 
 ## License
 

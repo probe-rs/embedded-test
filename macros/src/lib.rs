@@ -385,7 +385,13 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         #[export_name = "main"]
         unsafe extern "C" fn __embedded_test_entry() -> ! {
+            // The linker file will redirect this call to the function below.
+            // This trick ensures that we get a compile error, if the linker file was not added to the rustflags.
             #krate::export::ensure_linker_file_was_added_to_rustflags();
+        }
+
+        #[no_mangle]
+        unsafe extern "C" fn __embedded_test_start() -> ! {
             #krate::export::init_logging();
             const TEST_COUNT : usize = #test_count;
             const TEST_NAMES_STRLEN : usize = #test_names_strlen;

@@ -1,7 +1,6 @@
 #![macro_use]
 #![allow(unused_macros)]
 
-
 macro_rules! trace {
     ($s:literal $(, $x:expr)* $(,)?) => {
         {
