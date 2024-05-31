@@ -1,8 +1,8 @@
 // Copied from https://github.com/knurling-rs/defmt/blob/main/firmware/defmt-test/macros/src/lib.rs
 extern crate proc_macro;
 
+use darling::{ast::NestedMeta, FromMeta};
 use proc_macro::TokenStream;
-use proc_macro2::Span;
 use quote::{format_ident, quote};
 use syn::{parse, spanned::Spanned, Attribute, Item, ItemFn, ItemMod, ReturnType, Type};
 
@@ -15,10 +15,30 @@ pub fn tests(args: TokenStream, input: TokenStream) -> TokenStream {
 }
 
 fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStream> {
-    if !args.is_empty() {
+    #[derive(Debug, FromMeta)]
+    struct MacroArgs {
+        executor: Option<syn::Expr>,
+    }
+
+    let attr_args = match NestedMeta::parse_meta_list(args.into()) {
+        Ok(v) => v,
+        Err(e) => {
+            return Ok(TokenStream::from(darling::Error::from(e).write_errors()));
+        }
+    };
+
+    let macro_args = match MacroArgs::from_list(&attr_args) {
+        Ok(v) => v,
+        Err(e) => {
+            return Ok(TokenStream::from(e.write_errors()));
+        }
+    };
+
+    #[cfg(not(all(feature = "embassy", feature = "external-executor")))]
+    if macro_args.executor.is_some() {
         return Err(parse::Error::new(
-            Span::call_site(),
-            "`#[test]` attribute takes no arguments",
+            proc_macro2::Span::call_site(),
+            "`#[embedded_test::tests]` attribute doesn't take an executor unless the features `embassy` and `external-executor` are enabled",
         ));
     }
 
@@ -282,8 +302,18 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                   }
             ));
 
+            let executor = if let Some(executor) = &macro_args.executor {
+                quote! {
+                    #executor
+                }
+            } else {
+                quote! {
+                    #krate::export::Executor::new()
+                }
+            };
+
             quote!(|| {
-                let mut executor = #krate::export::Executor::new();
+                let mut executor = #executor;
                 let executor = unsafe { __make_static(&mut executor) };
                 executor.run(|spawner| {
                     spawner.must_spawn(#ident_invoker());
@@ -343,12 +373,25 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     mod #ident {
         #(#untouched_tokens)*
 
+        // Used by probe-rs to detect that the binary runs embedded-test
+        #[used]
+        #[no_mangle]
+        #[link_section = ".embedded_test.meta"]
+        static EMBEDDED_TEST_VERSION: usize = 0;
+
         unsafe fn __make_static<T>(t: &mut T) -> &'static mut T {
             ::core::mem::transmute(t)
         }
 
         #[export_name = "main"]
-        unsafe extern "C" fn __defmt_test_entry() -> ! {
+        unsafe extern "C" fn __embedded_test_entry() -> ! {
+            // The linker file will redirect this call to the function below.
+            // This trick ensures that we get a compile error, if the linker file was not added to the rustflags.
+            #krate::export::ensure_linker_file_was_added_to_rustflags();
+        }
+
+        #[no_mangle]
+        unsafe extern "C" fn __embedded_test_start() -> ! {
             #krate::export::init_logging();
             const TEST_COUNT : usize = #test_count;
             const TEST_NAMES_STRLEN : usize = #test_names_strlen;

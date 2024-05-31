@@ -5,17 +5,27 @@ pub use heapless::Vec;
 use semihosting::sys::arm_compat::syscall::ParamRegR;
 use semihosting::sys::arm_compat::syscall::{syscall_readonly, OperationNumber};
 
+pub fn ensure_linker_file_was_added_to_rustflags() -> ! {
+    // Try to access a symbol which we provide in the embedded-test.x linker file.
+    // This will trigger a linker error if the linker file has not been added to the rustflags
+    extern "C" {
+        fn embedded_test_linker_file_not_added_to_rustflags() -> !;
+    }
+    unsafe { embedded_test_linker_file_not_added_to_rustflags() }
+}
+
 // Reexport the embassy stuff
-#[cfg(feature="embassy")]
-pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.5.x)!
-#[cfg(feature="embassy")]
+#[cfg(feature = "embassy")]
 pub use embassy_executor::task;
+#[cfg(all(feature = "embassy", not(feature = "external-executor")))]
+pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.5.x)!
 
 const VERSION: u32 = 1; //Format version of our protocol between probe-rs and target running embedded-test
 
 // Constants ahead that are used by proc macros to calculate the needed json buffer size
-pub const JSON_SIZE_HEADER : usize = r#"{"version:12,tests:[]}"#.len();
-pub const JSON_SIZE_PER_TEST_WITHOUT_TESTNAME : usize = r#"{"name":"","should_panic":false,ignored:false,timeout:1234567890},"#.len();
+pub const JSON_SIZE_HEADER: usize = r#"{"version:12,tests:[]}"#.len();
+pub const JSON_SIZE_PER_TEST_WITHOUT_TESTNAME: usize =
+    r#"{"name":"","should_panic":false,ignored:false,timeout:1234567890},"#.len();
 
 /// Struct which will be serialized as JSON and sent to probe-rs when it requests the available tests
 // NOTE: Update the const's above if you change something here
@@ -43,7 +53,8 @@ pub fn run_tests<const JSON_SIZE_TOTAL: usize>(tests: &mut [Test]) -> ! {
         test.name = &test.name[test.name.find("::").unwrap() + 2..];
     }
 
-    let mut args = &semihosting::experimental::env::args::<1024>().expect("Failed to get cmdline via semihosting");
+    let mut args = &semihosting::experimental::env::args::<1024>()
+        .expect("Failed to get cmdline via semihosting");
     let command = match args.next() {
         Some(c) => c.expect("command to run contains non-utf8 characters"),
         None => {
@@ -61,7 +72,8 @@ pub fn run_tests<const JSON_SIZE_TOTAL: usize>(tests: &mut [Test]) -> ! {
             };
 
             let mut buf = [0u8; JSON_SIZE_TOTAL];
-            let size = serde_json_core::to_slice(&tests, &mut buf).expect("Buffer to store list of test was too small");
+            let size = serde_json_core::to_slice(&tests, &mut buf)
+                .expect("Buffer to store list of test was too small");
             let args = [ParamRegR::ptr(buf.as_ptr()), ParamRegR::usize(size)];
             let ret = unsafe {
                 syscall_readonly(
@@ -77,8 +89,14 @@ pub fn run_tests<const JSON_SIZE_TOTAL: usize>(tests: &mut [Test]) -> ! {
             semihosting::process::exit(0);
         }
         "run" => {
-            let test_name = args.next().expect("test name missing").expect("test name contains non-utf8 character");
-            let test = tests.iter_mut().find(|t| t.name == test_name).expect("test to run not found");
+            let test_name = args
+                .next()
+                .expect("test name missing")
+                .expect("test name contains non-utf8 character");
+            let test = tests
+                .iter_mut()
+                .find(|t| t.name == test_name)
+                .expect("test to run not found");
             info!("Running test: {:?}", test);
             (test.function)();
         }
@@ -100,6 +118,10 @@ pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
 }
 
 pub fn init_logging() {
-    #[cfg(feature = "rtt")]
+    #[cfg(feature = "init-rtt")]
     rtt_target::rtt_init_print!();
+    #[cfg(feature = "init-log")]
+    rtt_log::init();
+
+    // Unfortunately we can't do the same with defmt_rtt as this needs to be registered as `#[defmt::global_logger]` in the toplevel crate
 }

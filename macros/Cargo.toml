@@ -1,7 +1,7 @@
 [package]
 name = "embedded-test-macros"
 description = "proc-macros for the embedded-test crate"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
@@ -13,12 +13,14 @@ license = "MIT OR Apache-2.0"
 proc-macro = true
 
 [dependencies]
-proc-macro2 = "1"
-quote = "1"
-syn = { version = "2", features = ["extra-traits", "full"] }
+proc-macro2 = "1.0.79"
+quote = "1.0.35"
+syn = { version = "2.0.52", features = ["extra-traits", "full"] }
+darling = "0.20.8"
 
 [features]
 embassy = []
+external-executor = []
 
 [dev-dependencies]
 trybuild = "1"

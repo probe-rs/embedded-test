@@ -6,6 +6,40 @@ mod fmt;
 
 pub use embedded_test_macros::tests;
 
+#[cfg(feature = "panic-handler")]
+#[panic_handler]
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    #[cfg(not(nightly))]
+    {
+        #[cfg(feature = "log")]
+        {
+            error!("!! A panic occured: {:#?}", _info);
+        }
+        #[cfg(feature = "defmt")]
+        {
+            error!("!! A panic occured: {:?}", defmt::Debug2Format(_info));
+        }
+    }
+
+    #[cfg(nightly)]
+    {
+        if let Some(location) = _info.location() {
+            let (file, line, column) = (location.file(), location.line(), location.column());
+            error!(
+                "!! A panic occured in '{}', at line {}, column {}:",
+                file, line, column
+            );
+        } else {
+            error!("!! A panic occured at an unknown location:");
+        }
+        if let Some(message) = _info.message() {
+            error!("{}", message);
+        }
+    }
+
+    semihosting::process::abort()
+}
+
 /// Private implementation details used by the proc macro.
 /// WARNING: This API is not stable and may change at any time.
 #[doc(hidden)]
