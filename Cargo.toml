@@ -20,7 +20,7 @@ rtt-target = { version = "0.5.0", optional = true }
 rtt-log = { version = "0.3.0", optional = true }
 defmt = { version = "0.3.8", optional = true }
 log = { version = "0.4.20", optional = true }
-embassy-executor = { version = "0.5.0", optional = true, default-features = false }
+embassy-executor = { version = ">=0.5.0, <0.7.0", optional = true, default-features = false }
 
 
 [features]
