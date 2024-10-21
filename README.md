@@ -36,7 +36,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dev-dependencies]
-embedded-test = { version = "0.4.0", features = ["init-log"] }
+embedded-test = { version = "0.5.0", features = ["init-log"] }
 
 
 [[test]]
@@ -46,7 +46,7 @@ harness = false
 
 Install the runner on your system:
 
-```bash 
+```bash
 cargo install probe-rs-tools
 ```
 
@@ -73,13 +73,13 @@ the [FAQ and common Errors](https://github.com/probe-rs/embedded-test/wiki/FAQ-a
 
 ## Example Test
 
-[Example repo](https://github.com/probe-rs/embedded-test-example)  
-[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/master/Cargo.toml)  
+[Example repo](https://github.com/probe-rs/embedded-test-example)
+[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/master/Cargo.toml)
 [Async Test Example](https://github.com/probe-rs/embedded-test-example/blob/master/tests/async_test.rs)
 
 Example for `tests/example_test.rs`
 
-```rust 
+```rust
 #![no_std]
 #![no_main]
 
