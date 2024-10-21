@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0]
+
 ### Added
 
 ### Changed
@@ -66,7 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.4.0...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.5.0...master
+
+[0.5.0]: https://github.com/probe-rs/embedded-test/compare/v0.4.0...v0.5.0
 
 [0.4.0]: https://github.com/probe-rs/embedded-test/compare/v0.3.0...v0.4.0
 
