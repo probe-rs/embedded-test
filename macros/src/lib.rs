@@ -6,6 +6,49 @@ use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{parse, spanned::Spanned, Attribute, Item, ItemFn, ItemMod, ReturnType, Type};
 
+/// Attribute to be placed on the test suite's module.
+///
+/// ## Examples
+///
+/// Define a test suite with a single test:
+///
+/// ```rust,no_run
+/// #[embedded_test::tests]
+/// mod tests {
+///     #[init]
+///     fn init() {
+///         // Initialize the hardware
+///     }
+///
+///     #[test]
+///     fn test() {
+///        // Test the hardware
+///     }
+/// }
+/// ```
+///
+/// Define a test suite with a default timeout, and per-test timeouts:
+///
+/// ```rust,no_run
+/// #[embedded_test::tests(default_timeout = 10)]
+/// mod tests {
+///     #[init]
+///     fn init() {
+///         // Initialize the hardware
+///     }
+///
+///     #[test]
+///     fn test() {
+///        // Test the hardware
+///     }
+///
+///     #[test]
+///     #[timeout(5)]
+///     fn test2() {
+///        // Test the hardware
+///     }
+/// }
+/// ```
 #[proc_macro_attribute]
 pub fn tests(args: TokenStream, input: TokenStream) -> TokenStream {
     match tests_impl(args, input) {
@@ -18,6 +61,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     #[derive(Debug, FromMeta)]
     struct MacroArgs {
         executor: Option<syn::Expr>,
+        default_timeout: Option<u32>,
     }
 
     let attr_args = match NestedMeta::parse_meta_list(args.into()) {
@@ -208,7 +252,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                             input,
                             should_panic,
                             ignore,
-                            timeout,
+                            timeout: timeout.or(macro_args.default_timeout),
                         });
                     }
                 }
