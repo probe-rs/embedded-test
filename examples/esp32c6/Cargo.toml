@@ -1,0 +1,56 @@
+[package]
+name = "embedded-test-example-for-esp32c6"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/probe-rs/embedded-test"
+license = "MIT OR Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# dependencies when using the log feature
+log = { version = "0.4.20", optional = true }
+
+# dependencies when using the demft feature
+defmt = { version = "0.3.8", optional = true }
+defmt-rtt = { version = "0.4.1", optional = true }
+
+# dependencies when using the embassy feature
+embassy-executor = { default-features = false, version = "0.6.0"}
+
+# Esp32 related dependencies for main.rs. Note: embedded-test comes with its own panic handler and logging sink.
+esp-backtrace = { version = "0.14.2", features = [
+    "esp32c6",
+    "exception-handler",
+    "panic-handler",
+    "println",
+]}
+
+esp-hal = { version = "0.22.0", features = ["esp32c6"] }
+esp-println = { version = "0.12.0", features = ["esp32c6", "log"] }
+embassy-time     = { version = "0.3.1",  features = ["generic-queue-8"] }
+esp-hal-embassy  = { version = "0.5.0",  features = ["esp32c6"] }
+
+
+[dev-dependencies]
+embedded-test = { version = "0.5.0" , features = ["embassy", "external-executor"], path="../.."}
+
+[features]
+default = ["log"]
+log = ["dep:log", "embedded-test/init-log"]
+defmt = ["dep:defmt", "dep:defmt-rtt"]
+
+[[bin]]
+name = "embedded-test-example-for-esp32c6"
+test = false  # To make plain `cargo test` work: Disable tests for the bin, because we are only using the intergration tests
+required-features = ["log"]
+
+[lib]
+test = false # Same as above, to make plain `cargo test` work instead of `cargo test --tests`
+
+[[test]]
+name = "async_test"
+harness = false # Important: As we bring our own test harness, we need to disable the default one
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(abc)'] }
