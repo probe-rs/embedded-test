@@ -24,10 +24,22 @@ jobs:
     name: Check
     strategy:
       matrix:
+        toolchain:
+          - stable
+          - nightly
         os:
           - ubuntu-latest
           #- windows-latest
           #- macos-14
+        log_kind:
+          - log
+          - defmt
+
+        target_and_example: [
+          # RISC-V devices:
+          { target: "riscv32imac-unknown-none-elf", example: "examples/esp32c6/Cargo.toml" },
+        ]
+
 
     runs-on: ${{ matrix.os }}
 
@@ -38,14 +50,24 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Install riscv32imac-unknown-none-elf target
-        run: rustup target add riscv32imac-unknown-none-elf
+      - name: Install target
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          target: ${{ matrix.target_and_example.target}}
+          toolchain: ${{ matrix.toolchain }}
+          components: rust-src
+
+      - name: Print rustc version
+        run: rustc --version
 
       - name: Cache Dependencies
         uses: Swatinem/rust-cache@v2.7.5
 
-      - name: Run cargo check
-        run: cargo check --all-features --locked
+      - name: Run cargo check for embedded-test
+        run: cargo check --features ${{matrix.log_kind}} --locked
+
+      - name: Run cargo check for example
+        run: cargo check --no-default-features --features ${{matrix.log_kind}} --manifest-path ${{matrix.target_and_example.example}} --locked
 
   fmt:
     name: Rustfmt
