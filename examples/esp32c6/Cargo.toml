@@ -8,15 +8,10 @@ license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# dependencies when using the log feature
+# dependencies when using the log/defmt feature
 log = { version = "0.4.20", optional = true }
-
-# dependencies when using the demft feature
 defmt = { version = "0.3.8", optional = true }
-defmt-rtt = { version = "0.4.1", optional = true }
-
-# dependencies when using the embassy feature
-embassy-executor = { default-features = false, version = "0.6.0"}
+rtt-target = { git = "https://github.com/probe-rs/rtt-target", branch = "feature/log", optional = true }
 
 # Esp32 related dependencies for main.rs. Note: embedded-test comes with its own panic handler and logging sink.
 esp-backtrace = { version = "0.14.2", features = [
@@ -24,21 +19,21 @@ esp-backtrace = { version = "0.14.2", features = [
     "exception-handler",
     "panic-handler",
     "println",
-]}
+] }
 
 esp-hal = { version = "0.22.0", features = ["esp32c6"] }
 esp-println = { version = "0.12.0", features = ["esp32c6", "log"] }
-embassy-time     = { version = "0.3.1",  features = ["generic-queue-8"] }
-esp-hal-embassy  = { version = "0.5.0",  features = ["esp32c6"] }
-
+embassy-time = { version = "0.3.1", features = ["generic-queue-8"] }
+esp-hal-embassy = { version = "0.5.0", features = ["esp32c6"] }
+embassy-executor = { default-features = false, version = "0.6.0" }
 
 [dev-dependencies]
-embedded-test = { version = "0.5.0" , features = ["embassy", "external-executor"], path="../.."}
+embedded-test = { version = "0.6.0", features = ["embassy", "external-executor"], path = "../.." }
 
 [features]
 default = ["log"]
-log = ["dep:log", "embedded-test/init-log"]
-defmt = ["dep:defmt", "dep:defmt-rtt"]
+log = ["dep:log", "dep:rtt-target", "rtt-target/log", "embedded-test/log"]
+defmt = ["dep:defmt", "dep:rtt-target", "rtt-target/defmt", "embedded-test/defmt"]
 
 [[bin]]
 name = "embedded-test-example-for-esp32c6"

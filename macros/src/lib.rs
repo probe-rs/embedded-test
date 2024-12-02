@@ -62,6 +62,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     struct MacroArgs {
         executor: Option<syn::Expr>,
         default_timeout: Option<u32>,
+        setup: Option<syn::Expr>,
     }
 
     let attr_args = match NestedMeta::parse_meta_list(args.into()) {
@@ -411,6 +412,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
             }
         )
     };
+    let setup = macro_args.setup;
 
     Ok(quote!(
     #[cfg(test)]
@@ -436,7 +438,10 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
 
         #[no_mangle]
         unsafe extern "C" fn __embedded_test_start() -> ! {
-            #krate::export::init_logging();
+            {
+                #setup
+            }
+
             const TEST_COUNT : usize = #test_count;
             const TEST_NAMES_STRLEN : usize = #test_names_strlen;
             let mut test_funcs: #krate::export::Vec<#krate::export::Test, TEST_COUNT> = #krate::export::Vec::new();

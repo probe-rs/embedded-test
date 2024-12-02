@@ -3,14 +3,23 @@
 
 struct Context {
     #[allow(dead_code)]
-    i2c0: esp_hal::peripherals::I2C0
+    i2c0: esp_hal::peripherals::I2C0,
+}
+
+/// Sets up the logging before entering the test-body, so that embedded-test internal logs (e.g. Running Test <...>)  can also be printed.
+/// Note: you can also inline this method in the attribute. e.g. `#[embedded_test::tests(setup=rtt_target::rtt_init_log!())]`
+fn setup_log() {
+    #[cfg(feature = "log")]
+    rtt_target::rtt_init_log!();
+    #[cfg(feature = "defmt")]
+    rtt_target::rtt_init_defmt!();
 }
 
 #[cfg(test)]
-#[embedded_test::tests(executor=esp_hal_embassy::Executor::new())]
+#[embedded_test::tests(executor=esp_hal_embassy::Executor::new(), setup=crate::setup_log())]
 mod tests {
-    use esp_hal::{prelude::*};
     use super::*;
+    use esp_hal::prelude::*;
 
     // Optional: A init function which is called before every test
     // asyncness of init fn is optional
@@ -27,7 +36,9 @@ mod tests {
         esp_hal_embassy::init(timer0.alarm0);
 
         // The init function can return some state, which can be consumed by the testcases
-        Context { i2c0: peripherals.I2C0}
+        Context {
+            i2c0: peripherals.I2C0,
+        }
     }
 
     // A test which takes the state returned by the init function (optional)
@@ -41,7 +52,7 @@ mod tests {
     #[test]
     #[cfg(feature = "log")]
     fn log() {
-        log::info!("Hello, log!"); // Prints via esp-println to rtt
+        log::info!("Hello, log!");
         assert!(true)
     }
 
@@ -49,8 +60,7 @@ mod tests {
     #[test]
     #[cfg(feature = "defmt")]
     fn defmt() {
-        use defmt_rtt as _;
-        defmt::info!("Hello, defmt!"); // Prints via defmt-rtt to rtt
+        defmt::info!("Hello, defmt!");
         assert!(true)
     }
 

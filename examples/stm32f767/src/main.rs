@@ -3,7 +3,6 @@
 
 /// ====> Look in the tests directory to see how embedded-test works <====
 /// This file here is just a simple blinky example, as found in the examples of the stm32f7xx-hal crate.
-
 use core::panic::PanicInfo;
 use stm32f7xx_hal::gpio::GpioExt;
 use stm32f7xx_hal::pac;
@@ -42,5 +41,3 @@ fn main() -> ! {
 fn panic(_panic: &PanicInfo<'_>) -> ! {
     loop {}
 }
-
-

@@ -10,18 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `#[tests(default_timeout = <u32>)]` to configure a suite-wide default timeout.
+- `#[tests(setup = <expr>)]` to configure a suite-wide (log) setup function (e.g. `rtt_target::rtt_init_log()`).
+
+### Removed
+
+- Breaking: Removed Features `init-log` and `init-rtt`.
 
 ## [0.5.0]
-
-### Added
 
 ### Changed
 
 - Breaking: Bump embassy-excecutor to 0.6.1
-
-### Fixed
-
-### Removed
 
 ## [0.4.0]
 

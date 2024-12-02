@@ -116,12 +116,3 @@ pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
         semihosting::process::abort();
     }
 }
-
-pub fn init_logging() {
-    #[cfg(feature = "init-rtt")]
-    rtt_target::rtt_init_print!();
-    #[cfg(feature = "init-log")]
-    rtt_log::init();
-
-    // Unfortunately we can't do the same with defmt_rtt as this needs to be registered as `#[defmt::global_logger]` in the toplevel crate
-}

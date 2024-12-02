@@ -2,9 +2,9 @@
 #![no_main]
 
 use embassy_executor::Spawner;
-use embassy_time::{Timer, Duration};
+use embassy_time::{Duration, Timer};
 use esp_backtrace as _;
-use esp_hal::{prelude::*};
+use esp_hal::prelude::*;
 use log::info;
 
 /// ====> Look in the tests directory to see how embedded-test works <====
@@ -31,5 +31,3 @@ async fn main(_spawner: Spawner) -> ! {
         Timer::after(Duration::from_secs(1)).await;
     }
 }
-
-

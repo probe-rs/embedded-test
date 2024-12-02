@@ -1,19 +1,25 @@
 #![no_std]
 #![no_main]
 
-#[cfg(test)]
-#[embedded_test::tests]
-mod unit_tests {
+/// Sets up the logging before entering the test-body, so that embedded-test internal logs (e.g. Running Test <...>)  can also be printed.
+/// Note: you can also inline this method in the attribute. e.g. `#[embedded_test::tests(setup=rtt_target::rtt_init_log!())]`
+fn setup_log() {
+    #[cfg(feature = "log")]
+    rtt_target::rtt_init_log!();
+    #[cfg(feature = "defmt")]
+    rtt_target::rtt_init_defmt!();
+}
 
-    // import hal which provides exception handler
-    use stm32f7xx_hal::{pac::Peripherals};
+#[cfg(test)]
+#[embedded_test::tests(setup=crate::setup_log())]
+mod unit_tests {
+    use stm32f7xx_hal::pac::Peripherals;
 
     // Optional: A init function which is called before every test
-    // asyncness is optional and needs feature embassy
+    // async + return value are optional
     #[init]
     async fn init() -> Peripherals {
-        let p = Peripherals::take().unwrap();
-        p
+        Peripherals::take().unwrap()
     }
 
     // A test which takes the state returned by the init function (optional)
@@ -27,7 +33,7 @@ mod unit_tests {
     #[test]
     #[cfg(feature = "log")]
     fn log() {
-        log::info!("Hello, log!"); // Prints via esp-println to rtt
+        log::info!("Hello, log!");
         assert!(true)
     }
 
@@ -35,8 +41,7 @@ mod unit_tests {
     #[test]
     #[cfg(feature = "defmt")]
     fn defmt() {
-        use defmt_rtt as _;
-        defmt::info!("Hello, defmt!"); // Prints via defmt-rtt to rtt
+        defmt::info!("Hello, defmt!");
         assert!(true)
     }
 

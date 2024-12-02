@@ -8,31 +8,25 @@ license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cortex-m = { version = "0.7" , features = ["critical-section-single-core"]}
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
-stm32f7xx-hal = { version = "0.8" , features = ["stm32f767"]}  # replace the model of your microcontroller here
+stm32f7xx-hal = { version = "0.8", features = ["stm32f767"] }  # replace the model of your microcontroller here
 
-embassy-executor = { default-features = false, version="0.6.0", features = ["executor-thread", "arch-cortex-m"] }
-# Note: You need to enable at least one executor feature on embassy 0.5.x
+embassy-executor = { default-features = false, version = "0.6.0", features = ["executor-thread", "arch-cortex-m"] }
+# Note: You need to enable at least one executor feature on embassy 0.6.x
 
-# dependencies when using the log feature
-log = { version = "0.4.20", optional = true}
-
-# dependencies when using the demft feature
-defmt = { version = "0.3.5", optional = true }
-defmt-rtt = { version = "0.4.0", optional = true }
-
-
+# dependencies when using the log/defmt feature
+log = { version = "0.4.20", optional = true }
+defmt = { version = "0.3.8", optional = true }
+rtt-target = { git = "https://github.com/probe-rs/rtt-target", branch = "feature/log", optional = true }
 
 [dev-dependencies]
-embedded-test = {version="0.5.0", features = ["embassy"], path= "../.."}
-
+embedded-test = { version = "0.6.0", features = ["embassy"], path = "../.." }
 
 [features]
 default = ["log"]
-log = ["dep:log", "embedded-test/log", "embedded-test/init-log"]
-defmt = ["dep:defmt-rtt", "dep:defmt", "embedded-test/defmt"]
-# Note: You must adapt .cargo/config when disabling the defmt feature
+log = ["dep:log", "dep:rtt-target", "rtt-target/log", "embedded-test/log"]
+defmt = ["dep:defmt", "dep:rtt-target", "rtt-target/defmt", "embedded-test/defmt"]
 
 [[bin]]
 name = "embedded-test-example-for-stm32f767"

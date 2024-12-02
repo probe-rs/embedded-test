@@ -8,9 +8,12 @@
       <sourceFolder url="file://$MODULE_DIR$/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/esp32c6/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/esp32c6/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/stm32f767/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/stm32f767/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/embedded-test-example/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/examples/esp32c6/target" />
+      <excludeFolder url="file://$MODULE_DIR$/examples/stm32f767/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

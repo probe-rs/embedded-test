@@ -36,7 +36,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dev-dependencies]
-embedded-test = { version = "0.5.0", features = ["init-log"] }
+embedded-test = { version = "0.6.0" }
 
 
 [[test]]
@@ -50,11 +50,11 @@ Install the runner on your system:
 cargo install probe-rs-tools
 ```
 
-Add the following to your `.cargo/config.toml`:
+Setup probe-rs as the runner in your `.cargo/config.toml`. For example:
 
 ```toml
-[target.riscv32imac-unknown-none-elf]
-runner = "probe-rs run --chip esp32c6"
+[target.thumbv7em-none-eabihf]
+runner = "probe-rs run --chip STM32F767ZITx"
 # `probe-rs run` will autodetect whether the elf to flash is a normal firmware or a test binary
 ```
 
@@ -71,13 +71,10 @@ Then you can run your tests with `cargo test --test example_test` or use the but
 Having trouble setting up? Checkout out
 the [FAQ and common Errors](https://github.com/probe-rs/embedded-test/wiki/FAQ-and-common-Errors) Wiki page.
 
-## Example Test
+## Example Test (e.g. `tests/example_test.rs`)
 
-[Example repo](https://github.com/probe-rs/embedded-test-example)
-[More Detailed Cargo.toml](https://github.com/probe-rs/embedded-test-example/blob/master/Cargo.toml)
-[Async Test Example](https://github.com/probe-rs/embedded-test-example/blob/master/tests/async_test.rs)
-
-Example for `tests/example_test.rs`
+Check the [example folder](https://github.com/probe-rs/embedded-test/tree/master/examples)
+for a complete example project for stm32/esp32.
 
 ```rust
 #![no_std]
@@ -86,48 +83,29 @@ Example for `tests/example_test.rs`
 #[cfg(test)]
 #[embedded_test::tests]
 mod tests {
-    use esp_hal::{clock::ClockControl, delay::Delay, peripherals::Peripherals, prelude::*};
+    use stm32f7xx_hal::pac::Peripherals;
 
-    // Optional: A init function which is called before every test
+    // An optional init function which is called before every test
+    // Asyncness is optional, so is the return value
     #[init]
-    fn init() -> Delay {
-        let peripherals = Peripherals::take();
-        let system = peripherals.SYSTEM.split();
-        let clocks = ClockControl::max(system.clock_control).freeze();
-        let delay = Delay::new(&clocks);
-
-        // The init function can return some state, which can be consumed by the testcases
-        delay
+    async fn init() -> Peripherals {
+        Peripherals::take().unwrap()
     }
 
-    // A test which takes the state returned by the init function (optional)
+    // Tests can be async (needs feature `embassy`)
+    // Tests can take the state returned by the init function (optional)
     #[test]
-    fn takes_state(_state: Delay) {
+    async fn takes_state(_state: Peripherals) {
         assert!(true)
     }
 
-    // Example for a test which is conditionally enabled
+    // Tests can be conditionally enabled (with a cfg attribute)
     #[test]
     #[cfg(feature = "log")]
     fn log() {
-        log::info!("Hello, log!"); // Prints via esp-println to rtt
+        rtt_target::rtt_init_log!();
+        log::info!("Hello, log!");
         assert!(true)
-    }
-
-    // Another example for a conditionally enabled test
-    #[test]
-    #[cfg(feature = "defmt")]
-    fn defmt() {
-        use defmt_rtt as _;
-        defmt::info!("Hello, defmt!"); // Prints via defmt-rtt to rtt
-        assert!(true)
-    }
-
-    // A test which is cfg'ed out
-    #[test]
-    #[cfg(abc)]
-    fn it_works_disabled() {
-        assert!(false)
     }
 
     // Tests can be ignored with the #[ignore] attribute
@@ -137,15 +115,9 @@ mod tests {
         assert!(false)
     }
 
-    // A test that fails with a panic
+    // Tests can fail with a custom error message by returning a Result
     #[test]
-    fn it_fails1() {
-        assert!(false)
-    }
-
-    // A test that fails with a returned Err(&str)
-    #[test]
-    fn it_fails2() -> Result<(), &'static str> {
+    fn it_fails_with_err() -> Result<(), &'static str> {
         Err("It failed because ...")
     }
 
@@ -155,11 +127,6 @@ mod tests {
     fn it_passes() {
         assert!(false)
     }
-
-    // This test should panic, but doesn't => it fails
-    #[test]
-    #[should_panic]
-    fn it_fails3() {}
 
     // Tests can be annotated with #[timeout(<secs>)] to change the default timeout of 60s
     #[test]
@@ -175,10 +142,8 @@ mod tests {
 | Feature              | Default? | Description                                                                                                                                                                                   |
 |----------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `panic-handler`      | Yes      | Defines a panic-handler which will invoke `semihosting::process::abort()` on panic                                                                                                            |
-| `defmt`              | No       | Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself.                                                                                            |
-| `log`                | No       | Prints testcase exit result to log. You'll need to setup your logging sink yourself (or combine with the `init-log` feature).                                                                 |
-| `init-rtt`           | No       | Calls `rtt_target::rtt_init_print!()` before starting any tests                                                                                                                               |
-| `init-log`           | No       | Calls `rtt_log::init();` before starting any tests.                                                                                                                                           |
+| `defmt`              | No       | Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself (e.g. `#[embedded_test::tests(setup=rtt_target::rtt_init_defmt!())`) .                      |
+| `log`                | No       | Prints testcase exit result to log. You'll need to setup your logging sink yourself (e.g. `#[embedded_test::tests(setup=rtt_target::rtt_init_log!())`)                                        |
 | `embassy`            | No       | Enables async test and init functions. Note: You need to enable at least one executor feature on the embassy-executor crate unless you are using the `external-executor` feature.             |
 | `external-executor`  | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
 | `xtensa-semihosting` | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
