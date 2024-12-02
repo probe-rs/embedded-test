@@ -6,7 +6,7 @@
 mod unit_tests {
 
     // import hal which provides exception handler
-    use stm32f7xx_hal::{pac, pac::Peripherals};
+    use stm32f7xx_hal::{pac::Peripherals};
 
     // Optional: A init function which is called before every test
     // asyncness is optional and needs feature embassy

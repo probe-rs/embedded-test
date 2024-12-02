@@ -66,7 +66,7 @@ jobs:
         run: cargo check --target ${{ matrix.target_and_example.target}} --features ${{matrix.log_kind}} --locked
 
       - name: Run cargo check for example
-        run: cargo check --target ${{ matrix.target_and_example.target}} --no-default-features --features ${{matrix.log_kind}} --manifest-path ${{matrix.target_and_example.example}} --locked
+        run: cargo check --target ${{ matrix.target_and_example.target}} --no-default-features --features ${{matrix.log_kind}} --manifest-path ${{matrix.target_and_example.example}} --locked --all-targets
 
   fmt:
     name: Rustfmt

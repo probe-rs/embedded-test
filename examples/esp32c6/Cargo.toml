@@ -43,13 +43,15 @@ defmt = ["dep:defmt", "dep:defmt-rtt"]
 [[bin]]
 name = "embedded-test-example-for-esp32c6"
 test = false  # To make plain `cargo test` work: Disable tests for the bin, because we are only using the intergration tests
+bench = false # To make `cargo check --all-targets` work.
 required-features = ["log"]
 
 [lib]
 test = false # Same as above, to make plain `cargo test` work instead of `cargo test --tests`
+bench = false
 
 [[test]]
-name = "async_test"
+name = "example_test"
 harness = false # Important: As we bring our own test harness, we need to disable the default one
 
 [lints.rust]

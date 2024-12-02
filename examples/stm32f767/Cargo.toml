@@ -37,9 +37,11 @@ defmt = ["dep:defmt-rtt", "dep:defmt", "embedded-test/defmt"]
 [[bin]]
 name = "embedded-test-example-for-stm32f767"
 test = false  # To make plain `cargo test` work: Disable tests for the bin, because we are only using the intergration tests
+bench = false # To make `cargo check --all-targets` work.
 
 [lib]
 test = false # Same as above, to make plain `cargo test` work instead of `cargo test --tests`
+bench = false
 
 [[test]]
 name = "example_test"
