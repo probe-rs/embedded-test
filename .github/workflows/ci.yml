@@ -27,8 +27,8 @@ jobs:
         toolchain:
           - stable
           - nightly
-        os:
-          - ubuntu-latest
+        #os:
+          #- ubuntu-latest
           #- windows-latest
           #- macos-14
         log_kind:
@@ -38,10 +38,12 @@ jobs:
         target_and_example: [
           # RISC-V devices:
           { target: "riscv32imac-unknown-none-elf", example: "examples/esp32c6/Cargo.toml" },
+          # arm7 devices:
+          { target: "thumbv7em-none-eabihf", example: "examples/stm32f767/Cargo.toml" },
         ]
 
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest #${{ matrix.os }}
 
     env:
       VCPKGRS_DYNAMIC: 1 # Use dynamic linking on Windows build (vcpkg)
@@ -57,17 +59,14 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           components: rust-src
 
-      - name: Print rustc version
-        run: rustc --version
-
       - name: Cache Dependencies
         uses: Swatinem/rust-cache@v2.7.5
 
       - name: Run cargo check for embedded-test
-        run: cargo check --features ${{matrix.log_kind}} --locked
+        run: cargo check --target ${{ matrix.target_and_example.target}} --features ${{matrix.log_kind}} --locked
 
       - name: Run cargo check for example
-        run: cargo check --no-default-features --features ${{matrix.log_kind}} --manifest-path ${{matrix.target_and_example.example}} --locked
+        run: cargo check --target ${{ matrix.target_and_example.target}} --no-default-features --features ${{matrix.log_kind}} --manifest-path ${{matrix.target_and_example.example}} --locked
 
   fmt:
     name: Rustfmt

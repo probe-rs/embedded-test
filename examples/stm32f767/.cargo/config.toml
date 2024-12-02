@@ -1,0 +1,8 @@
+[env]
+DEFMT_LOG="debug"
+
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+runner = "probe-rs run --chip STM32F767ZITx"
