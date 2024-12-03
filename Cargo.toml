@@ -8,6 +8,9 @@ keywords = ["embedded", "test", "testing", "test-runner", "test-framework"]
 description = "A test harness and runner for embedded devices"
 categories = ["embedded", "no-std", "development-tools::testing"]
 
+[package.metadata.docs.rs]
+default-target = "riscv32imac-unknown-none-elf"
+
 [dependencies]
 semihosting = { version = "0.1.7", features = ["args"] }
 embedded-test-macros = { version = "0.6.0", path = "./macros" }

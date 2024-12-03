@@ -1,6 +1,7 @@
 # Embedded Test
 
 [![Crates.io](https://img.shields.io/crates/v/embedded-test?labelColor=1C2C2E&color=C96329&logo=Rust&style=flat-square)](https://crates.io/crates/embedded-test)
+[![Documentation](https://docs.rs/embedded-test/badge.svg)](https://docs.rs/embedded-test)
 ![Crates.io](https://img.shields.io/crates/l/embedded-test?labelColor=1C2C2E&style=flat-square)
 
 The embedded-test library provides a test harness for embedded systems (riscv, arm and xtensa).
@@ -37,7 +38,6 @@ Add the following to your `Cargo.toml`:
 ```toml
 [dev-dependencies]
 embedded-test = { version = "0.6.0" }
-
 
 [[test]]
 name = "example_test"
@@ -148,12 +148,15 @@ mod tests {
 | `external-executor`  | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
 | `xtensa-semihosting` | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
 
+Please also note the doc for
+the [Attribute Macro embedded_test::tests](https://docs.rs/embedded-test/latest/embedded-test/attr.tests.html).
+
 ## License
 
 Licensed under either of:
 
-- Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license (http://opensource.org/licenses/MIT)
+- [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+- [MIT license](http://opensource.org/licenses/MIT)
 
 at your option.
 
