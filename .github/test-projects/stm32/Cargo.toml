@@ -10,12 +10,13 @@ cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-sing
 cortex-m-rt = "0.7.3"
 panic-probe = "0.3"
 rtt-target = { version = "0.6.1", features = ["log"] }
-
-embassy-stm32 = { git = "https://github.com/embassy-rs/embassy", rev = "ed3da1721a4f704d3f2a8a1cf84d9fc051c71945", features = ["time-driver-any", "memory-x", "unstable-pac", "exti"] }
+embassy-executor = { version = "0.6.3", features = ["arch-cortex-m", "executor-thread", "integrated-timers"] }
+embassy-stm32 = { version = "0.1.0", features = ["time-driver-any", "memory-x", "unstable-pac", "exti"] }
+embassy-time = "0.3.2"
 log = "0.4.22"
 
 [dev-dependencies]
-embedded-test = { version = "0.5.0" }
+embedded-test = { path = "../../..", features = ["embassy", "log"] }
 
 [[test]]
 name = "example_test"

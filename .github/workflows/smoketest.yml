@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{inputs.soc}}
-          path: .github/test-projects/${{inputs.project}}/output/${{inputs.soc}}
+          path: .github/test-projects/${{inputs.project}}/output
 
   run:
     runs-on: [ "self-hosted", "linux", "ARM64", "smoke-tester-2" ]
@@ -61,6 +61,4 @@ jobs:
 
 
       - name: Run embedded-tests
-        run: |
-          ls -lah
-          python ${ORCHESTRATOR} --target ${{inputs.soc}} --step-executor .github/test-projects/step-executor.sh
+        run: python ${ORCHESTRATOR} --target ${{inputs.soc}} --step-executor .github/test-projects/step-executor.sh
