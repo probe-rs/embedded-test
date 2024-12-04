@@ -1,7 +1,7 @@
 #!/bin/sh
-echo start
-echo "$TARGET"
-echo "$TARGET_CONFIG"
-echo end
+set -e
+set -x
+
+/home/probe-rs-runner/probe-rs run "$TARGET" $TARGET_CONFIG
 
 exit 1

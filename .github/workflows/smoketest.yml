@@ -17,7 +17,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    name: Build ${{inputs.soc}}
+    name: Build example for ${{inputs.soc}}
 
     steps:
       - name: Checkout sources
@@ -42,25 +42,25 @@ jobs:
           name: ${{inputs.soc}}
           path: .github/test-projects/${{inputs.project}}/output/${{inputs.soc}}
 
+  run:
+    runs-on: [ "self-hosted", "linux", "ARM64", "smoke-tester-2" ]
+    needs: build
+    name: Run on ${{inputs.soc}}
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/test-projects/step-executor.sh
+            sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{inputs.soc}}
 
 
-
-#  run:
-#    runs-on: [ "self-hosted", "linux", "ARM64", "smoke-tester-2" ]
-#    needs: build
-#
-#    strategy:
-#      matrix: *build-matrix
-#
-#
-#    steps:
-#      #- uses: actions/download-artifact@v4
-#      #  with:
-#      #    name: probe-rs
-#
-#      - name: Checkout sources
-#        uses: actions/checkout@v4
-#
-#      - name: Run embedded-tests
-#        run: |
-#          python ${ORCHESTRATOR} --target ${{inputs.soc}} --step-executor ./.github/test-projects/step-executor.sh
+      - name: Run embedded-tests
+        run: |
+          ls -lah
+          python ${ORCHESTRATOR} --target ${{inputs.soc}} --step-executor .github/test-projects/step-executor.sh
