@@ -1,0 +1,48 @@
+[package]
+name = "nrf-embedded-test"
+version = "0.1.0"
+authors = ["Dániel Buga <bugadani@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+defmt-rtt = "0.4.0"
+cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
+cortex-m-rt = "0.7.3"
+panic-probe = { version = "0.3", features = ["print-rtt"] }
+
+embassy-nrf = { version = "0.2.0", features = ["time-driver-rtc1", "unstable-pac", "rt"] }
+
+rtt-target = { version = "0.6.1", features = ["log"] }
+embassy-executor = { version = "0.6.3", features = ["arch-cortex-m", "executor-thread", "integrated-timers"] }
+embassy-time = "0.3.2"
+log = "0.4.22"
+
+
+
+[features]
+nrf51422 = ["embassy-nrf/nrf51"]
+nrf52832 = ["embassy-nrf/nrf52832"]
+nrf52833 = ["embassy-nrf/nrf52833"]
+
+[dev-dependencies]
+embedded-test = { path = "../../..", features = ["embassy", "log"] }
+
+
+[[test]]
+name = "example_test"
+harness = false
+
+[profile.dev]
+# Rust debug is too slow.
+# For debug builds always builds with some optimization
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1 # LLVM can perform better optimizations using a single thread
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 's'
+overflow-checks = false

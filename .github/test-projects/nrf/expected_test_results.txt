@@ -1,0 +1,16 @@
+{"type":"suite","event":"started","test_count":7}
+{"type":"test","event":"started","name":"test::test"}
+{"type":"test","name":"test::test","event":"ok"}
+{"type":"test","event":"started","name":"test::it_fails1"}
+{"type":"test","name":"test::it_fails1","event":"failed","stdout":"Error: \"Test should Pass but it did Panic\"\n"}
+{"type":"test","event":"started","name":"test::it_fails2"}
+{"type":"test","name":"test::it_fails2","event":"failed","stdout":"Error: \"Test should Pass but it did Panic\"\n"}
+{"type":"test","event":"started","name":"test::it_passes"}
+{"type":"test","name":"test::it_passes","event":"ok"}
+{"type":"test","event":"started","name":"test::it_fails3"}
+{"type":"test","name":"test::it_fails3","event":"failed","stdout":"Error: \"Test should Panic but it did Pass\"\n"}
+{"type":"test","event":"started","name":"test::it_timeouts"}
+{"type":"test","name":"test::it_timeouts","event":"failed","stdout":"Error: \"Test timed out after 3s\"\n"}
+{"type":"test","event":"started","name":"test::async_test"}
+{"type":"test","name":"test::async_test","event":"ok"}
+{"type":"suite","event":"failed","passed":3,"failed":4,"ignored":0,"measured":0,"filtered_out":0}
