@@ -17,17 +17,17 @@ jobs:
       fail-fast: false
       matrix:
         targets: [
-          #{ soc: "esp32c2", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
-          #{ soc: "esp32c3", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
-          #{ soc: "esp32c6", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
-          #{ soc: "esp32s3", "target": "xtensa-esp32s3-none-elf", "project": "esp32" },
+          { soc: "esp32c2", "target": "riscv32imc-unknown-none-elf", "project": "esp32" },
+          { soc: "esp32c3", "target": "riscv32imc-unknown-none-elf", "project": "esp32" },
+          { soc: "esp32c6", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
+          { soc: "esp32s3", "target": "xtensa-esp32s3-none-elf", "project": "esp32" },
           { soc: "stm32c011f6", "target": "thumbv6m-none-eabi", "project": "stm32" },
-          { soc: "stm32f051r8", "target": "thumbv6m-none-eabi", "project": "stm32" },
-          { soc: "stm32f429zi", "target": "thumbv7em-none-eabi", "project": "stm32" },
-          { soc: "stm32g031k8", "target": "thumbv6m-none-eabi", "project": "stm32" },
-          { soc: "stm32g431kb", "target": "thumbv7em-none-eabi", "project": "stm32" },
-          { soc: "stm32l432kc", "target": "thumbv7em-none-eabi", "project": "stm32" },
-          { soc: "stm32u545re", "target": "thumbv8m.main-none-eabihf", "project": "stm32" },
+          #{ soc: "stm32f051r8", "target": "thumbv6m-none-eabi", "project": "stm32" },
+          #{ soc: "stm32f429zi", "target": "thumbv7em-none-eabi", "project": "stm32" },
+          #{ soc: "stm32g031k8", "target": "thumbv6m-none-eabi", "project": "stm32" },
+          #{ soc: "stm32g431kb", "target": "thumbv7em-none-eabi", "project": "stm32" },
+          #{ soc: "stm32l432kc", "target": "thumbv7em-none-eabi", "project": "stm32" },
+          #{ soc: "stm32u545re", "target": "thumbv8m.main-none-eabihf", "project": "stm32" },
           #{ soc: "nrf51422", "target": "thumbv7em-none-eabihf", "project": "nrf" },
           #{ soc: "nrf52832", "target": "thumbv7em-none-eabihf", "project": "nrf" }
         ]

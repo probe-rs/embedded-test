@@ -1,0 +1,13 @@
+[target.'cfg(target_arch = "riscv32")']
+rustflags = [
+    "-C", "force-frame-pointers",
+]
+
+[target.'cfg(target_arch = "xtensa")']
+rustflags = [
+    "-C", "link-arg=-nostartfiles",
+]
+
+[unstable]
+build-std = ["core"]
+

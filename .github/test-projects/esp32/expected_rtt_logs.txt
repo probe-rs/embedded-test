@@ -1,0 +1,17 @@
+INFO  [embedded_test::export] tests available: [Test { name: "test::test", should_panic: false, ignored: false, timeout: None }, Test { name: "test::it_fails1", should_panic: false, ignored: false, timeout: None }, Test { name: "test::it_fails2", should_panic: false, ignored: false, timeout: None }, Test { name: "test::it_passes", should_panic: true, ignored: false, timeout: None }, Test { name: "test::it_fails3", should_panic: true, ignored: false, timeout: None }, Test { name: "test::it_timeouts", should_panic: false, ignored: false, timeout: Some(3) }, Test { name: "test::async_test", should_panic: false, ignored: false, timeout: None }]
+INFO  [embedded_test::export] Running test: Test { name: "test::test", should_panic: false, ignored: false, timeout: None }
+ERROR [example_test::test] Hello, log!
+INFO  [embedded_test::export] Test exited with () or Ok(..)
+INFO  [embedded_test::export] Running test: Test { name: "test::it_fails1", should_panic: false, ignored: false, timeout: None }
+ERROR [embedded_test] ====================== PANIC ======================
+ERROR [embedded_test] panicked at tests/example_test.rs:31:9:
+INFO  [embedded_test::export] Running test: Test { name: "test::it_fails2", should_panic: false, ignored: false, timeout: None }
+INFO  [embedded_test::export] Test exited with Err(..): Err("It failed because ...")
+INFO  [embedded_test::export] Running test: Test { name: "test::it_passes", should_panic: true, ignored: false, timeout: None }
+ERROR [embedded_test] ====================== PANIC ======================
+ERROR [embedded_test] panicked at tests/example_test.rs:42:9:
+INFO  [embedded_test::export] Running test: Test { name: "test::it_fails3", should_panic: true, ignored: false, timeout: None }
+INFO  [embedded_test::export] Test exited with () or Ok(..)
+INFO  [embedded_test::export] Running test: Test { name: "test::it_timeouts", should_panic: false, ignored: false, timeout: Some(3) }
+INFO  [embedded_test::export] Running test: Test { name: "test::async_test", should_panic: false, ignored: false, timeout: None }
+INFO  [embedded_test::export] Test exited with () or Ok(..)

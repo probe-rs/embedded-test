@@ -1,12 +1,2 @@
-[alias]
-stm32c011f6 = "test --features embassy-stm32/stm32c011f6"
-stm32f051r8 = "test --features embassy-stm32/stm32f051r8"
-stm32f429zi = "test --features embassy-stm32/stm32f429zi"
-stm32g031k8 = "test --features embassy-stm32/stm32g031k8"
-stm32g431kb = "test --features embassy-stm32/stm32g431kb"
-stm32l432kc = "test --features embassy-stm32/stm32l432kc"
-stm32u545re = "test --features embassy-stm32/stm32u545re"
-#stm32f767zi = "test --features embassy-stm32/stm32f767zi --target thumbv7em-none-eabihf"
-
 [unstable]
 build-std = ["core"]

@@ -1,0 +1,90 @@
+[package]
+name = "esp-hal-smoketest"
+version = "0.1.0"
+authors = ["Dániel Buga <bugadani@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[features]
+esp32 = [
+    "xtensa",
+    "esp-hal/esp32",
+    "esp-hal-embassy/esp32",
+    "esp-println/esp32",
+    "esp-backtrace/esp32",
+]
+esp32s2 = [
+    "xtensa",
+    "esp-hal/esp32s2",
+    "esp-hal-embassy/esp32s2",
+    "esp-println/esp32s2",
+    "esp-backtrace/esp32s2",
+]
+esp32s3 = [
+    "xtensa",
+    "esp-hal/esp32s3",
+    "esp-hal-embassy/esp32s3",
+    "esp-println/esp32s3",
+    "esp-backtrace/esp32s3",
+]
+esp32c2 = [
+    "esp-hal/esp32c2",
+    "esp-hal-embassy/esp32c2",
+    "esp-println/esp32c2",
+    "esp-backtrace/esp32c2",
+]
+esp32c3 = [
+    "esp-hal/esp32c3",
+    "esp-hal-embassy/esp32c3",
+    "esp-println/esp32c3",
+    "esp-backtrace/esp32c3",
+]
+esp32c6 = [
+    "esp-hal/esp32c6",
+    "esp-hal-embassy/esp32c6",
+    "esp-println/esp32c6",
+    "esp-backtrace/esp32c6",
+]
+esp32h2 = [
+    "esp-hal/esp32h2",
+    "esp-hal-embassy/esp32h2",
+    "esp-println/esp32h2",
+    "esp-backtrace/esp32h2",
+]
+
+xtensa = ["embedded-test/xtensa-semihosting"]
+
+[dependencies]
+log = "0.4.22"
+esp-backtrace = { version = "0.14.0", features = [
+    "exception-handler",
+    "panic-handler",
+    "println"
+] }
+esp-hal = { version = "0.22.0" }
+esp-println = { version = "0.12.0" }
+rtt-target = { version = "0.6.1", features = ["log"] }
+esp-hal-embassy = "0.5.0"
+embassy-time = { version = "0.3.2" }
+embassy-executor = { default-features = false, version = "0.6.0", features = ["integrated-timers"] }
+
+[dev-dependencies]
+embedded-test = { path = "../../..", features = ["embassy", "log", "external-executor"] }
+
+[[test]]
+name = "example_test"
+harness = false
+
+[profile.dev]
+# Rust debug is too slow.
+# For debug builds always builds with some optimization
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1 # LLVM can perform better optimizations using a single thread
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 's'
+overflow-checks = false

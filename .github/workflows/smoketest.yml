@@ -25,10 +25,18 @@ jobs:
 
       - name: Install target
         uses: dtolnay/rust-toolchain@v1
+        if: ${{ ! startsWith(inputs.target, 'xtensa') }}
         with:
           target: ${{ inputs.target}}
           toolchain: stable
           components: rust-src
+
+      - name: Install xtensa target
+        uses: esp-rs/xtensa-toolchain@v1.5
+        if: ${{ startsWith(inputs.target, 'xtensa') }}
+        with:
+          ldproxy: false
+          default: true
 
       - name: Cache Dependencies
         uses: Swatinem/rust-cache@v2.7.5
