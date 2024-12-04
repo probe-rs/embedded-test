@@ -1,0 +1,36 @@
+[package]
+name = "stm32-embedded-test"
+version = "0.1.0"
+authors = ["Dániel Buga <bugadani@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
+cortex-m-rt = "0.7.3"
+panic-probe = "0.3"
+rtt-target = { version = "0.6.1", features = ["log"] }
+
+embassy-stm32 = { git = "https://github.com/embassy-rs/embassy", rev = "ed3da1721a4f704d3f2a8a1cf84d9fc051c71945", features = ["time-driver-any", "memory-x", "unstable-pac", "exti"] }
+log = "0.4.22"
+
+[dev-dependencies]
+embedded-test = { version = "0.5.0" }
+
+[[test]]
+name = "example_test"
+harness = false
+
+[profile.dev]
+# Rust debug is too slow.
+# For debug builds always builds with some optimization
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1 # LLVM can perform better optimizations using a single thread
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 's'
+overflow-checks = false

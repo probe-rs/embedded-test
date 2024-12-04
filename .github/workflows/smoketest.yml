@@ -11,37 +11,70 @@ concurrency:
 name: Smoke Test
 
 jobs:
-  embedded-test:
-    runs-on: [ "self-hosted", "linux", "ARM64", "smoke-tester-2" ]
+
+  build:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
         targets: [
-          { soc: "esp32c2", "target": "riscv32imac-unknown-none-elf" },
-          { soc: "esp32c3", "target": "riscv32imac-unknown-none-elf" },
-          { soc: "esp32c6", "target": "riscv32imac-unknown-none-elf" },
-          { soc: "esp32s3", "target": "xtensa-esp32s3-none-elf" },
-          { soc: "stm32c011f6", "target": "thumbv6m-none-eabi" },
-          { soc: "stm32f051r8", "target": "thumbv6m-none-eabi" },
-          { soc: "stm32f429zi", "target": "thumbv7em-none-eabihf" },
-          { soc: "stm32g031k8", "target": "thumbv7em-none-eabihf" },
-          { soc: "stm32g431kb", "target": "thumbv7em-none-eabihf" },
-          { soc: "stm32l432kc", "target": "thumbv7em-none-eabihf" },
-          { soc: "stm32u545re", "target": "thumbv7em-none-eabihf" },
-          { soc: "nrf51422", "target": "thumbv7em-none-eabihf" },
-          { soc: "nrf52832", "target": "thumbv7em-none-eabihf" }
+          #{ soc: "esp32c2", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
+          #{ soc: "esp32c3", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
+          #{ soc: "esp32c6", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
+          #{ soc: "esp32s3", "target": "xtensa-esp32s3-none-elf", "project": "esp32" },
+          { soc: "stm32c011f6", "target": "thumbv6m-none-eabi", "project": "stm32" },
+          { soc: "stm32f051r8", "target": "thumbv6m-none-eabi", "project": "stm32" },
+          { soc: "stm32f429zi", "target": "thumbv7em-none-eabi", "project": "stm32" },
+          { soc: "stm32g031k8", "target": "thumbv6m-none-eabi", "project": "stm32" },
+          { soc: "stm32g431kb", "target": "thumbv7em-none-eabi", "project": "stm32" },
+          { soc: "stm32l432kc", "target": "thumbv7em-none-eabi", "project": "stm32" },
+          { soc: "stm32u545re", "target": "thumbv8m.main-none-eabihf", "project": "stm32" },
+          #{ soc: "nrf51422", "target": "thumbv7em-none-eabihf", "project": "nrf" },
+          #{ soc: "nrf52832", "target": "thumbv7em-none-eabihf", "project": "nrf" }
         ]
 
-    #needs: build
-
     steps:
-      #- uses: actions/download-artifact@v4
-      #  with:
-      #    name: probe-rs
-
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Run embedded-tests
-        run: |
-          python ${ORCHESTRATOR} --target ${{matrix.targets.soc}} --step-executor ./.github/test-projects/step-executor.sh
+      - name: Install target
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          target: ${{ matrix.targets.target}}
+          toolchain: stable
+          components: rust-src
+
+      - name: Cache Dependencies
+        uses: Swatinem/rust-cache@v2.7.5
+
+      - name: Build example
+        run: cd .github/test-projects/${{matrix.targets.project}} && ./build.sh ${{matrix.targets.soc}} ${{matrix.targets.target}}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.targets.soc}}
+          path: .github/test-projects/${{matrix.targets.project}}/output/${{matrix.targets.soc}}
+
+
+
+
+#  run:
+#    runs-on: [ "self-hosted", "linux", "ARM64", "smoke-tester-2" ]
+#    needs: build
+#
+#    strategy:
+#      matrix: *build-matrix
+#
+#
+#    steps:
+#      #- uses: actions/download-artifact@v4
+#      #  with:
+#      #    name: probe-rs
+#
+#      - name: Checkout sources
+#        uses: actions/checkout@v4
+#
+#      - name: Run embedded-tests
+#        run: |
+#          python ${ORCHESTRATOR} --target ${{matrix.targets.soc}} --step-executor ./.github/test-projects/step-executor.sh
