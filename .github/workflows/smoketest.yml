@@ -1,37 +1,23 @@
-on: push
+on:
+  workflow_call:
+    inputs:
+      soc:
+        required: true
+        type: string
+      target:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
 
-# Cancel any currently running workflows from the same PR, branch, or
-# tag when a new workflow is triggered.
-#
-# https://stackoverflow.com/a/66336834
-concurrency:
-  cancel-in-progress: true
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-
-name: Smoke Test
+name: Smoke Test (workflow call)
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        targets: [
-          #{ soc: "esp32c2", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
-          #{ soc: "esp32c3", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
-          #{ soc: "esp32c6", "target": "riscv32imac-unknown-none-elf", "project": "esp32" },
-          #{ soc: "esp32s3", "target": "xtensa-esp32s3-none-elf", "project": "esp32" },
-          { soc: "stm32c011f6", "target": "thumbv6m-none-eabi", "project": "stm32" },
-          { soc: "stm32f051r8", "target": "thumbv6m-none-eabi", "project": "stm32" },
-          { soc: "stm32f429zi", "target": "thumbv7em-none-eabi", "project": "stm32" },
-          { soc: "stm32g031k8", "target": "thumbv6m-none-eabi", "project": "stm32" },
-          { soc: "stm32g431kb", "target": "thumbv7em-none-eabi", "project": "stm32" },
-          { soc: "stm32l432kc", "target": "thumbv7em-none-eabi", "project": "stm32" },
-          { soc: "stm32u545re", "target": "thumbv8m.main-none-eabihf", "project": "stm32" },
-          #{ soc: "nrf51422", "target": "thumbv7em-none-eabihf", "project": "nrf" },
-          #{ soc: "nrf52832", "target": "thumbv7em-none-eabihf", "project": "nrf" }
-        ]
+    name: Build ${{inputs.soc}}
 
     steps:
       - name: Checkout sources
@@ -40,7 +26,7 @@ jobs:
       - name: Install target
         uses: dtolnay/rust-toolchain@v1
         with:
-          target: ${{ matrix.targets.target}}
+          target: ${{ inputs.target}}
           toolchain: stable
           components: rust-src
 
@@ -48,13 +34,13 @@ jobs:
         uses: Swatinem/rust-cache@v2.7.5
 
       - name: Build example
-        run: cd .github/test-projects/${{matrix.targets.project}} && ./build.sh ${{matrix.targets.soc}} ${{matrix.targets.target}}
+        run: cd .github/test-projects/${{inputs.project}} && ./build.sh ${{inputs.soc}} ${{inputs.target}}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{matrix.targets.soc}}
-          path: .github/test-projects/${{matrix.targets.project}}/output/${{matrix.targets.soc}}
+          name: ${{inputs.soc}}
+          path: .github/test-projects/${{inputs.project}}/output/${{inputs.soc}}
 
 
 
@@ -77,4 +63,4 @@ jobs:
 #
 #      - name: Run embedded-tests
 #        run: |
-#          python ${ORCHESTRATOR} --target ${{matrix.targets.soc}} --step-executor ./.github/test-projects/step-executor.sh
+#          python ${ORCHESTRATOR} --target ${{inputs.soc}} --step-executor ./.github/test-projects/step-executor.sh
