@@ -1,0 +1,47 @@
+on: push
+
+# Cancel any currently running workflows from the same PR, branch, or
+# tag when a new workflow is triggered.
+#
+# https://stackoverflow.com/a/66336834
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+
+name: Smoke Test
+
+jobs:
+  embedded-test:
+    runs-on: [ "self-hosted", "linux", "ARM64", "smoke-tester-2" ]
+
+    strategy:
+      matrix:
+        targets: [
+          { soc: "esp32c2", "target": "riscv32imac-unknown-none-elf" },
+          { soc: "esp32c3", "target": "riscv32imac-unknown-none-elf" },
+          { soc: "esp32c6", "target": "riscv32imac-unknown-none-elf" },
+          { soc: "esp32s3", "target": "xtensa-esp32s3-none-elf" },
+          { soc: "stm32c011f6", "target": "thumbv6m-none-eabi" },
+          { soc: "stm32f051r8", "target": "thumbv6m-none-eabi" },
+          { soc: "stm32f429zi", "target": "thumbv7em-none-eabihf" },
+          { soc: "stm32g031k8", "target": "thumbv7em-none-eabihf" },
+          { soc: "stm32g431kb", "target": "thumbv7em-none-eabihf" },
+          { soc: "stm32l432kc", "target": "thumbv7em-none-eabihf" },
+          { soc: "stm32u545re", "target": "thumbv7em-none-eabihf" },
+          { soc: "nrf51422", "target": "thumbv7em-none-eabihf" },
+          { soc: "nrf52832", "target": "thumbv7em-none-eabihf" }
+        ]
+
+    #needs: build
+
+    steps:
+      #- uses: actions/download-artifact@v4
+      #  with:
+      #    name: probe-rs
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Run embedded-tests
+        run: |
+          python ${ORCHESTRATOR} --target ${{matrix.targets.soc}} --step-executor ./.github/test-projects/step-executor.sh
