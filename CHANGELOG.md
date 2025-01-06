@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Breaking: Removed Features `init-log` and `init-rtt`.
 
+### Changed
+
+- Breaking: Bump embassy-excecutor to 0.7.0
+
 ## [0.5.0]
 
 ### Changed

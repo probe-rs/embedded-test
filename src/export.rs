@@ -18,7 +18,7 @@ pub fn ensure_linker_file_was_added_to_rustflags() -> ! {
 #[cfg(feature = "embassy")]
 pub use embassy_executor::task;
 #[cfg(all(feature = "embassy", not(feature = "external-executor")))]
-pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.5.x/v0.6.x)!
+pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.7.x)!
 
 const VERSION: u32 = 1; //Format version of our protocol between probe-rs and target running embedded-test
 

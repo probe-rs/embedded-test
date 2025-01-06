@@ -25,7 +25,7 @@ esp-hal = { version = "0.22.0", features = ["esp32c6"] }
 esp-println = { version = "0.12.0", features = ["esp32c6", "log"] }
 embassy-time = { version = "0.3.1", features = ["generic-queue-8"] }
 esp-hal-embassy = { version = "0.5.0", features = ["esp32c6"] }
-embassy-executor = { default-features = false, version = "0.6.0" }
+embassy-executor = { default-features = false, version = "0.6.0" } # TODO: update to 0.7.0 when esp-hal supports it
 
 [dev-dependencies]
 embedded-test = { version = "0.6.0", features = ["embassy", "external-executor"], path = "../.." }
