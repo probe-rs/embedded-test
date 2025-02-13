@@ -446,7 +446,6 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
         (
             quote!(
                 // TODO: make stack size configurable
-                //#[cfg(feature = "ariel-os")]
                 #[ariel_os::thread(autostart, stacksize = 16384)]
                 fn embedded_test_thread() {
                     unsafe { __embedded_test_entry() }
