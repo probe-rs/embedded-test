@@ -147,6 +147,7 @@ mod tests {
 | `embassy`            | No       | Enables async test and init functions. Note: You need to enable at least one executor feature on the embassy-executor crate unless you are using the `external-executor` feature.             |
 | `external-executor`  | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
 | `xtensa-semihosting` | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
+| `ariel-os`           | No       | Enables [Ariel OS](https://ariel-os.github.io/ariel-os/dev/docs/book/testing.html) integration.                                                                                               |
 
 Please also note the doc for
 the [Attribute Macro embedded_test::tests](https://docs.rs/embedded-test/latest/embedded-test/attr.tests.html).

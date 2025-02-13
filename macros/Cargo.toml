@@ -21,6 +21,7 @@ darling = "0.20.8"
 [features]
 embassy = []
 external-executor = []
+ariel-os = []
 
 [dev-dependencies]
 trybuild = "1"

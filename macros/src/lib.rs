@@ -339,6 +339,12 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
             }
         );
 
+        let task_path = if cfg!(feature = "ariel-os") {
+            quote!(ariel_os::task)
+        } else {
+            quote!(#krate::export::task)
+        };
+
         // The closure that will be called, if the test should be runned.
         // This closure has the signature () -> !, so it will never return.
         // The closure will signal the test result via semihosting exit/abort instead
@@ -347,29 +353,37 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
             let cfgs = &test.cfgs;
             test_function_invokers.push(quote!(
                   #(#cfgs)*
-                  #[#krate::export::task]
+                  #[#task_path]
                   async fn #ident_invoker() {
                       #init_run_and_check
                   }
             ));
 
-            let executor = if let Some(executor) = &macro_args.executor {
-                quote! {
-                    #executor
-                }
-            } else {
-                quote! {
-                    #krate::export::Executor::new()
-                }
-            };
-
-            quote!(|| {
-                let mut executor = #executor;
-                let executor = unsafe { __make_static(&mut executor) };
-                executor.run(|spawner| {
-                    spawner.must_spawn(#ident_invoker());
+            if cfg!(feature = "ariel-os") {
+                quote!(|| {
+                    ariel_os::asynch::spawner().must_spawn(#ident_invoker());
+                    ariel_os::thread::park();
+                    unreachable!();
                 })
-            })
+            } else {
+                let executor = if let Some(executor) = &macro_args.executor {
+                    quote! {
+                        #executor
+                    }
+                } else {
+                    quote! {
+                        #krate::export::Executor::new()
+                    }
+                };
+
+                quote!(|| {
+                    let mut executor = #executor;
+                    let executor = unsafe { __make_static(&mut executor) };
+                    executor.run(|spawner| {
+                        spawner.must_spawn(#ident_invoker());
+                    })
+                })
+            }
         } else {
             quote!(|| {
                 #init_run_and_check
@@ -420,6 +434,21 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
     };
     let setup = macro_args.setup;
 
+    let (thread_start, maybe_export_name) = if cfg!(feature = "ariel-os") {
+        (
+            quote!(
+                // TODO: make stack size configurable
+                #[ariel_os::thread(autostart, stacksize = 16384)]
+                fn embedded_test_thread() {
+                    unsafe { __embedded_test_entry() }
+                }
+            ),
+            quote!(),
+        )
+    } else {
+        (quote!(), quote!(#[export_name = "main"]))
+    };
+
     Ok(quote!(
     #[cfg(test)]
     mod #ident {
@@ -435,7 +464,9 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
             ::core::mem::transmute(t)
         }
 
-        #[export_name = "main"]
+        #thread_start
+
+        #maybe_export_name
         unsafe extern "C" fn __embedded_test_entry() -> ! {
             // The linker file will redirect this call to the function below.
             // This trick ensures that we get a compile error, if the linker file was not added to the rustflags.
