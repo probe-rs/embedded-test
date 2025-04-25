@@ -2,8 +2,9 @@ use crate::TestOutcome;
 
 pub use heapless::Vec;
 
-use semihosting::sys::arm_compat::syscall::ParamRegR;
-use semihosting::sys::arm_compat::syscall::{syscall_readonly, OperationNumber};
+#[cfg_attr(feature = "std", path = "std.rs")]
+#[cfg_attr(not(feature = "std"), path = "semihosting.rs")]
+mod hosting;
 
 pub fn ensure_linker_file_was_added_to_rustflags() -> ! {
     // Try to access a symbol which we provide in the embedded-test.x linker file.
@@ -34,7 +35,7 @@ pub const JSON_SIZE_PER_TEST_WITHOUT_TESTNAME: usize =
 /// Struct which will be serialized as JSON and sent to probe-rs when it requests the available tests
 // NOTE: Update the const's above if you change something here
 #[derive(Debug, serde::Serialize)]
-struct Tests<'a> {
+pub struct Tests<'a> {
     pub version: u32,
     pub tests: &'a [Test],
 }
@@ -57,13 +58,16 @@ pub fn run_tests<const JSON_SIZE_TOTAL: usize>(tests: &mut [Test]) -> ! {
         test.name = &test.name[test.name.find("::").unwrap() + 2..];
     }
 
-    let mut args = &semihosting::experimental::env::args::<1024>()
-        .expect("Failed to get cmdline via semihosting");
+    let args = &hosting::args().expect("Failed to get cmdline via semihosting");
+
+    // this is an iterator already with semihosting, not on std
+    let mut args = args.into_iter();
+
     let command = match args.next() {
         Some(c) => c.expect("command to run contains non-utf8 characters"),
         None => {
             error!("Received no arguments via semihosting. Please communicate with the target with the embedded-test runner.");
-            semihosting::process::abort();
+            hosting::abort();
         }
     };
 
@@ -75,28 +79,15 @@ pub fn run_tests<const JSON_SIZE_TOTAL: usize>(tests: &mut [Test]) -> ! {
                 tests,
             };
 
-            let mut buf = [0u8; JSON_SIZE_TOTAL];
-            let size = serde_json_core::to_slice(&tests, &mut buf)
-                .expect("Buffer to store list of test was too small");
-            let args = [ParamRegR::ptr(buf.as_ptr()), ParamRegR::usize(size)];
-            let ret = unsafe {
-                syscall_readonly(
-                    OperationNumber::user_defined(0x100),
-                    ParamRegR::block(&args),
-                )
-            };
-            if ret.usize() != 0 {
-                error!("syscall failed: {}", ret.usize());
-                semihosting::process::abort();
-            }
+            hosting::print_test_list::<JSON_SIZE_TOTAL>(&tests);
 
-            semihosting::process::exit(0);
+            hosting::exit(0);
         }
         "run" => {
-            let test_name = args
-                .next()
-                .expect("test name missing")
-                .expect("test name contains non-utf8 character");
+            let test_name = args.next().expect("test name missing");
+
+            let test_name = test_name.expect("test name contains non-utf8 character");
+
             let test = tests
                 .iter_mut()
                 .find(|t| t.name == test_name)
@@ -106,7 +97,7 @@ pub fn run_tests<const JSON_SIZE_TOTAL: usize>(tests: &mut [Test]) -> ! {
         }
         _ => {
             error!("Unknown command: {}", command);
-            semihosting::process::abort();
+            hosting::abort();
         }
     }
 }
@@ -114,9 +105,9 @@ pub fn run_tests<const JSON_SIZE_TOTAL: usize>(tests: &mut [Test]) -> ! {
 pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
     if outcome.is_success() {
         info!("Test exited with () or Ok(..)");
-        semihosting::process::exit(0);
+        hosting::exit(0);
     } else {
         info!("Test exited with Err(..): {:?}", outcome);
-        semihosting::process::abort();
+        hosting::abort();
     }
 }

@@ -1,0 +1,8 @@
+[build]
+# The repository level `.cargo/config.toml` sets an embedded target, which we
+# want to override here. Unfortunately there is no `host target triple`, so
+# this is hard-coded to x86_64 Linux here. This needs changing on other
+# platforms.
+target = "x86_64-unknown-linux-gnu"
+[target."x86_64-unknown-linux-gnu"]
+runner = "embedded-test-std-runner"

@@ -22,6 +22,7 @@ macro_rules! assert_unique_features {
 fn main() -> Result<(), Box<dyn Error>> {
     assert_unique_features!("log", "defmt");
     assert_unique_features!("ariel-os", "external-executor");
+    assert_unique_features!("std", "semihosting");
 
     let out = &PathBuf::from(env::var("OUT_DIR")?);
     let linker_script = fs::read_to_string("embedded-test.x")?;

@@ -1,0 +1,38 @@
+[package]
+name = "embedded-test-example-for-std"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/probe-rs/embedded-test"
+license = "MIT OR Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+embassy-executor = { default-features = false, version = "0.7.0", features = ["arch-std", "executor-thread"] }
+# Note: You need to enable at least one executor feature on embassy 0.7.x
+
+# dependencies when using the log feature
+log = { version = "0.4.20", optional = true }
+
+[dev-dependencies]
+embedded-test = { version = "0.6.0", default-features = false, features = ["embassy", "std"], path = "../.." }
+
+[features]
+default = ["log"]
+log = ["dep:log", "embedded-test/log"]
+
+[[bin]]
+name = "embedded-test-example-for-std"
+test = false  # To make plain `cargo test` work: Disable tests for the bin, because we are only using the intergration tests
+bench = false # To make `cargo check --all-targets` work.
+
+[lib]
+test = false # Same as above, to make plain `cargo test` work instead of `cargo test --tests`
+bench = false
+
+[[test]]
+name = "example_test"
+harness = false # Important: As we bring our own test harness, we need to disable the default one
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(abc)'] }

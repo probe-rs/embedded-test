@@ -490,8 +490,7 @@ fn tests_impl(args: TokenStream, input: TokenStream) -> parse::Result<TokenStrea
                 }
             )*
 
-            const JSON_SIZE_TOTAL : usize =  #krate::export::JSON_SIZE_HEADER + TEST_NAMES_STRLEN
-                + #krate::export::JSON_SIZE_PER_TEST_WITHOUT_TESTNAME * TEST_COUNT;
+            const JSON_SIZE_TOTAL : usize =  #krate::export::JSON_SIZE_HEADER + TEST_NAMES_STRLEN + #krate::export::JSON_SIZE_PER_TEST_WITHOUT_TESTNAME * TEST_COUNT;
 
             #krate::export::run_tests::<JSON_SIZE_TOTAL>(&mut test_funcs[..]);
         }
