@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.6.1]
 ### Added
 
 - Support [Ariel OS](https://ariel-os.org).
+- Support to run test on the host/std for Ariel OS.
 
 ## [0.6.0]
 
@@ -81,7 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.6.0...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.6.1...master
+
+[0.6.1]: https://github.com/probe-rs/embedded-test/compare/v0.6.0...v0.6.1
 
 [0.6.0]: https://github.com/probe-rs/embedded-test/compare/v0.5.0...v0.6.0
 
