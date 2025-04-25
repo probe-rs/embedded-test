@@ -17,8 +17,8 @@ embassy-executor = { default-features = false, version = "0.7.0", features = ["e
 
 # dependencies when using the log/defmt feature
 log = { version = "0.4.20", optional = true }
-defmt = { version = "0.3.8", optional = true }
-rtt-target = { git = "https://github.com/probe-rs/rtt-target", branch = "feature/log", optional = true }
+defmt = { version = "1", optional = true }
+rtt-target = { version="0.6.1", optional= true }
 
 [dev-dependencies]
 embedded-test = { version = "0.6.0", features = ["embassy"], path = "../.." }

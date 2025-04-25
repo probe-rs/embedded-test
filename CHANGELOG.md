@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ## [0.6.1]
+
 ### Added
 
 - Support [Ariel OS](https://ariel-os.org).
 - Support to run test on the host/std for Ariel OS.
+
+### Changed
+- Updated defmt 0.3.8 => 1
+
 
 ## [0.6.0]
 

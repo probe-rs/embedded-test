@@ -10,8 +10,8 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 # dependencies when using the log/defmt feature
 log = { version = "0.4.20", optional = true }
-defmt = { version = "0.3.8", optional = true }
-rtt-target = { git = "https://github.com/probe-rs/rtt-target", branch = "feature/log", optional = true }
+defmt = { version = "1", optional = true }
+rtt-target = { version="0.6.1", optional= true }
 
 # Esp32 related dependencies for main.rs. Note: embedded-test comes with its own panic handler and logging sink.
 esp-backtrace = { version = "0.14.2", features = [

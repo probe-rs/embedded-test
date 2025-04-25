@@ -98,7 +98,7 @@ dependencies = [
 
 [[package]]
 name = "embedded-test"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "embassy-executor",
  "embedded-test-macros",
@@ -119,7 +119,7 @@ dependencies = [
 
 [[package]]
 name = "embedded-test-macros"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "darling",
  "proc-macro2",
