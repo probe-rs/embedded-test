@@ -6,7 +6,7 @@ DEFMT_LOG = "debug"
 target = "riscv32imac-unknown-none-elf"
 
 [target.riscv32imac-unknown-none-elf]
-runner = "probe-rs run --chip esp32c6" # for runniing the tests with probe-rs
+runner = "probe-rs run --chip esp32c6" # for running the tests with probe-rs
 
 # use the following to run the main binary and see the jtag-uart output of the esp32c6
 # runner = "espflash flash --monitor"
