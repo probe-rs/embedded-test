@@ -356,7 +356,7 @@ dependencies = [
 
 [[package]]
 name = "embedded-test"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "defmt 1.0.1",
  "embassy-executor 0.7.0",

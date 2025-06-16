@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.6.2]
+
 ### Changed
+
+- Updated serde-json-core to 0.6
 - embedded-test no longer enables default `heapless` and `serde-json-core` features.
 - the panic handler should no longer use `defmt::Display2Format`.
 
@@ -92,7 +96,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.6.1...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...master
+
+[0.6.2]: https://github.com/probe-rs/embedded-test/compare/v0.6.1...v0.6.2
 
 [0.6.1]: https://github.com/probe-rs/embedded-test/compare/v0.6.0...v0.6.1
 
