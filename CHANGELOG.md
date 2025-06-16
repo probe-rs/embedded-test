@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- embedded-test no longer enables default `heapless` and `serde-json-core` features.
+- the panic handler should no longer use `defmt::Display2Format`.
+
 ## [0.6.1]
 
 ### Added
