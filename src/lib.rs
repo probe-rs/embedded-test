@@ -13,11 +13,7 @@ pub use embedded_test_macros::tests;
 fn panic(info: &core::panic::PanicInfo) -> ! {
     error!("====================== PANIC ======================");
 
-    #[cfg(not(feature = "defmt"))]
     error!("{}", info);
-
-    #[cfg(feature = "defmt")]
-    error!("{}", defmt::Display2Format(info));
 
     semihosting::process::abort()
 }
