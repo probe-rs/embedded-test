@@ -5,7 +5,7 @@
 
 on:
   push:
-    branches: [master, staging, trying]
+    branches: [ master, staging, trying ]
   pull_request:
   merge_group:
 
@@ -27,7 +27,7 @@ jobs:
         toolchain:
           - stable
           - nightly
-        #os:
+          #os:
           #- ubuntu-latest
           #- windows-latest
           #- macos-14
@@ -93,3 +93,6 @@ jobs:
 
       - name: Run cargo clippy
         run: cargo clippy --locked -- -D warnings
+
+      - name: Run cargo clippy on macros crate
+        run: cd macros && cargo clippy --locked -- -D warnings

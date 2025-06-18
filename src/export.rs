@@ -51,6 +51,12 @@ fn ensure_linker_file_was_added_to_rustflags() -> ! {
 
 #[no_mangle]
 unsafe extern "C" fn __embedded_test_start() -> ! {
+    // Invoke the user provided setup function, if it exists or run a default (empty) setup function.
+    extern "Rust" {
+        fn _embedded_test_setup();
+    }
+    unsafe { _embedded_test_setup() }
+
     let args = &export::hosting::args().expect("Failed to get cmdline via semihosting");
     // this is an iterator already with semihosting, not on std
     let mut args = args.into_iter();
@@ -80,6 +86,9 @@ unsafe extern "C" fn __embedded_test_start() -> ! {
         }
     }
 }
+
+#[export_name = "__embedded_test_default_setup"]
+fn default_setup() {}
 
 #[used]
 #[no_mangle]

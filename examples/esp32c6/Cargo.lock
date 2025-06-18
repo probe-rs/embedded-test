@@ -389,6 +389,7 @@ name = "embedded-test-macros"
 version = "0.6.1"
 dependencies = [
  "darling",
+ "proc-macro-error2",
  "proc-macro2",
  "quote",
  "syn",

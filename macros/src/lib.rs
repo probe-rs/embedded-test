@@ -4,13 +4,13 @@ mod attributes;
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
+use proc_macro_error2::proc_macro_error;
 
 /// Attribute to be placed on the test suite's module.
 ///
 /// ## Arguments
 /// - `default-timeout`: The default timeout in seconds for all tests in the suite. This can be overridden on a per-test basis. If not specified here or on a per-test basis, the default timeout is 60 seconds.
 /// - `executor`: The custom executor to use for running async tests. This is only required if the features `embassy` and `external-executor` are enabled.
-/// - `setup`: A function that will be called before running the tests. This can be used to setup logging or other global state.
 ///
 /// ## Examples
 ///
@@ -34,7 +34,7 @@ use proc_macro::TokenStream;
 /// Define a test suite and customize everything:
 ///
 /// ```rust,no_run
-/// #[embedded_test::tests(default_timeout = 10, executor = embassy::executor::Executor::new(), setup = rtt_target::rtt_init_log!())]
+/// #[embedded_test::tests(default_timeout = 10, executor = embassy::executor::Executor::new())]
 /// mod tests {
 ///     #[init]
 ///     fn init() {
@@ -57,4 +57,24 @@ use proc_macro::TokenStream;
 #[proc_macro_attribute]
 pub fn tests(args: TokenStream, input: TokenStream) -> TokenStream {
     attributes::tests::expand(args, input).unwrap_or_else(|e| e.to_compile_error().into())
+}
+
+/// Attribute to be placed on a global setup function for the test suite
+///
+/// Use this function to set up a global logger
+///
+/// ## Examples
+///
+/// ```rust,no_run
+/// #[cfg(test)]
+/// #[embedded_test::setup]
+/// fn setup() {
+///     rtt_target::rtt_init_log!();
+/// }
+/// ```
+///
+#[proc_macro_attribute]
+#[proc_macro_error]
+pub fn setup(args: TokenStream, input: TokenStream) -> TokenStream {
+    attributes::setup::expand(args, input)
 }

@@ -6,7 +6,6 @@ use proc_macro::TokenStream;
 pub(crate) struct MacroArgs {
     pub executor: Option<syn::Expr>,
     pub default_timeout: Option<u32>,
-    pub setup: Option<syn::Expr>,
 }
 
 pub(crate) fn parse_args(args: TokenStream) -> Result<MacroArgs, syn::Error> {

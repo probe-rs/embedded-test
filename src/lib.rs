@@ -4,7 +4,7 @@
 
 mod fmt;
 
-pub use embedded_test_macros::tests;
+pub use embedded_test_macros::{setup, tests};
 
 #[cfg(all(feature = "panic-handler", not(feature = "ariel-os")))]
 #[panic_handler]

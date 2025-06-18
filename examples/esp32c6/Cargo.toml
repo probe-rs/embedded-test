@@ -11,7 +11,7 @@ license = "MIT OR Apache-2.0"
 # dependencies when using the log/defmt feature
 log = { version = "0.4.20", optional = true }
 defmt = { version = "1", optional = true }
-rtt-target = { version="0.6.1", optional= true }
+rtt-target = { version = "0.6.1", optional = true }
 
 # Esp32 related dependencies for main.rs. Note: embedded-test comes with its own panic handler and logging sink.
 esp-backtrace = { version = "0.14.2", features = [
@@ -27,7 +27,6 @@ embassy-time = { version = "0.3.1", features = ["generic-queue-8"] }
 esp-hal-embassy = { version = "0.5.0", features = ["esp32c6"] }
 embassy-executor = { default-features = false, version = "0.6.0" } # TODO: update to 0.7.0 when esp-hal supports it
 
-[dev-dependencies]
 embedded-test = { version = "0.6.0", features = ["embassy", "external-executor"], path = "../.." }
 
 [features]
