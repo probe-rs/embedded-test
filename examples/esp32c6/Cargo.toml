@@ -42,7 +42,8 @@ bench = false # To make `cargo check --all-targets` work.
 required-features = ["log"]
 
 [lib]
-test = false # Same as above, to make plain `cargo test` work instead of `cargo test --tests`
+harness = false
+#test = false # Same as above, to make plain `cargo test` work instead of `cargo test --tests`
 bench = false
 
 [[test]]

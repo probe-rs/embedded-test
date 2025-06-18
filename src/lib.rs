@@ -1,5 +1,3 @@
-// Copied from https://github.com/knurling-rs/defmt/blob/main/firmware/defmt-test/src/lib.rs
-
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::needless_doctest_main)]
 #![cfg_attr(not(doctest), doc = include_str!("../README.md"))]
