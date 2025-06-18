@@ -23,6 +23,7 @@ darling = "0.20.8"
 embassy = []
 external-executor = []
 ariel-os = []
+std = []
 
 [dev-dependencies]
 trybuild = "1"

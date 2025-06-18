@@ -28,11 +28,38 @@ pub(crate) fn export_sym(
         }
     );
 
+    // Export test as struct so that we can collect it using linkme when on std
+    let std_sym = if cfg!(feature = "std") {
+        let ident_var2 = format_ident!("__{}_SYM2", test_name.to_string().to_uppercase());
+        let timeout = if let Some(timeout) = timeout {
+            quote!(Some(#timeout))
+        } else {
+            quote!(None)
+        };
+        Some(quote!(
+            #(#cfgs)*
+            #[embedded_test::export::hosting::distributed_slice(embedded_test::export::hosting::TESTS)]
+            #[linkme(crate= embedded_test::export::hosting::linkme)]
+                static #ident_var2: embedded_test::export::hosting::Test = embedded_test::export::hosting::Test {
+                    name:  concat!(module_path!(), "::", stringify!(#test_name)),
+                    function: #ident_entrypoint,
+                    should_panic: #should_panic,
+                    ignored: #ignore,
+                    timeout: #timeout,
+            };
+        ))
+    } else {
+        None
+    };
+
     // Unfortunately the module path can not be extracted from the Span yet.
     // At least on stable rust. Tracking issue: https://github.com/rust-lang/rust/issues/54725
     // As a workaround we use `module_path!()` to get the module path at runtime.
     quote!(
-         #(#cfgs)*
+
+        #std_sym
+
+        #(#cfgs)*
         //#[used]
         //#[no_mangle]
         #[link_section = ".embedded_test.tests"]

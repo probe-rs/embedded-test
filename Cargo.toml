@@ -14,9 +14,9 @@ default-target = "riscv32imac-unknown-none-elf"
 [dependencies]
 semihosting = { version = "0.1.7", features = ["args"], optional = true }
 embedded-test-macros = { version = "0.6.1", path = "./macros" }
-serde = { version = "1.0.193", default-features = false, features = ["derive"] }
-serde-json-core = { version = "0.6.0", default-features = false }
-heapless = { version = "0.8.0", default-features = false }
+serde = { version = "1.0.193", default-features = false, features = ["derive"], optional = true }
+serde_json = { version = "1.0.139", optional = true }
+linkme = { version = "0.3.31", optional = true }
 
 # Optional dependencies
 defmt = { version = "1", optional = true }
@@ -31,7 +31,7 @@ default = ["semihosting", "panic-handler"]
 semihosting = ["dep:semihosting"]
 
 # use std functionality
-std = []
+std = ["embedded-test-macros/std", "dep:linkme", "dep:serde", "dep:serde_json"]
 
 # defines a panic-handler which will invoke `semihosting::process::abort()` on panic
 panic-handler = []

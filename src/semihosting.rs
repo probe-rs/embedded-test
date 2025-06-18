@@ -12,3 +12,13 @@ pub fn abort() -> ! {
 pub fn exit(code: i32) -> ! {
     semihosting::process::exit(code)
 }
+
+pub fn run_test(_test: &str) -> ! {
+    // TODO: print reason
+    abort();
+}
+
+pub fn print_test_list() {
+    // TODO: print reason: We no longer print the tests via semihosting, they should be read from the ELF with probe-rs
+    abort();
+}

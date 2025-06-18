@@ -69,11 +69,17 @@ unsafe extern "C" fn __embedded_test_start() -> ! {
 
     match command {
         "list" => {
-            export::hosting::abort();
+            export::hosting::print_test_list();
+            loop {}
+        }
+        "run" => {
+            let test_name = args.next().expect("test name missing");
+            let test_name = test_name.expect("test name contains non-utf8 character");
+            export::hosting::run_test(test_name);
         }
         "run_addr" => {
-            let addr = args.next().expect("test name missing");
-            let addr = addr.expect("test name contains non-utf8 character");
+            let addr = args.next().expect("addr missing");
+            let addr = addr.expect("addr contains non-utf8 character");
             let addr: usize = addr.parse().expect("invalid number");
             let test_invoker: fn() -> ! = unsafe { core::mem::transmute(addr) };
             test_invoker();
