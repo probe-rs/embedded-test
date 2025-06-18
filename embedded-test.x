@@ -6,7 +6,7 @@
 EXTERN (__embedded_test_start);
 PROVIDE(embedded_test_linker_file_not_added_to_rustflags = __embedded_test_start);
 
-PROVIDE(_embedded_test_setup= __embedded_test_default_setup);
+PROVIDE(_embedded_test_setup = __embedded_test_default_setup);
 
 # Define a section for the embedded tests and make sure it is not optimized away
 SECTIONS

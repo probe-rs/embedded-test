@@ -1,7 +1,5 @@
 use crate::{export, TestOutcome};
 
-pub use heapless::Vec;
-
 #[cfg_attr(feature = "std", path = "std.rs")]
 #[cfg_attr(not(feature = "std"), path = "semihosting.rs")]
 pub mod hosting;

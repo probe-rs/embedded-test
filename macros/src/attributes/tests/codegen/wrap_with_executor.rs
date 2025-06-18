@@ -22,7 +22,7 @@ pub(crate) fn wrap_with_executor(
         }
     } else {
         quote! {
-            embedded_test:export::Executor::new()
+            embedded_test::export::Executor::new()
         }
     };
 
