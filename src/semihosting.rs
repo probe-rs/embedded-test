@@ -18,7 +18,7 @@ pub fn run_test(_test: &str) -> ! {
     abort();
 }
 
-pub fn print_test_list() {
+pub fn print_test_list() -> ! {
     // TODO: print reason: We no longer print the tests via semihosting, they should be read from the ELF with probe-rs
     abort();
 }

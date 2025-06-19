@@ -70,7 +70,6 @@ unsafe extern "C" fn __embedded_test_start() -> ! {
     match command {
         "list" => {
             export::hosting::print_test_list();
-            loop {}
         }
         "run" => {
             let test_name = args.next().expect("test name missing");

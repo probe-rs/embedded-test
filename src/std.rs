@@ -13,12 +13,22 @@ pub struct Tests<'a> {
 #[derive(Debug, serde::Serialize)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct Test {
-    pub name: &'static str, //TODO: strip first segment of the module path
+    #[serde(serialize_with = "ser_test_name")]
+    pub name: &'static str,
     #[serde(skip)]
     pub function: fn() -> !,
     pub should_panic: bool,
     pub ignored: bool,
     pub timeout: Option<u32>,
+}
+
+fn strip_crate_name(name: &str) -> Option<&str> {
+    let col = name.find("::")?;
+    Some(&name[col + 2..])
+}
+fn ser_test_name<S: serde::Serializer>(name: &'static str, s: S) -> Result<S::Ok, S::Error> {
+    let name = strip_crate_name(name).ok_or(serde::ser::Error::custom("test name has no ::"))?;
+    s.serialize_str(name)
 }
 
 #[distributed_slice]
@@ -48,7 +58,9 @@ pub fn exit(code: i32) -> ! {
 }
 
 pub fn run_test(test_name: &str) -> ! {
-    let test = TESTS.iter().find(|t| t.name == test_name); //TODO: strip first segment of the module path
+    let test = TESTS
+        .iter()
+        .find(|t| strip_crate_name(t.name) == Some(test_name));
     if let Some(test) = test {
         (test.function)();
     } else {
@@ -56,13 +68,13 @@ pub fn run_test(test_name: &str) -> ! {
     }
 }
 
-pub fn print_test_list() {
+pub fn print_test_list() -> ! {
     let tests = Tests {
         version: 0, // Old version. New version signals tests via ELF directly
         tests: &TESTS,
     };
 
     let tests_json = serde_json::to_string(&tests).expect("conversion to json");
-
     println!("{tests_json}");
+    std::process::exit(0);
 }

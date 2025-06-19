@@ -15,60 +15,54 @@ pub(crate) fn export_sym(
     let ident_var = format_ident!("__{}_SYM", test_name.to_string().to_uppercase());
     let timeout = test.timeout.or(input.macro_args.default_timeout);
 
-    // Generate a symbol name which is actually a JSON object describing the test so that probe-rs can parse it.
-    let sym_name = format!(
-        r#"{{"name":"{}","ignored":{},"should_panic":{}{}}}"#,
-        json_escape(&test_name.to_string()),
-        if ignore { "true" } else { "false" },
-        if should_panic { "true" } else { "false" },
-        if let Some(timeout) = timeout {
-            format!(",\"timeout\":{}", timeout)
-        } else {
-            String::new()
-        }
-    );
-
-    // Export test as struct so that we can collect it using linkme when on std
-    let std_sym = if cfg!(feature = "std") {
-        let ident_var2 = format_ident!("__{}_SYM2", test_name.to_string().to_uppercase());
+    if cfg!(feature = "std") {
+        // Export test as struct so that we can collect it using linkme when on std
         let timeout = if let Some(timeout) = timeout {
             quote!(Some(#timeout))
         } else {
             quote!(None)
         };
-        Some(quote!(
+        quote!(
             #(#cfgs)*
             #[embedded_test::export::hosting::distributed_slice(embedded_test::export::hosting::TESTS)]
             #[linkme(crate= embedded_test::export::hosting::linkme)]
-                static #ident_var2: embedded_test::export::hosting::Test = embedded_test::export::hosting::Test {
+                static #ident_var: embedded_test::export::hosting::Test = embedded_test::export::hosting::Test {
                     name:  concat!(module_path!(), "::", stringify!(#test_name)),
                     function: #ident_entrypoint,
                     should_panic: #should_panic,
                     ignored: #ignore,
                     timeout: #timeout,
             };
-        ))
+        )
     } else {
-        None
-    };
+        // Generate a symbol name which is actually a JSON object describing the test so that probe-rs can parse it.
+        let sym_name = format!(
+            r#"{{"name":"{}","ignored":{},"should_panic":{}{}}}"#,
+            _json_escape(&test_name.to_string()),
+            if ignore { "true" } else { "false" },
+            if should_panic { "true" } else { "false" },
+            if let Some(timeout) = timeout {
+                format!(",\"timeout\":{}", timeout)
+            } else {
+                String::new()
+            }
+        );
 
-    // Unfortunately the module path can not be extracted from the Span yet.
-    // At least on stable rust. Tracking issue: https://github.com/rust-lang/rust/issues/54725
-    // As a workaround we use `module_path!()` to get the module path at runtime.
-    quote!(
-
-        #std_sym
-
-        #(#cfgs)*
-        //#[used]
-        //#[no_mangle]
-        #[link_section = ".embedded_test.tests"]
-        #[export_name = #sym_name]
-        static #ident_var: (fn()->!,&'static str) = (#ident_entrypoint, module_path!());
-    )
+        // Unfortunately the module path can not be extracted from the Span yet.
+        // At least on stable rust. Tracking issue: https://github.com/rust-lang/rust/issues/54725
+        // As a workaround we use `module_path!()` to get the module path at runtime.
+        quote!(
+            #(#cfgs)*
+            //#[used]
+            //#[no_mangle]
+            #[link_section = ".embedded_test.tests"]
+            #[export_name = #sym_name]
+            static #ident_var: (fn()->!,&'static str) = (#ident_entrypoint, module_path!());
+        )
+    }
 }
 
-fn json_escape(string: &str) -> String {
+fn _json_escape(string: &str) -> String {
     use std::fmt::Write;
     let mut escaped = String::new();
     for c in string.chars() {
