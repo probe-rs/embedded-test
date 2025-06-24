@@ -1,0 +1,1 @@
+error: `#[test]` function can only be async if an async executor is enabled via feature

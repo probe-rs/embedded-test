@@ -1,0 +1,1 @@
+error: `#[embedded_test::tests]` attribute doesn't take an executor unless the features `embassy` and `external-executor` are enabled
