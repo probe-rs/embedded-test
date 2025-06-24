@@ -1,7 +1,9 @@
 use crate::attributes::tests::parse::items::TestFunc;
 use crate::attributes::tests::parse::Input;
+use proc_macro::Span;
 use proc_macro2::Ident;
 use quote::{format_ident, quote};
+use std::hash::{DefaultHasher, Hash as _, Hasher as _};
 
 pub(crate) fn export_sym(
     input: &Input,
@@ -36,8 +38,10 @@ pub(crate) fn export_sym(
         )
     } else {
         // Generate a symbol name which is actually a JSON object describing the test so that probe-rs can parse it.
+
         let sym_name = format!(
-            r#"{{"name":"{}","ignored":{},"should_panic":{}{}}}"#,
+            r#"{{"disambiguator":{},"name":"{}","ignored":{},"should_panic":{}{}}}"#,
+            _crate_local_disambiguator(), // disambiguator is needed to allow multiple identical test in different modules
             _json_escape(&test_name.to_string()),
             if ignore { "true" } else { "false" },
             if should_panic { "true" } else { "false" },
@@ -60,6 +64,19 @@ pub(crate) fn export_sym(
             static #ident_var: (fn()->!,&'static str) = (#ident_entrypoint, module_path!());
         )
     }
+}
+
+fn _hash(string: &str) -> u64 {
+    let mut hasher = DefaultHasher::new();
+    string.hash(&mut hasher);
+    hasher.finish()
+}
+pub(crate) fn _crate_local_disambiguator() -> u64 {
+    //copied from defmt ;)
+    // We want a deterministic, but unique-per-macro-invocation identifier. For that we
+    // hash the call site `Span`'s debug representation, which contains a counter that
+    // should disambiguate macro invocations within a crate.
+    _hash(&format!("{:?}", Span::call_site()))
 }
 
 fn _json_escape(string: &str) -> String {
