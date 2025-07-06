@@ -31,7 +31,7 @@ default = ["semihosting", "panic-handler"]
 semihosting = ["dep:semihosting"]
 
 # use std functionality
-std = []
+std = ["serde-json-core/heapless"]
 
 # defines a panic-handler which will invoke `semihosting::process::abort()` on panic
 panic-handler = []
