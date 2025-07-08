@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Make `std` enable `serde-json-core`'s `heapless` feature
+
 ## [0.6.2]
 
 ### Changed
