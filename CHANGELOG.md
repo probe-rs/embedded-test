@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Ensure `embedded-test.x` is only augmenting the linker scripts
 - Make `std` enable `serde-json-core`'s `heapless` feature
 
 ## [0.6.2]
