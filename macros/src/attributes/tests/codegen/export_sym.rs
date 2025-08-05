@@ -46,7 +46,7 @@ pub(crate) fn export_sym(
             if ignore { "true" } else { "false" },
             if should_panic { "true" } else { "false" },
             if let Some(timeout) = timeout {
-                format!(",\"timeout\":{}", timeout)
+                format!(",\"timeout\":{timeout}")
             } else {
                 String::new()
             }

@@ -60,7 +60,7 @@ pub(crate) fn parse_item(mut f: ItemFn) -> Result<Func, syn::Error> {
             Err(e) => {
                 return Err(syn::Error::new(
                     attr.span(),
-                    format!("failed to parse `timeout` attribute. Must be of the form #[timeout(10)] where 10 is the timeout in seconds. Error: {}", e)
+                    format!("failed to parse `timeout` attribute. Must be of the form #[timeout(10)] where 10 is the timeout in seconds. Error: {e}")
                 ));
             }
         }

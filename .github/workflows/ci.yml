@@ -86,7 +86,7 @@ jobs:
         uses: Swatinem/rust-cache@v2.7.5
 
       - name: Run Compile tests
-        run: cd tests-build && cargo test
+        run: cd tests-build && cargo test -- --test-threads 1
 
   fmt:
     name: Rustfmt
