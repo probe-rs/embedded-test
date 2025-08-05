@@ -41,7 +41,7 @@ pub(crate) struct BinOrTest {
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Manifest {
     package: Option<Package>,
-    dependencies: Map<String, Dependency>,
+    pub dependencies: Map<String, Dependency>,
     #[serde(skip_serializing_if = "Option::is_none")]
     lib: Option<Lib>,
     #[serde(rename = "bin", default, skip_serializing_if = "Vec::is_empty")]

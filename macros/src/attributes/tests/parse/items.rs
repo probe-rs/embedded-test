@@ -132,7 +132,7 @@ pub(crate) fn parse_item(mut f: ItemFn) -> Result<Func, syn::Error> {
             if check_fn_sig(&f.sig).is_err() || f.sig.inputs.len() > 1 {
                 return Err(parse::Error::new(
                     f.sig.ident.span(),
-                    "`#[test]` function must have signature `async fn(state: &mut Type)` (async/parameter are optional)",
+                    "`#[test]` function must have signature `async fn(state: Type)` (async/parameter are optional)",
                 ));
             }
 

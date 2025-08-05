@@ -1,3 +1,4 @@
+mod build_rs;
 mod manifest;
 
 use crate::manifest::Manifest;
@@ -25,6 +26,17 @@ fn run_test(test_file: &Path, should_pass: bool) {
     let manifest_path = temp_dir.join("Cargo.toml");
     manifest.write(&manifest_path).unwrap();
 
+    //TODO: only link embedded-test.x for some tests, to check for errors if missing
+
+    let mut build_rs = build_rs::BuildRs::new();
+    if manifest.dependencies.contains_key("esp-hal") {
+        build_rs.add_linker_file("linkall.x");
+    }
+    build_rs.add_linker_file("embedded-test.x");
+
+    let build_rs_path = temp_dir.join("build.rs");
+    build_rs.write(&build_rs_path).unwrap();
+
     let output = Command::new("cargo")
         .args(&[
             "test",
@@ -39,6 +51,11 @@ fn run_test(test_file: &Path, should_pass: bool) {
         ])
         .output()
         .unwrap();
+    println!(
+        "Running test {} in {}",
+        test_file.display(),
+        manifest_path.display()
+    );
 
     if should_pass {
         if output.status.success() {

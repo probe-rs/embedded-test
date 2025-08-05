@@ -1,7 +1,7 @@
 use crate::{export, TestOutcome};
 
 #[cfg_attr(feature = "std", path = "std.rs")]
-#[cfg_attr(not(feature = "std"), path = "semihosting.rs")]
+#[cfg_attr(feature = "semihosting", path = "semihosting.rs")]
 pub mod hosting;
 
 // Reexport the embassy stuff
@@ -33,7 +33,7 @@ pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
 */
 
 #[export_name = "main"]
-unsafe extern "C" fn __embedded_test_entry() -> ! {
+pub unsafe extern "C" fn __embedded_test_entry() -> ! {
     ensure_linker_file_was_added_to_rustflags();
 }
 

@@ -2,6 +2,7 @@
 ```cargo
 [dependencies]
 embassy-executor = { version = "0.7", features = ["executor-thread", "arch-riscv32"] }
+esp-hal = { version = "0.23.1", features = ["esp32c6"] } # for critical section implementation
 embedded-test = { path = "../../..", features = ["embassy"] }
 
 [lib]
@@ -15,6 +16,7 @@ harness = false
 #[cfg(test)]
 #[embedded_test::tests]
 mod tests1 {
+    use esp_hal::*; // needs to be in scope, to prevent linker error about missing `critical_section` implementation
 
     struct Context;
 
@@ -25,6 +27,11 @@ mod tests1 {
 
     #[test]
     async fn takes_state(_state: Context) {
+        assert!(true)
+    }
+
+    #[test]
+    fn takes_state2(_state: Context) {
         assert!(true)
     }
 
@@ -46,7 +53,7 @@ mod tests2 {
     }
 
     #[test]
-    async fn takes_state2(_state: Context) {
+    async fn takes_state3(_state: Context) {
         assert!(true)
     }
 
