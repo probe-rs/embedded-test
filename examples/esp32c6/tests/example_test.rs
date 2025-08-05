@@ -3,7 +3,7 @@
 
 struct Context {
     #[allow(dead_code)]
-    i2c0: esp_hal::peripherals::I2C0,
+    i2c0: esp_hal::peripherals::I2C0<'static>,
 }
 
 /// Sets up the logging before entering the test-body, so that embedded-test internal logs (e.g. Running Test <...>)  can also be printed.
@@ -15,24 +15,22 @@ fn setup_log() {
     rtt_target::rtt_init_defmt!();
 }
 
+esp_bootloader_esp_idf::esp_app_desc!();
+
 #[cfg(test)]
 #[embedded_test::tests(executor=esp_hal_embassy::Executor::new(), setup=crate::setup_log())]
 mod tests {
     use super::*;
-    use esp_hal::prelude::*;
+    use esp_hal::clock::CpuClock;
+    use esp_hal::timer::systimer::SystemTimer;
 
     // Optional: A init function which is called before every test
     // asyncness of init fn is optional
     #[init]
     async fn init() -> Context {
-        let peripherals = esp_hal::init({
-            let mut config = esp_hal::Config::default();
-            config.cpu_clock = CpuClock::max();
-            config
-        });
+        let peripherals = esp_hal::init(esp_hal::Config::default().with_cpu_clock(CpuClock::max()));
 
-        let timer0 = esp_hal::timer::systimer::SystemTimer::new(peripherals.SYSTIMER)
-            .split::<esp_hal::timer::systimer::Target>();
+        let timer0 = SystemTimer::new(peripherals.SYSTIMER);
         esp_hal_embassy::init(timer0.alarm0);
 
         // The init function can return some state, which can be consumed by the testcases

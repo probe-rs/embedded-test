@@ -23,7 +23,7 @@ pub use embassy_executor::task;
     not(feature = "external-executor"),
     not(feature = "ariel-os")
 ))]
-pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.7.x)!
+pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.9.x)!
 
 const VERSION: u32 = 1; //Format version of our protocol between probe-rs and target running embedded-test
 

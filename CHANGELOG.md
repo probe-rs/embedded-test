@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Updated embassy-executor to 0.9
+
 ### Fixed
 
 - Ensure `embedded-test.x` is only augmenting the linker scripts

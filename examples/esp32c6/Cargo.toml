@@ -1,5 +1,5 @@
 [package]
-name = "embedded-test-example-for-esp32c6"
+name = "embedded-test-example-esp32c6"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
@@ -14,18 +14,18 @@ defmt = { version = "1", optional = true }
 rtt-target = { version="0.6.1", optional= true }
 
 # Esp32 related dependencies for main.rs. Note: embedded-test comes with its own panic handler and logging sink.
-esp-backtrace = { version = "0.14.2", features = [
+esp-backtrace = { version = "0.17", features = [
     "esp32c6",
-    "exception-handler",
     "panic-handler",
     "println",
 ] }
 
-esp-hal = { version = "0.22.0", features = ["esp32c6"] }
-esp-println = { version = "0.12.0", features = ["esp32c6", "log"] }
-embassy-time = { version = "0.3.1", features = ["generic-queue-8"] }
-esp-hal-embassy = { version = "0.5.0", features = ["esp32c6"] }
-embassy-executor = { default-features = false, version = "0.6.0" } # TODO: update to 0.7.0 when esp-hal supports it
+esp-bootloader-esp-idf = { version = "0.2", features = ["esp32c6"] }
+esp-hal = { version = "1.0.0-rc.0", features = ["esp32c6", "unstable"] }
+esp-println = { version = "0.15", features = ["esp32c6", "log-04"] }
+esp-hal-embassy = { version = "0.9", features = ["esp32c6"] }
+embassy-time = { version = "0.5", features = ["generic-queue-8"] }
+embassy-executor = { version = "0.9", default-features = false }
 
 [dev-dependencies]
 embedded-test = { version = "0.6.0", features = ["embassy", "external-executor"], path = "../.." }
@@ -36,7 +36,7 @@ log = ["dep:log", "dep:rtt-target", "rtt-target/log", "embedded-test/log"]
 defmt = ["dep:defmt", "dep:rtt-target", "rtt-target/defmt", "embedded-test/defmt"]
 
 [[bin]]
-name = "embedded-test-example-for-esp32c6"
+name = "embedded-test-example-esp32c6"
 test = false  # To make plain `cargo test` work: Disable tests for the bin, because we are only using the intergration tests
 bench = false # To make `cargo check --all-targets` work.
 required-features = ["log"]
@@ -51,3 +51,11 @@ harness = false # Important: As we bring our own test harness, we need to disabl
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(abc)'] }
+
+# For now we have to use future versions
+[patch.crates-io]
+esp-hal = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+esp-bootloader-esp-idf = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+esp-hal-embassy = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+esp-println = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+esp-backtrace = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }

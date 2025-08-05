@@ -21,7 +21,7 @@ heapless = { version = "0.8.0", default-features = false }
 # Optional dependencies
 defmt = { version = "1", optional = true }
 log = { version = "0.4.20", optional = true }
-embassy-executor = { version = "0.7.0", optional = true, default-features = false }
+embassy-executor = { version = "0.9", optional = true, default-features = false }
 
 
 [features]

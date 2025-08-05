@@ -8,8 +8,8 @@ license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-embassy-executor = { default-features = false, version = "0.7.0", features = ["arch-std", "executor-thread"] }
-# Note: You need to enable at least one executor feature on embassy 0.7.x
+embassy-executor = { default-features = false, version = "0.9", features = ["arch-std", "executor-thread"] }
+# Note: You need to enable at least one executor feature on embassy-executor
 
 # dependencies when using the log feature
 log = { version = "0.4.20", optional = true }
