@@ -1,6 +1,13 @@
 #![no_main]
 
 #[cfg(test)]
+#[cfg(feature = "log")]
+#[embedded_test::setup]
+fn setup() {
+    env_logger::init();
+}
+
+#[cfg(test)]
 #[embedded_test::tests]
 mod unit_tests {
     // Optional: A init function which is called before every test
@@ -21,8 +28,8 @@ mod unit_tests {
     #[test]
     #[cfg(feature = "log")]
     fn log() {
-        log::info!("Hello, log!");
-        assert!(true)
+        log::error!("Hello, log!");
+        assert!(false)
     }
 
     // A test which is cfg'ed out

@@ -16,3 +16,9 @@ SECTIONS
     KEEP(*(.embedded_test.*));
   }
 }
+
+# Without this `INSERT ...`, including this linker script using `-T...` will
+# replace the default linker script if this is the first linker script
+# included.
+# See https://github.com/probe-rs/embedded-test/pull/67 for more information.
+INSERT AFTER .comment;

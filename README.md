@@ -5,13 +5,13 @@
 ![Crates.io](https://img.shields.io/crates/l/embedded-test?labelColor=1C2C2E&style=flat-square)
 
 The embedded-test library provides a test harness for embedded systems (riscv, arm and xtensa).
-Use this library on the target together with [probe-rs](https://probe.rs/) on the host to run integration tests on your
-embedded device.
+Use this library on the target together with [probe-rs](https://probe.rs/) on the host to run unit + integration tests
+on your embedded device.
 
 [probe-rs](https://probe.rs/)  together with embedded-test provide a (libtest compatible) test runner, which will:
 
-1. Flash all the tests to the device in one go (via the `probe-rs run` command)
-2. Request information about all tests from the device (via semihosting SYS_GET_CMDLINE)
+1. Read information about the available tests directly from the ELF file
+2. Flash all the tests to the device in one go (via the `probe-rs run` command)
 3. In turn for each testcase:
     - Reset the device
     - Signal to the device (via semihosting SYS_GET_CMDLINE) which test to run
@@ -36,11 +36,18 @@ with the click of a button.
 Add the following to your `Cargo.toml`:
 
 ```toml
-[dev-dependencies]
-embedded-test = { version = "0.6.0" }
+[dependencies]
+embedded-test = { version = "0.7.0" }
+
+[lib]
+harness = false
+
+[[bin]]
+name = "example_binary"
+harness = false
 
 [[test]]
-name = "example_test"
+name = "example_integration_test"
 harness = false
 ```
 
@@ -62,11 +69,11 @@ Add the following to your `build.rs` file:
 
 ```rust
 fn main() {
-    println!("cargo::rustc-link-arg-tests=-Tembedded-test.x");
+    println!("cargo::rustc-link-arg=-Tembedded-test.x");
 }
 ```
 
-Then you can run your tests with `cargo test --test example_test` or use the button in vscode/intellij.
+Then you can run your tests with `cargo test` or use the button in vscode/intellij.
 
 Having trouble setting up? Checkout out
 the [FAQ and common Errors](https://github.com/probe-rs/embedded-test/wiki/FAQ-and-common-Errors) Wiki page.
@@ -142,8 +149,8 @@ mod tests {
 | Feature              | Default? | Description                                                                                                                                                                                   |
 |----------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `panic-handler`      | Yes      | Defines a panic-handler which will invoke `semihosting::process::abort()` on panic                                                                                                            |
-| `defmt`              | No       | Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself (e.g. `#[embedded_test::tests(setup=rtt_target::rtt_init_defmt!())`) .                      |
-| `log`                | No       | Prints testcase exit result to log. You'll need to setup your logging sink yourself (e.g. `#[embedded_test::tests(setup=rtt_target::rtt_init_log!())`)                                        |
+| `defmt`              | No       | Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself (e.g. `#[embedded_test::setup] fn setup() {rtt_target::rtt_init_defmt!()}`) .               |
+| `log`                | No       | Prints testcase exit result to log. You'll need to setup your logging sink yourself (e.g. `#[embedded_test::setup] fn setup() {rtt_target::rtt_init_log!()}`)                                 |
 | `embassy`            | No       | Enables async test and init functions. Note: You need to enable at least one executor feature on the embassy-executor crate unless you are using the `external-executor` feature.             |
 | `external-executor`  | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
 | `xtensa-semihosting` | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
