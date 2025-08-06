@@ -66,6 +66,18 @@ impl Input {
             validate_argument_type(test, expected_arg_type)?;
         }
 
+        // Validate a custom executor is provided if needed and at least one test/init is async
+        if cfg!(feature = "external-executor")
+            && macro_args.executor.is_none()
+            && (tests.iter().any(|test| test.asyncness)
+                || init.as_ref().is_some_and(|i| i.asyncness))
+        {
+            return Err(parse::Error::new(
+                    proc_macro2::Span::call_site(),
+                    "async test/init func requires that an executor is provided via `#[embedded_test::tests(executor = ...)] because the feature `external-executor` is enabled",
+                ));
+        }
+
         Ok(Self {
             module_name: module.ident.to_string(),
             macro_args,

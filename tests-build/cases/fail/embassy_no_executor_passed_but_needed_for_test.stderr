@@ -1,0 +1,1 @@
+error: async test/init func requires that an executor is provided via `#[embedded_test::tests(executor = ...)] because the feature `external-executor` is enabled
