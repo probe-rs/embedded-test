@@ -2,7 +2,7 @@
 #![no_main]
 
 /// Sets up the logging before entering the test-body, so that embedded-test internal logs (e.g. Running Test <...>)  can also be printed.
-/// Note: you can also inline this method in the attribute. e.g. `#[embedded_test::tests(setup=rtt_target::rtt_init_log!())]`
+#[embedded_test::setup]
 fn setup_log() {
     #[cfg(feature = "log")]
     rtt_target::rtt_init_log!();
@@ -11,7 +11,7 @@ fn setup_log() {
 }
 
 #[cfg(test)]
-#[embedded_test::tests(setup=crate::setup_log())]
+#[embedded_test::tests]
 mod unit_tests {
     use stm32f7xx_hal::pac::Peripherals;
 

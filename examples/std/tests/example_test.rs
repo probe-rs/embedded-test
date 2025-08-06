@@ -1,5 +1,6 @@
 #![no_main]
 
+/// Sets up the logging before entering the test-body, so that embedded-test internal logs (e.g. Running Test <...>)  can also be printed.
 #[cfg(test)]
 #[cfg(feature = "log")]
 #[embedded_test::setup]

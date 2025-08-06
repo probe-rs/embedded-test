@@ -12,16 +12,16 @@ cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
 stm32f7xx-hal = { version = "0.8", features = ["stm32f767"] }  # replace the model of your microcontroller here
 
+embedded-test = { version = "0.6.0", features = ["embassy"], path = "../.." }
+
 embassy-executor = { default-features = false, version = "0.7.0", features = ["executor-thread", "arch-cortex-m"] }
 # Note: You need to enable at least one executor feature on embassy 0.7.x
 
 # dependencies when using the log/defmt feature
 log = { version = "0.4.20", optional = true }
 defmt = { version = "1", optional = true }
-rtt-target = { version="0.6.1", optional= true }
+rtt-target = { version = "0.6.1", optional = true }
 
-[dev-dependencies]
-embedded-test = { version = "0.6.0", features = ["embassy"], path = "../.." }
 
 [features]
 default = ["log"]
@@ -34,7 +34,7 @@ test = false  # To make plain `cargo test` work: Disable tests for the bin, beca
 bench = false # To make `cargo check --all-targets` work.
 
 [lib]
-test = false # Same as above, to make plain `cargo test` work instead of `cargo test --tests`
+harness = false # Important: As we bring our own test harness, we need to disable the default one
 bench = false
 
 [[test]]
