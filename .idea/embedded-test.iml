@@ -10,10 +10,18 @@
       <sourceFolder url="file://$MODULE_DIR$/examples/esp32c6/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/examples/stm32f767/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/stm32f767/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/std/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/std/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/macros/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests-build/cases" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests-build/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/embedded-test-example/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/examples/esp32c6/target" />
       <excludeFolder url="file://$MODULE_DIR$/examples/stm32f767/target" />
+      <excludeFolder url="file://$MODULE_DIR$/examples/std/target" />
+      <excludeFolder url="file://$MODULE_DIR$/macros/target" />
+      <excludeFolder url="file://$MODULE_DIR$/tests-build/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

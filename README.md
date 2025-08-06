@@ -40,15 +40,15 @@ Add the following to your `Cargo.toml`:
 embedded-test = { version = "0.7.0" }
 
 [lib]
-harness = false
-
-[[bin]]
-name = "example_binary"
-harness = false
+harness = false # Important: As we bring our own test harness for all tests
 
 [[test]]
 name = "example_integration_test"
 harness = false
+
+[[bin]]
+name = "example_binary"
+test = false # Unless you want to add unit tests to the binary
 ```
 
 Install the runner on your system:

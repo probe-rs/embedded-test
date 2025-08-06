@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Test esp32c6 defmt" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="buildProfileId" value="test" />
-    <option name="command" value="test --no-default-features --features defmt --package embedded-test-example-for-esp32c6 --test example_test tests" />
+    <option name="command" value="test --no-default-features --features defmt --package example-esp32c6" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$/examples/esp32c6" />
     <envs />
     <option name="emulateTerminal" value="true" />
