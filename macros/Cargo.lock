@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "embedded-test-macros"
-version = "0.6.1"
+version = "0.7.0-alpha.0"
 dependencies = [
  "darling",
  "proc-macro-error2",

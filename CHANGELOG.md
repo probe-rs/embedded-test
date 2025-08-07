@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.7.0-alpha.0]
+
+### Added
+
+- Support for unit tests!
+
+### Changed
+
+- Breaking: probe-rs reads the test cases directly from the ELF file instead of querying them from the target via
+  semihosting.
+- Breaking: global setup function must now be annotated with an attribute `#[embedded_test::setup]`
+  instead of passing it to `#[embedded_test::tests(setup=...)]`.
+- Linker script now lives in its own crate `embedded-test-linker-script`, to allow keeping `embedded-test` in
+  `[dev-dependencies]`.
+
+### Fixed
+
+- Ensure `embedded-test.x` is only augmenting (instead of replacing) the linker scripts on std
+
 ## [0.6.2]
 
 ### Changed
@@ -23,8 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support to run test on the host/std for Ariel OS.
 
 ### Changed
-- Updated defmt 0.3.8 => 1
 
+- Updated defmt 0.3.8 => 1
 
 ## [0.6.0]
 
@@ -96,7 +115,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.0...master
+
+[0.7.0-alpha.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0-alpha.0
 
 [0.6.2]: https://github.com/probe-rs/embedded-test/compare/v0.6.1...v0.6.2
 
