@@ -39,9 +39,9 @@ pub unsafe extern "C" fn __embedded_test_entry() -> ! {
 }
 
 fn ensure_linker_file_was_added_to_rustflags() -> ! {
-    // Try to access a symbol which we provide in the embedded-test.x linker file.
-    // The linker file will redirect this call to the function below.
-    // This will trigger a linker error if the linker file has not been added to the rustflags
+    // Try to access a symbol which we provide in the embedded-test.x linker script.
+    // The linker script will redirect this call to the function below.
+    // This will trigger a linker error if the linker script has not been added to the rustflags
     extern "C" {
         fn embedded_test_linker_file_not_added_to_rustflags() -> !;
     }

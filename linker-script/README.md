@@ -6,7 +6,7 @@ Allows you to write
 
 ```toml
 [dependencies]
-embedded-test-linker-file = { version = "0.1.0" }
+embedded-test-linker-script = { version = "0.1.0" }
 
 [dev-dependencies]
 embedded-test = { version = "0.7.0" }
