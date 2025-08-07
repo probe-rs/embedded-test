@@ -22,6 +22,9 @@ esp-backtrace = { version = "0.17.0", features = ["esp32c6", "exception-handler"
 esp-hal-embassy = { version = "0.9.0", features = ["esp32c6"] }
 esp-println = { version = "0.15.0", features = ["esp32c6", "log-04"] }
 
+embedded-test-linker-script = { version = "0.1.0", path = "../../linker-script" }
+
+[dev-dependencies]
 embedded-test = { version = "0.6.0", features = ["embassy", "external-executor"], path = "../.." }
 
 [features]

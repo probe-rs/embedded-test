@@ -51,6 +51,9 @@ name = "example_binary"
 test = false # Unless you want to add unit tests to the binary
 ```
 
+<sup>Want to move embedded-test to `[dev-dependencies]`? Look
+at [embedded-test-linker-script](https://crates.io/crates/embedded-test-linker-script).</sup>
+
 Install the runner on your system:
 
 ```bash
@@ -157,7 +160,7 @@ mod tests {
 | `ariel-os`           | No       | Enables [Ariel OS](https://ariel-os.github.io/ariel-os/dev/docs/book/testing.html) integration.                                                                                               |
 
 Please also note the doc for
-the [Attribute Macro embedded_test::tests](https://docs.rs/embedded-test/latest/embedded-test/attr.tests.html).
+the [Attribute Macro embedded_test::tests](https://docs.rs/embedded-test/latest/embedded_test/attr.tests.html).
 
 ## License
 

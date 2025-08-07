@@ -145,6 +145,7 @@ name = "embedded-test"
 version = "0.6.2"
 dependencies = [
  "embassy-executor",
+ "embedded-test-linker-script",
  "embedded-test-macros",
  "linkme",
  "log",
@@ -158,9 +159,14 @@ version = "0.1.0"
 dependencies = [
  "embassy-executor",
  "embedded-test",
+ "embedded-test-linker-script",
  "env_logger",
  "log",
 ]
+
+[[package]]
+name = "embedded-test-linker-script"
+version = "0.1.0"
 
 [[package]]
 name = "embedded-test-macros"

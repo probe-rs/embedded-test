@@ -235,6 +235,7 @@ version = "0.6.2"
 dependencies = [
  "defmt 1.0.1",
  "embassy-executor",
+ "embedded-test-linker-script",
  "embedded-test-macros",
  "log",
  "semihosting",
@@ -249,10 +250,15 @@ dependencies = [
  "defmt 1.0.1",
  "embassy-executor",
  "embedded-test",
+ "embedded-test-linker-script",
  "log",
  "rtt-target",
  "stm32f7xx-hal",
 ]
+
+[[package]]
+name = "embedded-test-linker-script"
+version = "0.1.0"
 
 [[package]]
 name = "embedded-test-macros"

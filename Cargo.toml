@@ -12,8 +12,9 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 default-target = "riscv32imac-unknown-none-elf"
 
 [dependencies]
-semihosting = { version = "0.1.7", features = ["args"], optional = true }
 embedded-test-macros = { version = "0.6.1", path = "./macros" }
+embedded-test-linker-script = { version = "0.1.0", path = "linker-script" }
+semihosting = { version = "0.1.7", features = ["args"], optional = true }
 serde = { version = "1.0.193", default-features = false, features = ["derive"], optional = true }
 serde_json = { version = "1.0.139", optional = true }
 linkme = { version = "0.3.31", optional = true }

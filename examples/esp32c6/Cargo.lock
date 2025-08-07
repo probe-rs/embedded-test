@@ -400,10 +400,15 @@ version = "0.6.2"
 dependencies = [
  "defmt 1.0.1",
  "embassy-executor",
+ "embedded-test-linker-script",
  "embedded-test-macros",
  "log",
  "semihosting",
 ]
+
+[[package]]
+name = "embedded-test-linker-script"
+version = "0.1.0"
 
 [[package]]
 name = "embedded-test-macros"
@@ -714,6 +719,7 @@ dependencies = [
  "embassy-executor",
  "embassy-time",
  "embedded-test",
+ "embedded-test-linker-script",
  "esp-backtrace",
  "esp-bootloader-esp-idf",
  "esp-hal",

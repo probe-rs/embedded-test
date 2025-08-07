@@ -1,6 +1,6 @@
-# This linker script is needed to ensure our symbol EMBEDDED_TEST_VERSION is not optimized away
-# The symbol is needed by probe-rs to determine whether a binary contains embedded tests or not
-# At a later point we might also communicate the available testcases to probe-rs via the symbol table
+# This linker script is needed to ensure our version + testcase symbols are not optimized away
+# The EMBEDDED_TEST_VERSION symbol is needed by probe-rs to determine whether a binary contains embedded tests or not
+# Afterwards it reads the testcases from the .embedded_test section
 
 # Redirect/rename a function here, so that we can make sure the user has added the linker script to the RUSTFLAGS
 EXTERN (__embedded_test_start);

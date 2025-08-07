@@ -119,6 +119,7 @@ version = "0.6.2"
 dependencies = [
  "defmt",
  "embassy-executor",
+ "embedded-test-linker-script",
  "embedded-test-macros",
  "linkme",
  "log",
@@ -126,6 +127,10 @@ dependencies = [
  "serde",
  "serde_json",
 ]
+
+[[package]]
+name = "embedded-test-linker-script"
+version = "0.1.0"
 
 [[package]]
 name = "embedded-test-macros"

@@ -1,8 +1,3 @@
-use std::env;
-use std::error::Error;
-use std::fs;
-use std::path::PathBuf;
-
 // Macros taken from:
 // https://github.com/TheDan64/inkwell/blob/36c3b10/src/lib.rs#L81-L110
 
@@ -19,15 +14,8 @@ macro_rules! assert_unique_features {
     };
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() {
     assert_unique_features!("log", "defmt");
     assert_unique_features!("ariel-os", "external-executor");
     assert_unique_features!("std", "semihosting");
-
-    let out = &PathBuf::from(env::var("OUT_DIR")?);
-    let linker_script = fs::read_to_string("embedded-test.x")?;
-    fs::write(out.join("embedded-test.x"), linker_script)?;
-    println!("cargo:rustc-link-search={}", out.display());
-
-    Ok(())
 }
