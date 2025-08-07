@@ -14,11 +14,11 @@ pub fn exit(code: i32) -> ! {
 }
 
 pub fn run_test(_test: &str) -> ! {
-    // TODO: print reason
+    error!("Running test by name is no longer supported by embedded-test. Please upgrade probe-rs to the latest version");
     abort();
 }
 
 pub fn print_test_list() -> ! {
-    // TODO: print reason: We no longer print the tests via semihosting, they should be read from the ELF with probe-rs
+    error!("Querying tests via semihosting is no longer supported by embedded-test. Please upgrade probe-rs to the latest version");
     abort();
 }

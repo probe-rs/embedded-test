@@ -25,14 +25,15 @@ pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
 }
 
 /*
-   // TODO: make stack size configurable
-   #[ariel_os::thread(autostart, stacksize = 16384)]
-   fn embedded_test_thread() {
-       unsafe { __embedded_test_entry() }
-   }
-*/
+// TODO: Readd support for ariel os startup. Ariel OS is currently not published to crates.io
+#[cfg(feature = "ariel-os")]
+#[ariel_os::thread(autostart, stacksize = 16384)]
+fn embedded_test_thread() {
+    // TODO: make stack size configurable
+    unsafe { __embedded_test_entry() }
+}*/
 
-#[export_name = "main"]
+#[cfg_attr(not(feature = "ariel-os"), export_name = "main")]
 pub unsafe extern "C" fn __embedded_test_entry() -> ! {
     ensure_linker_file_was_added_to_rustflags();
 }
