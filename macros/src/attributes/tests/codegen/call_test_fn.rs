@@ -1,20 +1,29 @@
-use crate::attributes::tests::codegen::Invoke;
-use crate::attributes::tests::parse::items::{InitFunc, TestFunc};
+use crate::attributes::tests::validate::{InitFunc, TestFunc};
 use proc_macro2::TokenStream;
 use quote::quote;
+use syn::ItemFn;
+
+fn invoke(func: &ItemFn, args: Vec<TokenStream>) -> TokenStream {
+    let ident = &func.sig.ident;
+    if func.sig.asyncness.is_some() {
+        quote!(#ident(#(#args),*).await)
+    } else {
+        quote!(#ident(#(#args),*))
+    }
+}
 
 /// Generate a code block ( in { ... }) to call the init function (if provided), call the test function and check the outcome.
 pub(crate) fn call_test_fn(test_func: &TestFunc, init_func: Option<&InitFunc>) -> TokenStream {
     let init_expr = if let Some(init) = init_func {
-        init.invoke_with(vec![])
+        invoke(&init.func, vec![])
     } else {
         quote!(())
     };
 
     let run_call = if test_func.input.is_some() {
-        test_func.invoke_with(vec![quote!(state)])
+        invoke(&test_func.func, vec![quote!(state)])
     } else {
-        test_func.invoke_with(vec![])
+        invoke(&test_func.func, vec![])
     };
 
     quote!(

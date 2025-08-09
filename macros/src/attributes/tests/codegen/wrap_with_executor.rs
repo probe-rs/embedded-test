@@ -1,4 +1,4 @@
-use crate::attributes::tests::parse::items::TestFunc;
+use crate::attributes::tests::validate::TestFunc;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use syn::Expr;

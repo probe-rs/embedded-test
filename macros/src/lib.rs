@@ -1,8 +1,5 @@
 mod attributes;
 
-// Copied from https://github.com/knurling-rs/defmt/blob/main/firmware/defmt-test/macros/src/lib.rs
-extern crate proc_macro;
-
 use proc_macro::TokenStream;
 use proc_macro_error2::proc_macro_error;
 
@@ -55,8 +52,9 @@ use proc_macro_error2::proc_macro_error;
 /// }
 /// ```
 #[proc_macro_attribute]
+#[proc_macro_error]
 pub fn tests(args: TokenStream, input: TokenStream) -> TokenStream {
-    attributes::tests::expand(args, input).unwrap_or_else(|e| e.to_compile_error().into())
+    attributes::tests::expand(args, input)
 }
 
 /// Attribute to be placed on a global setup function for the test suite

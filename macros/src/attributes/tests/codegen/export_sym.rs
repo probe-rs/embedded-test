@@ -1,21 +1,20 @@
-use crate::attributes::tests::parse::items::TestFunc;
-use crate::attributes::tests::parse::Input;
+use crate::attributes::tests::validate::TestFunc;
 use proc_macro::Span;
 use proc_macro2::Ident;
 use quote::{format_ident, quote};
 use std::hash::{DefaultHasher, Hash as _, Hasher as _};
 
 pub(crate) fn export_sym(
-    input: &Input,
     test: &TestFunc,
     ident_entrypoint: Ident,
+    default_timeout: Option<u32>,
 ) -> proc_macro2::TokenStream {
     let cfgs = &test.cfgs;
     let should_panic = test.should_panic;
     let ignore = test.ignore;
     let test_name = &test.func.sig.ident;
     let ident_var = format_ident!("__{}_SYM", test_name.to_string().to_uppercase());
-    let timeout = test.timeout.or(input.macro_args.default_timeout);
+    let timeout = test.timeout.or(default_timeout);
 
     if cfg!(feature = "std") {
         // Export test as struct so that we can collect it using linkme when on std
