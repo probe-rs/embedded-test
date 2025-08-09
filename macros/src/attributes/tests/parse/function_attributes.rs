@@ -1,3 +1,4 @@
+use darling::FromMeta;
 use proc_macro_error2::abort;
 use syn::spanned::Spanned;
 use syn::{Attribute, ItemFn};
@@ -5,7 +6,7 @@ use syn::{Attribute, ItemFn};
 /// Represents the attributes that can be applied to a function in the test module
 pub(crate) enum FuncAttribute {
     Init,
-    Test,
+    Test(TestAttribute),
     ShouldPanic,
     Ignore,
     Timeout(TimeoutAttribute),
@@ -19,7 +20,7 @@ impl FuncAttribute {
         let ident = attr.path().get_ident()?.to_string();
         Some(match ident.as_str() {
             "init" => FuncAttribute::Init,
-            "test" => FuncAttribute::Test,
+            "test" => FuncAttribute::Test(TestAttribute::from_attr(attr)),
             "should_panic" => FuncAttribute::ShouldPanic,
             "ignore" => FuncAttribute::Ignore,
             "timeout" => FuncAttribute::Timeout(TimeoutAttribute::from_attr(attr)),
@@ -52,6 +53,24 @@ impl TimeoutAttribute {
                     e
                 );
             }
+        }
+    }
+}
+
+#[derive(Debug, FromMeta, Default)]
+pub(crate) struct TestAttribute {
+    #[darling(default)]
+    pub init: Option<syn::Ident>,
+}
+
+impl TestAttribute {
+    pub fn from_attr(attr: &Attribute) -> Self {
+        match &attr.meta {
+            syn::Meta::Path(_) => TestAttribute::default(),
+            meta => match TestAttribute::from_meta(meta) {
+                Ok(test_attr) => test_attr,
+                Err(e) => abort!(attr, "failed to parse `test` attribute. Must be of the form #[test(init = init_function)]: {}", e),
+            },
         }
     }
 }

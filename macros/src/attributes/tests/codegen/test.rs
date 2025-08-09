@@ -13,13 +13,10 @@ pub(crate) fn test(test: &TestFunc, module: &ValidatedModule) -> TokenStream {
     let mut embassy_task = None;
 
     // Generate the code block that will call init, run the test and check the outcome.
-    let mut test_invocation = call_test_fn(test, module.init_func.as_ref());
+    let init = module.init_function_for_test(test);
+    let mut test_invocation = call_test_fn(test, init);
 
-    let init_is_async = module
-        .init_func
-        .as_ref()
-        .map(|i| i.asyncness)
-        .unwrap_or_default();
+    let init_is_async = init.map(|i| i.asyncness).unwrap_or_default();
 
     // If the test is async or the init function is async, we need to wrap the test invocation in an executor.
     // Result is still a block

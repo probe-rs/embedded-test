@@ -17,11 +17,11 @@ pub(crate) fn expand(args: TokenStream, input: TokenStream) -> TokenStream {
     let validated_module = validate::ValidatedModule::from_module_and_args(module, macro_args);
 
     let untouched_tokens = &validated_module.untouched_tokens;
-    let init_fn = validated_module.init_func.as_ref().map(|i| &i.func);
     let tests = validated_module
         .tests
         .iter()
         .map(|test| codegen::test(test, &validated_module));
+    let init_fns = validated_module.init_funcs.values().map(|i| &i.func);
 
     let mod_name = format_ident!("{}", validated_module.module_name);
     quote!(
@@ -29,7 +29,7 @@ pub(crate) fn expand(args: TokenStream, input: TokenStream) -> TokenStream {
         mod #mod_name {
             #(#untouched_tokens)*
 
-            #init_fn
+            #(#init_fns)*
 
             #(#tests)*
         }

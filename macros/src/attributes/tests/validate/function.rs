@@ -3,6 +3,7 @@ use proc_macro_error2::abort;
 use syn::{Attribute, ItemFn, ReturnType, Type};
 
 pub(crate) struct InitFunc {
+    pub name: String,
     pub func: ItemFn,
     pub state: Option<Type>,
     pub asyncness: bool,
@@ -14,15 +15,15 @@ impl From<FunctionWithAttributes> for InitFunc {
         for (attr, span) in attributes {
             match attr {
                 FuncAttribute::Init => {}
-                FuncAttribute::Test => unreachable!(),
+                FuncAttribute::Test(_) => unreachable!(),
                 _ => abort!(span, "The `#[init]` function can not have this attribute"),
             }
         }
         if check_fn_sig(&func.sig).is_err() || !func.sig.inputs.is_empty() {
             abort!(
-                    func.sig,
-                    "`#[init]` function must have signature `async fn() [-> Type]` (async/return type are optional)",
-                );
+                func.sig,
+                "`#[init]` function must have signature `async fn() [-> Type]` (async/return type are optional)",
+            );
         }
 
         if cfg!(not(feature = "embassy")) && func.sig.asyncness.is_some() {
@@ -37,6 +38,7 @@ impl From<FunctionWithAttributes> for InitFunc {
             ReturnType::Type(.., ty) => Some(*ty.clone()),
         };
         InitFunc {
+            name: func.sig.ident.to_string(),
             asyncness: func.sig.asyncness.is_some(),
             func,
             state,
@@ -52,6 +54,7 @@ pub(crate) struct TestFunc {
     pub ignore: bool,
     pub asyncness: bool,
     pub timeout: Option<u32>,
+    pub custom_init: Option<syn::Ident>,
 }
 
 impl From<FunctionWithAttributes> for TestFunc {
@@ -60,10 +63,11 @@ impl From<FunctionWithAttributes> for TestFunc {
         let mut should_panic = false;
         let mut ignore = false;
         let mut timeout = None;
+        let mut custom_init = None;
         for (attr, _span) in attributes {
             match attr {
                 FuncAttribute::Init => unreachable!(),
-                FuncAttribute::Test => {}
+                FuncAttribute::Test(attr) => custom_init = attr.init,
                 FuncAttribute::ShouldPanic => should_panic = true,
                 FuncAttribute::Ignore => ignore = true,
                 FuncAttribute::Timeout(t) => timeout = Some(t.value),
@@ -99,17 +103,31 @@ impl From<FunctionWithAttributes> for TestFunc {
             should_panic,
             ignore,
             timeout,
+            custom_init,
         }
     }
 }
 
-pub(crate) enum Func {
-    Init(InitFunc),
-    Test(TestFunc),
-    Other(FunctionWithAttributes),
+pub(crate) struct OtherFunc(pub FunctionWithAttributes);
+impl From<FunctionWithAttributes> for OtherFunc {
+    fn from(func: FunctionWithAttributes) -> Self {
+        if let Some((_attr, span)) = func.attributes.first() {
+            abort!(
+                span,
+                "Only `#[test]` or `#[init]` functions can have such an attribute"
+            );
+        }
+        OtherFunc(func)
+    }
 }
 
-impl From<FunctionWithAttributes> for Func {
+pub(crate) enum AnnotatedFunction {
+    Init(InitFunc),
+    Test(TestFunc),
+    Other(OtherFunc),
+}
+
+impl From<FunctionWithAttributes> for AnnotatedFunction {
     fn from(func: FunctionWithAttributes) -> Self {
         enum FuncKind {
             Init,
@@ -119,8 +137,8 @@ impl From<FunctionWithAttributes> for Func {
         for (attr, span) in &func.attributes {
             match attr {
                 FuncAttribute::Init if func_kind.is_none() => func_kind = Some(FuncKind::Init),
-                FuncAttribute::Test if func_kind.is_none() => func_kind = Some(FuncKind::Test),
-                FuncAttribute::Init | FuncAttribute::Test => {
+                FuncAttribute::Test(_) if func_kind.is_none() => func_kind = Some(FuncKind::Test),
+                FuncAttribute::Init | FuncAttribute::Test(_) => {
                     abort!(
                         span,
                         "A function can only be marked with one of `#[init]` or `#[test]`"
@@ -131,9 +149,9 @@ impl From<FunctionWithAttributes> for Func {
         }
 
         match func_kind {
-            Some(FuncKind::Init) => Func::Init(InitFunc::from(func)),
-            Some(FuncKind::Test) => Func::Test(TestFunc::from(func)),
-            None => Func::Other(func),
+            Some(FuncKind::Init) => AnnotatedFunction::Init(InitFunc::from(func)),
+            Some(FuncKind::Test) => AnnotatedFunction::Test(TestFunc::from(func)),
+            None => AnnotatedFunction::Other(OtherFunc::from(func)),
         }
     }
 }
