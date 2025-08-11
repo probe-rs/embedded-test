@@ -37,7 +37,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-embedded-test = { version = "0.7.0-alpha.0" }
+embedded-test = { version = "0.7.0-alpha.1" }
 
 [lib]
 harness = false # Important: As we bring our own test harness for all tests

@@ -431,7 +431,7 @@ dependencies = [
 
 [[package]]
 name = "embedded-test"
-version = "0.7.0-alpha.0"
+version = "0.7.0-alpha.1"
 dependencies = [
  "defmt 1.0.1",
  "embassy-executor",
@@ -443,11 +443,11 @@ dependencies = [
 
 [[package]]
 name = "embedded-test-linker-script"
-version = "0.1.0-alpha.0"
+version = "0.1.0-alpha.1"
 
 [[package]]
 name = "embedded-test-macros"
-version = "0.7.0-alpha.0"
+version = "0.7.0-alpha.1"
 dependencies = [
  "darling 0.21.1",
  "proc-macro-error2",

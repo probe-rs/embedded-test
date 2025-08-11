@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.7.0-alpha.1]
+
+### Added
+
+- Init function can not be overridden on a per-test basis (`#[test(init = <expr>)]`).
+
+### Changed
+
+- Tests modules can now contain helper function (w/o test/init attributes).
+
 ## [0.7.0-alpha.0]
 
 ### Added
@@ -115,7 +125,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.0...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.1...master
+
+[0.7.0-alpha.1]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.0...v0.7.0-alpha.1
 
 [0.7.0-alpha.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0-alpha.0
 
