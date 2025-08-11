@@ -131,7 +131,7 @@ impl Manifest {
             .unwrap_or(true)
         {
             self.package = Some(Package {
-                name: "embedded-test".to_string(),
+                name: test_file.file_stem().unwrap().to_str().unwrap().to_string(),
                 edition: "2024".to_string(),
             });
         }

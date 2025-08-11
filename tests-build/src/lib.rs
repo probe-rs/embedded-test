@@ -16,9 +16,19 @@ fn run_test(test_file: &Path, should_pass: bool) {
         .and_then(|s| s.to_str())
         .expect("Failed to get file stem")
         .to_string();
-    let temp_dir = Path::new(env!("OUT_DIR")).join(test_name);
+    let temp_dir = Path::new(env!("OUT_DIR")).join("cases").join(test_name);
     if !temp_dir.exists() {
         fs::create_dir_all(&temp_dir).expect("Failed to create temporary directory for test");
+    }
+
+    // Create a cargo workspace, to have one shared target directory for all tests
+    let workspace_manifest = Path::new(env!("OUT_DIR")).join("Cargo.toml");
+    if !workspace_manifest.exists() {
+        fs::write(
+            &workspace_manifest,
+            "[workspace]\nresolver = \"3\"\nmembers = [\"cases/*\"]\n",
+        )
+        .expect("Failed to create workspace manifest");
     }
 
     let mut manifest = Manifest::from_rust_file(test_file).unwrap();
