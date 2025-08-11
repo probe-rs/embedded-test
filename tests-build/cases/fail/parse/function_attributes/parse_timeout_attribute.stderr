@@ -1,0 +1,1 @@
+error: failed to parse `timeout` attribute. Must be of the form #[timeout(10)] where 10 is the timeout in seconds. Error: expected integer literal

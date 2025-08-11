@@ -11,21 +11,15 @@ harness = false
 #![no_main]
 
 #[cfg(test)]
-#[embedded_test::setup]
-fn setup() {}
-
-mod somewhere_else {
-    #[cfg(test)]
-    #[embedded_test::setup]
-    fn setup() {}
-}
-
-#[cfg(test)]
 #[embedded_test::tests]
 mod tests {
 
+    fn helper() -> u32 {
+        42
+    }
+
     #[test]
-    fn ok() {
-        assert!(true);
+    fn takes_no_state() {
+        assert_eq!(helper(), 42);
     }
 }

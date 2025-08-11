@@ -1,0 +1,1 @@
+error: failed to parse `test` attribute. Must be of the form #[test(init = init_function)]: Unexpected meta-item format `word` at init

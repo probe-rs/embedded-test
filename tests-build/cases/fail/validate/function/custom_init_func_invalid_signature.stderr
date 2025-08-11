@@ -1,0 +1,1 @@
+error: `#[init]` function must have signature `async fn() [-> Type]` (async/return type are optional)

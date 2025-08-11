@@ -1,0 +1,1 @@
+error: `#[test]` function must have signature `async fn(state: Type)` (async/parameter are optional)

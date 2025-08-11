@@ -1,0 +1,1 @@
+error: A function can only be marked with one of `#[init]` or `#[test]`

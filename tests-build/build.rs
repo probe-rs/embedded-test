@@ -5,11 +5,11 @@ fn main() {
     println!("cargo::rerun-if-changed=build.rs");
     println!("cargo::rerun-if-changed=cases");
 
-    let pass_tests = glob("cases/pass/*.rs")
+    let pass_tests = glob("cases/pass/**/*.rs")
         .expect("Failed to read glob pattern")
         .map(|p| generate_test_function(p, true))
         .collect::<String>();
-    let fail_tests = glob("cases/fail/*.rs")
+    let fail_tests = glob("cases/fail/**/*.rs")
         .expect("Failed to read glob pattern")
         .map(|p| generate_test_function(p, false))
         .collect::<String>();

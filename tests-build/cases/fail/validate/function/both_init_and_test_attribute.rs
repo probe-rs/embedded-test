@@ -1,7 +1,7 @@
 /*
 ```cargo
 [dependencies]
-embedded-test = { path = "../../.." }
+embedded-test = { path = "../../../../.." }
 [lib]
 harness = false
 ```
@@ -13,8 +13,7 @@ harness = false
 #[cfg(test)]
 #[embedded_test::tests]
 mod tests {
+    #[init]
     #[test]
-    async fn takes_no_state() {
-        assert!(true)
-    }
+    fn strange() {}
 }

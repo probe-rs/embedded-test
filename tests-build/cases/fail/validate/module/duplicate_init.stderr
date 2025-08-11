@@ -1,0 +1,1 @@
+error: only one `#[init]` function is allowed in a test module

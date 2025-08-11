@@ -1,0 +1,1 @@
+error: this type must match the return type `f64` of the init function `custom_init`

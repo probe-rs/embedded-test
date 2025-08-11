@@ -1,7 +1,9 @@
 /*
 ```cargo
 [dependencies]
-embedded-test = { path = "../../.." }
+embassy-executor = { version = "0.7", features = ["arch-riscv32"] }
+embedded-test = { path = "../../../../..", features = ["embassy", "external-executor"] }
+
 [lib]
 harness = false
 ```
@@ -13,15 +15,13 @@ harness = false
 #[cfg(test)]
 #[embedded_test::tests]
 mod tests {
-
     struct Context;
 
-    #[init]
-    async fn init() -> Context {
+    async fn custom_init() -> Context {
         Context
     }
 
-    #[test]
+    #[test(init=custom_init)]
     fn takes_state(_state: Context) {
         assert!(true)
     }

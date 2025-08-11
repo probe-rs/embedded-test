@@ -1,0 +1,1 @@
+error: `#[setup]` attribute cannot be used together with `#[export_name]`

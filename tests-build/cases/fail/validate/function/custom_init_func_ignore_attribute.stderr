@@ -1,0 +1,1 @@
+error: Only `#[test]` or `#[init]` functions can have such an attribute

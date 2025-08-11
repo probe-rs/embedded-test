@@ -1,0 +1,1 @@
+error: module must be inline (e.g. `mod foo {}`)

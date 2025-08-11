@@ -1,0 +1,1 @@
+error: this test function has an argument but no `#[init]` function was provided
