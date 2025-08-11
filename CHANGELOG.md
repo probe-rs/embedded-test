@@ -11,11 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Init function can not be overridden on a per-test basis (`#[test(init = <expr>)]`).
+- Init function can now be overridden on a per-test basis (`#[test(init = my_custom_init)]`).
 
 ### Changed
 
-- Tests modules can now contain helper function (w/o test/init attributes).
+- Tests modules can now contain helper functions (=functions without test/init attributes).
 
 ## [0.7.0-alpha.0]
 
