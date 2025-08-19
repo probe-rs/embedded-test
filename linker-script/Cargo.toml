@@ -8,3 +8,6 @@ license = "MIT OR Apache-2.0"
 links = "embedded-test-linker-script" # prevent multiple versions of the same crate
 
 [dependencies]
+
+[features]
+std = []
