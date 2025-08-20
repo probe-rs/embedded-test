@@ -4,7 +4,7 @@
 embedded-test = { path = "../../../.." }
 rtt-target = { version = "0.6.1", features = ["log"] }
 log = { version = "0.4.20" }
-esp-hal = { version = "0.23.1", features = ["esp32c6"] } # for critical section implementation
+esp-hal = { version = "=1.0.0-rc.0", features = ["esp32c6"] } # for critical section implementation
 [lib]
 harness = false
 ```

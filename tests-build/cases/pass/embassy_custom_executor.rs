@@ -1,9 +1,9 @@
 /*
 ```cargo
 [dependencies]
-embassy-executor = { version = "0.7", features = ["arch-riscv32"] }
-esp-hal-embassy = { version = "0.6", features = ["esp32c6"] }
-esp-hal = { version = "0.23.1", features = ["esp32c6"] }
+embassy-executor = { version = "0.8", features = ["arch-riscv32"] }
+esp-hal-embassy = { version = "0.9", features = ["esp32c6"] }
+esp-hal = { version = "=1.0.0-rc.0", features = ["esp32c6", "unstable"] }
 embedded-test = { path = "../../..", features = ["embassy", "external-executor"] }
 
 [lib]

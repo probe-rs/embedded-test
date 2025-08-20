@@ -1,7 +1,9 @@
 mod build_rs;
 mod manifest;
+mod workspace_manifest;
 
 use crate::manifest::Manifest;
+use crate::workspace_manifest::WorkspaceManifest;
 use std::fs;
 use std::io::Write;
 use std::path::Path;
@@ -22,13 +24,11 @@ fn run_test(test_file: &Path, should_pass: bool) {
     }
 
     // Create a cargo workspace, to have one shared target directory for all tests
-    let workspace_manifest = Path::new(env!("OUT_DIR")).join("Cargo.toml");
-    if !workspace_manifest.exists() {
-        fs::write(
-            &workspace_manifest,
-            "[workspace]\nresolver = \"3\"\nmembers = [\"cases/*\"]\n",
-        )
-        .expect("Failed to create workspace manifest");
+    let workspace_manifest_path = Path::new(env!("OUT_DIR")).join("Cargo.toml");
+    if !workspace_manifest_path.exists() {
+        let m = WorkspaceManifest::new();
+        m.write(&workspace_manifest_path)
+            .expect("Failed to create workspace manifest");
     }
 
     let mut manifest = Manifest::from_rust_file(test_file).unwrap();

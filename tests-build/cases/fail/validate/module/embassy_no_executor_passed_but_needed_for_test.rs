@@ -1,7 +1,7 @@
 /*
 ```cargo
 [dependencies]
-embassy-executor = { version = "0.7", features = ["arch-riscv32"] }
+embassy-executor = { version = "0.8", features = ["arch-riscv32"] }
 embedded-test = { path = "../../../../..", features = ["embassy", "external-executor"] }
 
 [lib]
