@@ -1,6 +1,6 @@
 [package]
 name = "embedded-test"
-version = "0.7.0-alpha.1"
+version = "0.7.0-alpha.2"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
@@ -12,8 +12,8 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 default-target = "riscv32imac-unknown-none-elf"
 
 [dependencies]
-embedded-test-macros = { version = "0.7.0-alpha.1", path = "./macros" }
-embedded-test-linker-script = { version = "0.1.0-alpha.1", path = "linker-script" }
+embedded-test-macros = { version = "=0.7.0-alpha.2", path = "./macros" }
+embedded-test-linker-script = { version = "=0.1.0-alpha.2", path = "linker-script" }
 semihosting = { version = "0.1.7", features = ["args"], optional = true }
 serde = { version = "1.0.193", default-features = false, features = ["derive"], optional = true }
 serde_json = { version = "1.0.139", optional = true }

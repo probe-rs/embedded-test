@@ -37,11 +37,16 @@ jobs:
 
         target_and_example: [
           # RISC-V devices:
-          { target: "riscv32imac-unknown-none-elf", example: "examples/esp32c6/Cargo.toml" },
+          { target: "riscv32imac-unknown-none-elf", example: "examples/esp32c6/Cargo.toml", features: "default" },
           # arm7 devices:
-          { target: "thumbv7em-none-eabihf", example: "examples/stm32f767/Cargo.toml" },
+          { target: "thumbv7em-none-eabihf", example: "examples/stm32f767/Cargo.toml", features: "default" },
+          # std:
+          { target: "x86_64-unknown-linux-gnu", example: "examples/std/Cargo.toml", features: "std" },
         ]
 
+        exclude:
+          - log_kind: defmt
+            target_and_example: { target: "x86_64-unknown-linux-gnu", example: "examples/std/Cargo.toml", features: "std" }
 
     runs-on: ubuntu-latest #${{ matrix.os }}
 
@@ -63,7 +68,7 @@ jobs:
         uses: Swatinem/rust-cache@v2.7.5
 
       - name: Run cargo check for embedded-test
-        run: cargo check --target ${{ matrix.target_and_example.target}} --features ${{matrix.log_kind}} --locked
+        run: cargo check --target ${{ matrix.target_and_example.target}} --no-default-features --features ${{matrix.log_kind}},${{matrix.target_and_example.features}} --locked
 
       - name: Run cargo check for example
         run: cargo check --target ${{ matrix.target_and_example.target}} --no-default-features --features ${{matrix.log_kind}} --manifest-path ${{matrix.target_and_example.example}} --locked --all-targets
