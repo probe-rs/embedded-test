@@ -238,7 +238,7 @@ dependencies = [
  "embassy-embedded-hal 0.4.0",
  "embassy-futures",
  "embassy-sync 0.6.2",
- "embassy-time",
+ "embassy-time 0.4.0",
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0",
  "embedded-hal-async",
@@ -266,36 +266,14 @@ dependencies = [
 
 [[package]]
 name = "embassy-executor"
-version = "0.7.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90327bcc66333a507f89ecc4e2d911b265c45f5c9bc241f98eee076752d35ac6"
+checksum = "d0c80c92a31c7f6b02a938f10feea17ea3cc0e8d33bcac7f3fe8cede3723bb56"
 dependencies = [
  "critical-section",
  "document-features",
- "embassy-executor-macros 0.6.2",
-]
-
-[[package]]
-name = "embassy-executor"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f102d5e04befe3ea74b6f41a0e26218740124636eb2f59e1cc215b5839b96df2"
-dependencies = [
- "critical-section",
- "document-features",
- "embassy-executor-macros 0.7.0",
-]
-
-[[package]]
-name = "embassy-executor-macros"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3577b1e9446f61381179a330fc5324b01d511624c55f25e3c66c9e3c626dbecf"
-dependencies = [
- "darling 0.20.11",
- "proc-macro2",
- "quote",
- "syn",
+ "embassy-executor-macros",
+ "embassy-executor-timer-queue",
 ]
 
 [[package]]
@@ -309,6 +287,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "embassy-executor-timer-queue"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2fc328bf943af66b80b98755db9106bf7e7471b0cf47dc8559cd9a6be504cc9c"
 
 [[package]]
 name = "embassy-futures"
@@ -370,21 +354,37 @@ dependencies = [
 ]
 
 [[package]]
-name = "embassy-time-driver"
-version = "0.2.0"
+name = "embassy-time"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d45f5d833b6d98bd2aab0c2de70b18bfaa10faf661a1578fd8e5dfb15eb7eba"
+checksum = "f4fa65b9284d974dad7a23bb72835c4ec85c0b540d86af7fc4098c88cff51d65"
+dependencies = [
+ "cfg-if",
+ "critical-section",
+ "document-features",
+ "embassy-time-driver",
+ "embedded-hal 0.2.7",
+ "embedded-hal 1.0.0",
+ "embedded-hal-async",
+ "futures-core",
+]
+
+[[package]]
+name = "embassy-time-driver"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a0a244c7dc22c8d0289379c8d8830cae06bb93d8f990194d0de5efb3b5ae7ba6"
 dependencies = [
  "document-features",
 ]
 
 [[package]]
 name = "embassy-time-queue-utils"
-version = "0.1.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc55c748d16908a65b166d09ce976575fb8852cf60ccd06174092b41064d8f83"
+checksum = "80e2ee86063bd028a420a5fb5898c18c87a8898026da1d4c852af2c443d0a454"
 dependencies = [
- "embassy-executor 0.7.0",
+ "embassy-executor-timer-queue",
  "heapless",
 ]
 
@@ -454,10 +454,10 @@ dependencies = [
 
 [[package]]
 name = "embedded-test"
-version = "0.7.0-alpha.2"
+version = "0.7.0-alpha.3"
 dependencies = [
  "defmt 1.0.1",
- "embassy-executor 0.8.0",
+ "embassy-executor",
  "embedded-test-linker-script",
  "embedded-test-macros",
  "log",
@@ -509,7 +509,7 @@ checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 [[package]]
 name = "esp-backtrace"
 version = "0.17.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "cfg-if",
  "document-features",
@@ -521,7 +521,7 @@ dependencies = [
 [[package]]
 name = "esp-bootloader-esp-idf"
 version = "0.2.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "cfg-if",
  "document-features",
@@ -535,7 +535,7 @@ dependencies = [
 [[package]]
 name = "esp-config"
 version = "0.5.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "document-features",
  "esp-metadata-generated",
@@ -547,7 +547,7 @@ dependencies = [
 [[package]]
 name = "esp-hal"
 version = "1.0.0-rc.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "bitfield",
  "bitflags 2.9.1",
@@ -596,14 +596,14 @@ dependencies = [
 [[package]]
 name = "esp-hal-embassy"
 version = "0.9.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "cfg-if",
  "critical-section",
  "document-features",
- "embassy-executor 0.8.0",
+ "embassy-executor",
+ "embassy-executor-timer-queue",
  "embassy-sync 0.6.2",
- "embassy-time",
  "embassy-time-driver",
  "embassy-time-queue-utils",
  "esp-config",
@@ -617,7 +617,7 @@ dependencies = [
 [[package]]
 name = "esp-hal-procmacros"
 version = "0.19.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "document-features",
  "litrs",
@@ -632,7 +632,7 @@ dependencies = [
 [[package]]
 name = "esp-metadata"
 version = "0.8.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "anyhow",
  "basic-toml",
@@ -646,7 +646,7 @@ dependencies = [
 [[package]]
 name = "esp-metadata-generated"
 version = "0.1.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "esp-metadata",
 ]
@@ -654,7 +654,7 @@ dependencies = [
 [[package]]
 name = "esp-println"
 version = "0.15.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "critical-section",
  "document-features",
@@ -666,7 +666,7 @@ dependencies = [
 [[package]]
 name = "esp-riscv-rt"
 version = "0.12.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "document-features",
  "riscv",
@@ -676,7 +676,7 @@ dependencies = [
 [[package]]
 name = "esp-rom-sys"
 version = "0.1.1"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "cfg-if",
  "document-features",
@@ -686,7 +686,7 @@ dependencies = [
 [[package]]
 name = "esp32"
 version = "0.38.0"
-source = "git+https://github.com/esp-rs/esp-pacs?rev=c6257509fab5a584a5b6b49855bdde5cd0adee87#c6257509fab5a584a5b6b49855bdde5cd0adee87"
+source = "git+https://github.com/esp-rs/esp-pacs?rev=abbd5169c3bcd926c0f3b5078a81c8d2d3849a42#abbd5169c3bcd926c0f3b5078a81c8d2d3849a42"
 dependencies = [
  "critical-section",
  "vcell",
@@ -695,7 +695,7 @@ dependencies = [
 [[package]]
 name = "esp32c2"
 version = "0.27.0"
-source = "git+https://github.com/esp-rs/esp-pacs?rev=c6257509fab5a584a5b6b49855bdde5cd0adee87#c6257509fab5a584a5b6b49855bdde5cd0adee87"
+source = "git+https://github.com/esp-rs/esp-pacs?rev=abbd5169c3bcd926c0f3b5078a81c8d2d3849a42#abbd5169c3bcd926c0f3b5078a81c8d2d3849a42"
 dependencies = [
  "critical-section",
  "vcell",
@@ -704,7 +704,7 @@ dependencies = [
 [[package]]
 name = "esp32c3"
 version = "0.30.0"
-source = "git+https://github.com/esp-rs/esp-pacs?rev=c6257509fab5a584a5b6b49855bdde5cd0adee87#c6257509fab5a584a5b6b49855bdde5cd0adee87"
+source = "git+https://github.com/esp-rs/esp-pacs?rev=abbd5169c3bcd926c0f3b5078a81c8d2d3849a42#abbd5169c3bcd926c0f3b5078a81c8d2d3849a42"
 dependencies = [
  "critical-section",
  "vcell",
@@ -713,7 +713,7 @@ dependencies = [
 [[package]]
 name = "esp32c6"
 version = "0.21.0"
-source = "git+https://github.com/esp-rs/esp-pacs?rev=c6257509fab5a584a5b6b49855bdde5cd0adee87#c6257509fab5a584a5b6b49855bdde5cd0adee87"
+source = "git+https://github.com/esp-rs/esp-pacs?rev=abbd5169c3bcd926c0f3b5078a81c8d2d3849a42#abbd5169c3bcd926c0f3b5078a81c8d2d3849a42"
 dependencies = [
  "critical-section",
  "vcell",
@@ -722,7 +722,7 @@ dependencies = [
 [[package]]
 name = "esp32h2"
 version = "0.17.0"
-source = "git+https://github.com/esp-rs/esp-pacs?rev=c6257509fab5a584a5b6b49855bdde5cd0adee87#c6257509fab5a584a5b6b49855bdde5cd0adee87"
+source = "git+https://github.com/esp-rs/esp-pacs?rev=abbd5169c3bcd926c0f3b5078a81c8d2d3849a42#abbd5169c3bcd926c0f3b5078a81c8d2d3849a42"
 dependencies = [
  "critical-section",
  "vcell",
@@ -731,7 +731,7 @@ dependencies = [
 [[package]]
 name = "esp32s2"
 version = "0.29.0"
-source = "git+https://github.com/esp-rs/esp-pacs?rev=c6257509fab5a584a5b6b49855bdde5cd0adee87#c6257509fab5a584a5b6b49855bdde5cd0adee87"
+source = "git+https://github.com/esp-rs/esp-pacs?rev=abbd5169c3bcd926c0f3b5078a81c8d2d3849a42#abbd5169c3bcd926c0f3b5078a81c8d2d3849a42"
 dependencies = [
  "critical-section",
  "vcell",
@@ -740,7 +740,7 @@ dependencies = [
 [[package]]
 name = "esp32s3"
 version = "0.33.0"
-source = "git+https://github.com/esp-rs/esp-pacs?rev=c6257509fab5a584a5b6b49855bdde5cd0adee87#c6257509fab5a584a5b6b49855bdde5cd0adee87"
+source = "git+https://github.com/esp-rs/esp-pacs?rev=abbd5169c3bcd926c0f3b5078a81c8d2d3849a42#abbd5169c3bcd926c0f3b5078a81c8d2d3849a42"
 dependencies = [
  "critical-section",
  "vcell",
@@ -751,8 +751,8 @@ name = "example-esp32c6"
 version = "0.1.0"
 dependencies = [
  "defmt 1.0.1",
- "embassy-executor 0.8.0",
- "embassy-time",
+ "embassy-executor",
+ "embassy-time 0.5.0",
  "embedded-test",
  "embedded-test-linker-script",
  "esp-backtrace",
@@ -1437,7 +1437,7 @@ dependencies = [
 [[package]]
 name = "xtensa-lx"
 version = "0.12.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "critical-section",
 ]
@@ -1445,7 +1445,7 @@ dependencies = [
 [[package]]
 name = "xtensa-lx-rt"
 version = "0.20.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "document-features",
  "r0",
@@ -1456,7 +1456,7 @@ dependencies = [
 [[package]]
 name = "xtensa-lx-rt-proc-macros"
 version = "0.4.0"
-source = "git+https://github.com/bugadani/esp-hal?branch=executor#b7f1742e0228f37f90efe4cc47e9170589c370fb"
+source = "git+https://github.com/bugadani/esp-hal?branch=embassy-fun#a06445c1265e9e239fa34f61bcf180243a83aa61"
 dependencies = [
  "proc-macro2",
  "quote",

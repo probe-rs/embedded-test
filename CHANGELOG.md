@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.7.0-alpha.3]
+
+### Changed
+
+- Breaking: Updated embassy-executor to 0.9
+
 ## [0.7.0-alpha.2]
 
 ### Changed
@@ -131,7 +137,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.2...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.3...master
+
+[0.7.0-alpha.3]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.2...v0.7.0-alpha.3
 
 [0.7.0-alpha.2]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.1...v0.7.0-alpha.2
 

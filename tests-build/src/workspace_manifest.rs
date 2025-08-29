@@ -16,11 +16,11 @@ impl WorkspaceManifest {
 
         # For now we have to use future versions
         [patch.crates-io]
-        esp-hal = { git = "https://github.com/bugadani/esp-hal", branch = "executor" }
-        esp-bootloader-esp-idf = { git = "https://github.com/bugadani/esp-hal", branch = "executor" }
-        esp-hal-embassy = { git = "https://github.com/bugadani/esp-hal", branch = "executor" }
-        esp-println = { git = "https://github.com/bugadani/esp-hal", branch = "executor" }
-        esp-backtrace = { git = "https://github.com/bugadani/esp-hal", branch = "executor" }
+        esp-hal = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+        esp-bootloader-esp-idf = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+        esp-hal-embassy = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+        esp-println = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
+        esp-backtrace = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
 
         "#;
 

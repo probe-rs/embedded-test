@@ -1,6 +1,6 @@
 [package]
 name = "embedded-test"
-version = "0.7.0-alpha.2"
+version = "0.7.0-alpha.3"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
@@ -22,7 +22,7 @@ linkme = { version = "0.3.31", optional = true }
 # Optional dependencies
 defmt = { version = "1", optional = true }
 log = { version = "0.4.20", optional = true }
-embassy-executor = { version = "0.8", optional = true, default-features = false }
+embassy-executor = { version = "0.9", optional = true, default-features = false }
 
 
 [features]

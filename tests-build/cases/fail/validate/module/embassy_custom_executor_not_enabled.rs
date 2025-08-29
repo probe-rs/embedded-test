@@ -1,7 +1,7 @@
 /*
 ```cargo
 [dependencies]
-embassy-executor = { version = "0.8", features = ["executor-thread","arch-riscv32"] }
+embassy-executor = { version = "0.9", features = ["executor-thread","arch-riscv32"] }
 esp-hal-embassy = { version = "0.9", features = ["esp32c6"] }
 esp-hal = { version = "=1.0.0-rc.0", features = ["esp32c6", "unstable"] }
 embedded-test = { path = "../../../../..", features = ["embassy"] }
