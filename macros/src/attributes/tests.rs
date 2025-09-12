@@ -25,7 +25,6 @@ pub(crate) fn expand(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let mod_name = format_ident!("{}", validated_module.module_name);
     quote!(
-        #[cfg(test)]
         mod #mod_name {
             #(#untouched_tokens)*
 

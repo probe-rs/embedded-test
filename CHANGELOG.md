@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `[dev-dependencies]`.
 - Tests modules can now contain helper functions (=functions without test/init attributes).
 
+### Removed
+
+- Removed the `#[cfg(test)]` attribute from the test module.
+
 ## [0.6.2]
 
 ### Changed
@@ -114,9 +118,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.3...master
 
-[0.7.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0
+[0.7.0-alpha.3]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.2...v0.7.0-alpha.3
+
+[0.7.0-alpha.2]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.1...v0.7.0-alpha.2
+
+[0.7.0-alpha.1]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.0...v0.7.0-alpha.1
+
+[0.7.0-alpha.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0-alpha.0
 
 [0.6.2]: https://github.com/probe-rs/embedded-test/compare/v0.6.1...v0.6.2
 
