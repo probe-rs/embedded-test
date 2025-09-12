@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Removed
+
+- Removed the `#[cfg(test)]` attribute from the test module.
+
 ## [0.7.0-alpha.3]
 
 ### Changed
