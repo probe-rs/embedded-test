@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
 ## [0.7.0]
 
@@ -118,15 +118,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.3...master
+[Unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0...master
 
-[0.7.0-alpha.3]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.2...v0.7.0-alpha.3
-
-[0.7.0-alpha.2]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.1...v0.7.0-alpha.2
-
-[0.7.0-alpha.1]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.0...v0.7.0-alpha.1
-
-[0.7.0-alpha.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0-alpha.0
+[0.7.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0
 
 [0.6.2]: https://github.com/probe-rs/embedded-test/compare/v0.6.1...v0.6.2
 
