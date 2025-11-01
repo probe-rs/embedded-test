@@ -20,10 +20,10 @@ log = { version = "0.4.20", optional = true }
 defmt = { version = "1", optional = true }
 rtt-target = { version = "0.6.1", optional = true }
 
-embedded-test-linker-script = { version = "0.1.0-alpha.0", path = "../../linker-script" }
+embedded-test-linker-script = { version = "0.1.0", path = "../../linker-script" }
 
 #[dev-dependencies]
-embedded-test = { version = "0.7.0-alpha.0", features = ["embassy"], path = "../.." }
+embedded-test = { version = "0.7.0", features = ["embassy"], path = "../.." }
 
 [features]
 default = ["log"]

@@ -2,7 +2,7 @@
 ```cargo
 [dependencies]
 embassy-executor = { version = "0.9", features = ["executor-thread", "arch-riscv32"] }
-esp-hal = { version = "=1.0.0-rc.0", features = ["esp32c6"] } # for critical section implementation
+esp-hal = { version = "1.0.0", features = ["esp32c6"] } # for critical section implementation
 embedded-test = { path = "../../..", features = ["embassy"] }
 
 [lib]

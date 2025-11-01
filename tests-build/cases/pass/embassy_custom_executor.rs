@@ -2,8 +2,8 @@
 ```cargo
 [dependencies]
 embassy-executor = { version = "0.9", features = ["arch-riscv32"] }
-esp-hal-embassy = { version = "0.9", features = ["esp32c6"] }
-esp-hal = { version = "=1.0.0-rc.0", features = ["esp32c6", "unstable"] }
+esp-rtos = { version = "0.2.0", features = ["embassy", "esp32c6", "log-04"] }
+esp-hal = { version = "1.0.0", features = ["esp32c6", "unstable"] }
 embedded-test = { path = "../../..", features = ["embassy", "external-executor"] }
 
 [lib]
@@ -15,7 +15,7 @@ harness = false
 #![no_main]
 
 #[cfg(test)]
-#[embedded_test::tests(executor=esp_hal_embassy::Executor::new())]
+#[embedded_test::tests(executor=esp_rtos::embassy::Executor::new())]
 mod tests {
     //use esp_hal::*;
 

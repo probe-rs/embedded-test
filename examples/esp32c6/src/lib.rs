@@ -13,7 +13,7 @@ fn setup_log() {
 }
 
 #[cfg(test)]
-#[embedded_test::tests(executor=esp_hal_embassy::Executor::new())]
+#[embedded_test::tests(executor=esp_rtos::embassy::Executor::new())]
 mod unit_tests {
     #[test]
     #[cfg(feature = "log")]

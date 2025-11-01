@@ -20,11 +20,11 @@ fn setup_log() {
 }
 
 #[cfg(test)]
-#[embedded_test::tests(executor=esp_hal_embassy::Executor::new())]
+#[embedded_test::tests(executor=esp_rtos::embassy::Executor::new())]
 mod tests {
     use super::*;
     use esp_hal::clock::CpuClock;
-    use esp_hal::timer::systimer::SystemTimer;
+    use esp_hal::timer::timg::TimerGroup;
 
     // Optional: A init function which is called before every test
     // asyncness of init fn is optional
@@ -33,8 +33,10 @@ mod tests {
         let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
         let peripherals = esp_hal::init(config);
 
-        let timer0 = SystemTimer::new(peripherals.SYSTIMER);
-        esp_hal_embassy::init(timer0.alarm0);
+        let timg0 = TimerGroup::new(peripherals.TIMG0);
+        let sw_interrupt =
+            esp_hal::interrupt::software::SoftwareInterruptControl::new(peripherals.SW_INTERRUPT);
+        esp_rtos::start(timg0.timer0, sw_interrupt.software_interrupt0);
 
         // The init function can return some state, which can be consumed by the testcases
         Context {

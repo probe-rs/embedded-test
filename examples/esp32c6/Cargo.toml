@@ -14,18 +14,18 @@ defmt = { version = "1", optional = true }
 rtt-target = { version = "0.6.1", optional = true }
 
 # Esp32 related dependencies for main.rs. Note: embedded-test comes with its own panic handler and logging sink.
-esp-bootloader-esp-idf = { version = "0.2.0", features = ["esp32c6"] }
-esp-hal = { version = "=1.0.0-rc.0", features = ["esp32c6", "unstable"] }
-embassy-executor = { version = "0.9.0" }
-embassy-time = { version = "0.5.0" }
-esp-backtrace = { version = "0.17.0", features = ["esp32c6", "panic-handler", "println"] }
-esp-hal-embassy = { version = "0.9.0", features = ["esp32c6"] }
-esp-println = { version = "0.15.0", features = ["esp32c6", "log-04"] }
+esp-hal = { version = "1.0.0", features = ["esp32c6", "unstable"] }
+esp-rtos = { version = "0.2.0", features = ["embassy", "esp32c6", "log-04"] }
+esp-bootloader-esp-idf = { version = "0.4.0", features = ["esp32c6", "log-04"] }
+embassy-executor = { version = "0.9.1", features = ["log"] }
+embassy-time = { version = "0.5.0", features = ["log"] }
+esp-backtrace = { version = "0.18.1", features = ["esp32c6", "panic-handler", "println"] }
+esp-println = { version = "0.16.1", features = ["esp32c6", "log-04"] }
 
-embedded-test-linker-script = { version = "0.1.0-alpha.0", path = "../../linker-script" }
+embedded-test-linker-script = { version = "0.1.0", path = "../../linker-script" }
 
 [dev-dependencies]
-embedded-test = { version = "0.7.0-alpha.0", features = ["embassy", "external-executor"], path = "../.." }
+embedded-test = { version = "0.7.0", features = ["embassy", "external-executor"], path = "../.." }
 
 [features]
 default = ["log"]
@@ -48,11 +48,3 @@ harness = false # Important: As we bring our own test harness, we need to disabl
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(abc)'] }
-
-# For now we have to use future versions
-[patch.crates-io]
-esp-hal = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
-esp-bootloader-esp-idf = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
-esp-hal-embassy = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
-esp-println = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }
-esp-backtrace = { git = "https://github.com/bugadani/esp-hal", branch = "embassy-fun" }

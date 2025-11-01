@@ -2,6 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/embedded-test?labelColor=1C2C2E&color=C96329&logo=Rust&style=flat-square)](https://crates.io/crates/embedded-test)
 [![Documentation](https://docs.rs/embedded-test/badge.svg)](https://docs.rs/embedded-test)
+[![dependency status](https://deps.rs/repo/github/probe-rs/embedded-test/status.svg)](https://deps.rs/repo/github/probe-rs/embedded-test)
 ![Crates.io](https://img.shields.io/crates/l/embedded-test?labelColor=1C2C2E&style=flat-square)
 
 The embedded-test library provides a test harness for embedded systems (riscv, arm and xtensa).
@@ -37,7 +38,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-embedded-test = { version = "0.7.0-alpha.1" }
+embedded-test = { version = "0.7.0" }
 
 [lib]
 harness = false # Important: As we bring our own test harness for all tests

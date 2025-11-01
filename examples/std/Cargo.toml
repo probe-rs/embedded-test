@@ -15,10 +15,10 @@ embassy-executor = { default-features = false, version = "0.9", features = ["arc
 log = { version = "0.4.20", optional = true }
 env_logger = { version = "0.11.6", optional = true }
 
-embedded-test-linker-script = { version = "0.1.0-alpha.0", path = "../../linker-script" }
+embedded-test-linker-script = { version = "0.1.0", path = "../../linker-script" }
 
 [dev-dependencies]
-embedded-test = { version = "0.7.0-alpha.0", default-features = false, features = ["embassy", "std"], path = "../.." }
+embedded-test = { version = "0.7.0", default-features = false, features = ["embassy", "std"], path = "../.." }
 
 [features]
 default = ["log"]

@@ -157,7 +157,7 @@ checksum = "2fc328bf943af66b80b98755db9106bf7e7471b0cf47dc8559cd9a6be504cc9c"
 
 [[package]]
 name = "embedded-test"
-version = "0.7.0-alpha.3"
+version = "0.7.0"
 dependencies = [
  "defmt",
  "embassy-executor",
@@ -172,11 +172,11 @@ dependencies = [
 
 [[package]]
 name = "embedded-test-linker-script"
-version = "0.1.0-alpha.2"
+version = "0.1.0"
 
 [[package]]
 name = "embedded-test-macros"
-version = "0.7.0-alpha.2"
+version = "0.7.0"
 dependencies = [
  "darling 0.21.1",
  "proc-macro-error2",

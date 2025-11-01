@@ -7,46 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## [0.7.0-alpha.3]
-
-### Changed
-
-- Breaking: Updated embassy-executor to 0.9
-
-## [0.7.0-alpha.2]
-
-### Changed
-
-- Breaking: Updated embassy-executor to 0.8
-
-## [0.7.0-alpha.1]
-
-### Added
-
-- Init function can now be overridden on a per-test basis (`#[test(init = my_custom_init)]`).
-
-### Changed
-
-- Tests modules can now contain helper functions (=functions without test/init attributes).
-
-## [0.7.0-alpha.0]
+## [0.7.0]
 
 ### Added
 
 - Support for unit tests!
+- Init function can now be overridden on a per-test basis (`#[test(init = my_custom_init)]`).
 
 ### Changed
 
+- Breaking: Updated embassy-executor to 0.9
 - Breaking: probe-rs reads the test cases directly from the ELF file instead of querying them from the target via
   semihosting.
 - Breaking: global setup function must now be annotated with an attribute `#[embedded_test::setup]`
   instead of passing it to `#[embedded_test::tests(setup=...)]`.
 - Linker script now lives in its own crate `embedded-test-linker-script`, to allow keeping `embedded-test` in
   `[dev-dependencies]`.
-
-### Fixed
-
-- Ensure `embedded-test.x` is only augmenting (instead of replacing) the linker scripts on std
+- Tests modules can now contain helper functions (=functions without test/init attributes).
 
 ## [0.6.2]
 
@@ -137,15 +114,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.3...master
+[unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0...master
 
-[0.7.0-alpha.3]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.2...v0.7.0-alpha.3
-
-[0.7.0-alpha.2]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.1...v0.7.0-alpha.2
-
-[0.7.0-alpha.1]: https://github.com/probe-rs/embedded-test/compare/v0.7.0-alpha.0...v0.7.0-alpha.1
-
-[0.7.0-alpha.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0-alpha.0
+[0.7.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0
 
 [0.6.2]: https://github.com/probe-rs/embedded-test/compare/v0.6.1...v0.6.2
 
