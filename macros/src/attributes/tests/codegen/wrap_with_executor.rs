@@ -53,7 +53,7 @@ pub(crate) fn wrap_with_executor(
             }
             let executor = unsafe { __make_static(&mut executor) };
             executor.run(|spawner| {
-                spawner.must_spawn(#ident_invoker());
+                spawner.spawn(#ident_invoker().unwrap());
             })
         })
     };
