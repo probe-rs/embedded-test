@@ -39,9 +39,17 @@ pub(crate) fn wrap_with_executor(
           }
     );
 
+    let spawn_invoker = if cfg!(feature = "embassy09") {
+        quote!( spawn(#ident_invoker()).unwrap() )
+    } else if cfg!(feature = "embassy010") {
+        quote!( spawn(#ident_invoker().unwrap()) )
+    } else {
+        panic!("must select embassy09 or embassy10 feature");
+    };
+
     let spawner_block = if cfg!(feature = "ariel-os") {
         quote!( {
-            ariel_os::asynch::spawner().must_spawn(#ident_invoker());
+            ariel_os::asynch::spawner().#spawn_invoker;
             ariel_os::thread::park();
             unreachable!();
         })
@@ -53,7 +61,7 @@ pub(crate) fn wrap_with_executor(
             }
             let executor = unsafe { __make_static(&mut executor) };
             executor.run(|spawner| {
-                spawner.must_spawn(#ident_invoker());
+                spawner.#spawn_invoker;
             })
         })
     };
