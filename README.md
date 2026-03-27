@@ -87,7 +87,7 @@ the [FAQ and common Errors](https://github.com/probe-rs/embedded-test/wiki/FAQ-a
 Check the [example folder](https://github.com/probe-rs/embedded-test/tree/master/examples)
 for a complete example project for stm32/esp32.
 
-```rust
+```rust,no_run
 #![no_std]
 #![no_main]
 
