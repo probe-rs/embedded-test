@@ -6,7 +6,7 @@ mod fmt;
 
 pub use embedded_test_macros::{setup, tests};
 
-#[cfg(all(feature = "panic-handler", not(feature = "ariel-os")))]
+#[cfg(all(feature = "panic-handler", not(feature = "ariel-os-any")))]
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
     error!("====================== PANIC ======================");

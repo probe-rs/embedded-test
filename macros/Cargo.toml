@@ -21,7 +21,8 @@ darling = "0.21.1"
 
 [features]
 embassy = []
-external-executor = []
+embassy09 = ["embassy"]
+embassy010 = ["embassy"]
+external-executor = ["embassy"]
 ariel-os = []
 std = []
-
