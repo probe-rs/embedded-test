@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support embassy-executor v0.10.x via feature `embassy010`
 
+### Fixed
+
+- fix "unit tests in doctest are not executed" clippy warning
+
 ## [0.7.0]
 
 ### Added
