@@ -22,6 +22,7 @@ fn setup_log() {
 #[cfg(test)]
 #[embedded_test::tests(executor=esp_rtos::embassy::Executor::new())]
 mod tests {
+
     use super::*;
     use esp_hal::clock::CpuClock;
     use esp_hal::timer::timg::TimerGroup;

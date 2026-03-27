@@ -4,20 +4,20 @@ use crate::{export, TestOutcome};
 #[cfg_attr(feature = "semihosting", path = "semihosting.rs")]
 pub mod hosting;
 
-#[cfg(all(feature = "embassy010", not(feature = "ariel-os-any")))]
+#[cfg(all(feature = "embassy-010", not(feature = "_ariel")))]
 use embassy_executor_010 as embassy_executor;
-#[cfg(all(feature = "embassy09", not(feature = "ariel-os-any")))]
+#[cfg(all(feature = "embassy-09", not(feature = "_ariel")))]
 use embassy_executor_09 as embassy_executor;
 
 // Reexport the embassy stuff
-#[cfg(all(feature = "embassy-any", not(feature = "ariel-os-any")))]
+#[cfg(all(feature = "_embassy", not(feature = "_ariel")))]
 pub use embassy_executor::task;
 #[cfg(all(
-    feature = "embassy-any",
+    feature = "_embassy",
     not(feature = "external-executor"),
-    not(feature = "ariel-os-any")
+    not(feature = "_ariel")
 ))]
-pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.9.x)!
+pub use embassy_executor::Executor; // Please activate the `executor-thread` or `executor-interrupt` feature on the embassy-executor crate (v0.9.x/0.10.x)!
 
 pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
     if outcome.is_success() {
@@ -31,7 +31,7 @@ pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
 
 // Ariel OS invokes the `__embedded_test_entry` function directly
 // Otherwise we export it as `main` function.
-#[cfg_attr(not(feature = "ariel-os-any"), export_name = "main")]
+#[cfg_attr(not(feature = "_ariel"), export_name = "main")]
 pub unsafe extern "C" fn __embedded_test_entry() -> ! {
     ensure_linker_file_was_added_to_rustflags();
 }

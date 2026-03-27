@@ -1,6 +1,6 @@
 [env]
-ESP_LOG = "debug"
-DEFMT_LOG = "debug"
+ESP_LOG = "info"
+DEFMT_LOG = "info"
 
 [build]
 target = "riscv32imac-unknown-none-elf"

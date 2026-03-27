@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1]
+
 ### Added
 
 - Support embassy-executor v0.10.x via feature `embassy010`
@@ -126,7 +128,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release on crates.io
 
-[Unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.0...master
+[Unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.1...master
+
+[0.7.1]: https://github.com/probe-rs/embedded-test/compare/v0.7.0...v0.7.1
 
 [0.7.0]: https://github.com/probe-rs/embedded-test/compare/v0.6.2...v0.7.0
 
