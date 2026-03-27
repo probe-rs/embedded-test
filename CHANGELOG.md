@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support embassy-executor v0.10.x via feature `embassy010`
+- Support embassy-executor v0.10.x via feature `embassy-010`
 
 ### Fixed
 
