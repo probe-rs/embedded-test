@@ -1,6 +1,6 @@
 [package]
 name = "embedded-test"
-version = "0.7.0"
+version = "0.7.1"
 edition = "2021"
 repository = "https://github.com/probe-rs/embedded-test"
 license = "MIT OR Apache-2.0"
@@ -12,7 +12,7 @@ categories = ["embedded", "no-std", "development-tools::testing"]
 default-target = "riscv32imac-unknown-none-elf"
 
 [dependencies]
-embedded-test-macros = { version = "0.7.0", path = "./macros" }
+embedded-test-macros = { version = "0.8.0", path = "./macros" }
 embedded-test-linker-script = { version = "0.1.0", path = "linker-script" }
 semihosting = { version = "0.1.7", features = ["args"], optional = true }
 serde = { version = "1.0.193", default-features = false, features = ["derive"], optional = true }
@@ -45,19 +45,23 @@ log = ["dep:log"]
 
 # Enables async test and init functions using embassy-executor.
 # Note: You need to enable at least one executor feature on embassy unless you are using the `external-executor` feature
-embassy = ["embassy09"]
-embassy09 = ["embassy-any", "embedded-test-macros/embassy09", "dep:embassy-executor-09"]
-embassy010 = ["embassy-any", "embedded-test-macros/embassy010", "dep:embassy-executor-010"]
-
-embassy-any = []
+embassy-09 = ["_embassy", "embedded-test-macros/embassy-09", "dep:embassy-executor-09"]
+embassy-010 = ["_embassy", "embedded-test-macros/embassy-010", "dep:embassy-executor-010"]
 
 # you will use your own executor by setting it via the `tasks` macro, e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`
 external-executor = ["embedded-test-macros/external-executor"]
 
 # Enables Ariel OS integration
-ariel-os = ["embedded-test-macros/ariel-os", "embedded-test-macros/embassy09", "embassy", "ariel-os-any"]
-ariel-os-010 = ["embedded-test-macros/ariel-os", "embedded-test-macros/embassy010", "embassy010", "ariel-os-any"]
-ariel-os-any = []
+ariel-os-09 = ["embedded-test-macros/ariel-os", "embedded-test-macros/embassy-09", "embassy-09", "_ariel"]
+ariel-os-010 = ["embedded-test-macros/ariel-os", "embedded-test-macros/embassy-010", "embassy-010", "_ariel"]
 
 # enables the xtensa-specific semihosting implementation
 xtensa-semihosting = ["semihosting/openocd-semihosting"]
+
+# Note: The following features are deprecated and will probably be removed in the future, use embassy-09/010 or ariel-os-09/010 instead
+embassy = ["embassy-09"] # this feature will probably be removed in the future, use embassy-09 or embassy-010 instead
+ariel-os = ["ariel-os-09"] # this feature will probably be removed in the future, use ariel-os-09 or ariel-os-010 instead
+
+# Internal features
+_embassy = [] # internal feature: any embassy version selected
+_ariel = [] # internal feature: any ariel-os version selected

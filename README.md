@@ -150,15 +150,15 @@ mod tests {
 
 ## Configuration features
 
-| Feature              | Default? | Description                                                                                                                                                                                   |
-|----------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `panic-handler`      | Yes      | Defines a panic-handler which will invoke `semihosting::process::abort()` on panic                                                                                                            |
-| `defmt`              | No       | Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself (e.g. `#[embedded_test::setup] fn setup() {rtt_target::rtt_init_defmt!()}`) .               |
-| `log`                | No       | Prints testcase exit result to log. You'll need to setup your logging sink yourself (e.g. `#[embedded_test::setup] fn setup() {rtt_target::rtt_init_log!()}`)                                 |
-| `embassy`            | No       | Enables async test and init functions. Note: You need to enable at least one executor feature on the embassy-executor crate unless you are using the `external-executor` feature.             |
-| `external-executor`  | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
-| `xtensa-semihosting` | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
-| `ariel-os`           | No       | Enables [Ariel OS](https://ariel-os.github.io/ariel-os/dev/docs/book/testing.html) integration.                                                                                               |
+| Feature                         | Default? | Description                                                                                                                                                                                   |
+|---------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `panic-handler`                 | Yes      | Defines a panic-handler which will invoke `semihosting::process::abort()` on panic                                                                                                            |
+| `defmt`                         | No       | Prints testcase exit result to defmt. You'll need to setup your defmt `#[global_logger]` yourself (e.g. `#[embedded_test::setup] fn setup() {rtt_target::rtt_init_defmt!()}`) .               |
+| `log`                           | No       | Prints testcase exit result to log. You'll need to setup your logging sink yourself (e.g. `#[embedded_test::setup] fn setup() {rtt_target::rtt_init_log!()}`)                                 |
+| `embassy-09` or `embassy-010`   | No       | Enables async test and init functions. Note: You need to enable at least one executor feature on the embassy-executor crate unless you are using the `external-executor` feature.             |
+| `external-executor`             | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
+| `xtensa-semihosting`            | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
+| `ariel-os-09` or `ariel-os-010` | No       | Enables [Ariel OS](https://ariel-os.github.io/ariel-os/dev/docs/book/testing.html) integration.                                                                                               |
 
 Please also note the doc for
 the [Attribute Macro embedded_test::tests](https://docs.rs/embedded-test/latest/embedded_test/attr.tests.html).

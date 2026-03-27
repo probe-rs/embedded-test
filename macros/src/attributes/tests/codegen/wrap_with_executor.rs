@@ -39,12 +39,12 @@ pub(crate) fn wrap_with_executor(
           }
     );
 
-    let spawn_invoker = if cfg!(feature = "embassy09") {
+    let spawn_invoker = if cfg!(feature = "embassy-09") {
         quote!( spawn(#ident_invoker()).unwrap() )
-    } else if cfg!(feature = "embassy010") {
+    } else if cfg!(feature = "embassy-010") {
         quote!( spawn(#ident_invoker().unwrap()) )
     } else {
-        panic!("must select embassy09 or embassy10 feature");
+        panic!("must select embassy-09 or embassy-10 feature");
     };
 
     let spawner_block = if cfg!(feature = "ariel-os") {

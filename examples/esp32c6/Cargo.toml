@@ -25,7 +25,7 @@ esp-println = { version = "0.16.1", features = ["esp32c6", "log-04"] }
 embedded-test-linker-script = { version = "0.1.0", path = "../../linker-script" }
 
 [dev-dependencies]
-embedded-test = { version = "0.7.0", features = ["embassy", "external-executor"], path = "../.." }
+embedded-test = { version = "0.7.0", features = ["embassy-09", "external-executor"], path = "../.." }
 
 [features]
 default = ["log"]
