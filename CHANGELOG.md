@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- ELF test metadata now keeps `name` as the legacy flat leaf test name for compatibility,
+  and adds `full_name` with the canonical module-qualified path (e.g. `tests::my_test`)
+  to match libtest/rust-analyzer filtering semantics.
+
 ## [0.7.1]
 
 ### Added

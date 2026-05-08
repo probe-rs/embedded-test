@@ -39,7 +39,12 @@ pub(crate) fn test(test: &TestFunc, module: &ValidatedModule) -> TokenStream {
     );
 
     // A static symbol that will be exported that describes the test and can be parsed by probe-rs.
-    let sym = export_sym(test, ident_entrypoint, module.macro_args.default_timeout);
+    let sym = export_sym(
+        test,
+        &module.module_name,
+        ident_entrypoint,
+        module.macro_args.default_timeout,
+    );
 
     quote! {
 
