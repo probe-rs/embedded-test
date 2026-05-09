@@ -6,6 +6,7 @@ use std::hash::{DefaultHasher, Hash as _, Hasher as _};
 
 pub(crate) fn export_sym(
     test: &TestFunc,
+    module_name: &str,
     ident_entrypoint: Ident,
     default_timeout: Option<u32>,
 ) -> proc_macro2::TokenStream {
@@ -38,10 +39,12 @@ pub(crate) fn export_sym(
     } else {
         // Generate a symbol name which is actually a JSON object describing the test so that probe-rs can parse it.
 
+        let full_test_name = format!("{}::{}", module_name, test_name);
         let sym_name = format!(
-            r#"{{"disambiguator":{},"name":"{}","ignored":{},"should_panic":{}{}}}"#,
+            r#"{{"disambiguator":{},"name":"{}","full_name":"{}","ignored":{},"should_panic":{}{}}}"#,
             _crate_local_disambiguator(), // disambiguator is needed to allow multiple identical test in different modules
             _json_escape(&test_name.to_string()),
+            _json_escape(&full_test_name),
             if ignore { "true" } else { "false" },
             if should_panic { "true" } else { "false" },
             if let Some(timeout) = timeout {
