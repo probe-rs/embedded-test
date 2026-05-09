@@ -7,14 +7,16 @@ use quote::{format_ident, quote};
 
 pub(crate) fn test(test: &TestFunc, module: &ValidatedModule) -> TokenStream {
     let ident = &test.func.sig.ident;
+    let ident_body = format_ident!("__{}_body", ident);
     let ident_entrypoint = format_ident!("__{}_entrypoint", ident);
     let cfgs = &test.cfgs;
-    let test_func = &test.func;
+    let mut test_func = test.func.clone();
+    test_func.sig.ident = ident_body.clone();
     let mut embassy_task = None;
 
     // Generate the code block that will call init, run the test and check the outcome.
     let init = module.init_function_for_test(test);
-    let mut test_invocation = call_test_fn(test, init);
+    let mut test_invocation = call_test_fn(test, &ident_body, init);
 
     let init_is_async = init.map(|i| i.asyncness).unwrap_or_default();
 
@@ -41,9 +43,21 @@ pub(crate) fn test(test: &TestFunc, module: &ValidatedModule) -> TokenStream {
     // A static symbol that will be exported that describes the test and can be parsed by probe-rs.
     let sym = export_sym(test, ident_entrypoint, module.macro_args.default_timeout);
 
+    // Generate a wrapper that rust-analyzer can recognize as a runnable test.
+    // The real embedded-test body is kept in a hidden helper so the editor-facing
+    // test item stays a normal zero-argument #[test] function.
+    let test_wrapper = quote!(
+        #[doc(hidden)]
+        #[allow(dead_code)]
+        #[test]
+        fn #ident() {}
+    );
+
     quote! {
 
         #test_func
+
+        #test_wrapper
 
         #embassy_task
 
