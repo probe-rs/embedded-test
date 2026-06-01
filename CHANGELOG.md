@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Restored rust-analyzer `Run Test | Debug` buttons for `#[embedded_test::tests]` suites by generating IDE-visible `#[test]` wrappers.
+
 ## [0.7.1]
 
 ### Added
