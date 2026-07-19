@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for Rust-Analyzer's Run Test button. Add `println!("cargo::rustc-check-cfg=cfg(rust_analyzer)");` to build.rs.
+
+### Changed
+
+- Update proc-macro-error to v3
+
 ## [0.7.1]
 
 ### Added

@@ -1,5 +1,5 @@
 use darling::FromMeta;
-use proc_macro_error2::abort;
+use proc_macro_error3::abort;
 use syn::spanned::Spanned;
 use syn::{Attribute, ItemFn};
 

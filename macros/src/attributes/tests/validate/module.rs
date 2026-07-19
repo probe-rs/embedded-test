@@ -1,7 +1,7 @@
 use crate::attributes::tests::parse::Module;
 use crate::attributes::tests::parse::{FunctionWithAttributes, MacroArgs};
 use crate::attributes::tests::validate::{AnnotatedFunction, InitFunc, OtherFunc, TestFunc};
-use proc_macro_error2::{abort, abort_call_site};
+use proc_macro_error3::{abort, abort_call_site};
 use quote::quote;
 use std::collections::HashMap;
 use syn::Item;

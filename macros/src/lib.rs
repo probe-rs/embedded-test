@@ -1,7 +1,7 @@
 mod attributes;
 
 use proc_macro::TokenStream;
-use proc_macro_error2::proc_macro_error;
+use proc_macro_error3::proc_macro_error;
 
 /// Attribute to be placed on the test suite's module.
 ///

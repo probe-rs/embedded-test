@@ -1,6 +1,6 @@
 // File copied and adapted from https://github.com/knurling-rs/defmt/blob/main/macros/src/attributes/panic_handler.rs
 use proc_macro::TokenStream;
-use proc_macro_error2::{abort, abort_call_site};
+use proc_macro_error3::{abort, abort_call_site};
 use quote::quote;
 use syn::{parse_macro_input, Attribute, ItemFn, ReturnType};
 

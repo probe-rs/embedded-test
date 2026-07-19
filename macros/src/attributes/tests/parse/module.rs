@@ -1,5 +1,5 @@
 use crate::attributes::tests::parse::FunctionWithAttributes;
-use proc_macro_error2::abort;
+use proc_macro_error3::abort;
 use syn::{Item, ItemMod};
 
 pub(crate) struct Module {

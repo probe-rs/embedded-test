@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use proc_macro_error2::abort;
+use proc_macro_error3::abort;
 use quote::{format_ident, quote};
 use syn::{parse_macro_input, ItemMod};
 

@@ -1,5 +1,5 @@
 use crate::attributes::tests::parse::{FuncAttribute, FunctionWithAttributes};
-use proc_macro_error2::abort;
+use proc_macro_error3::abort;
 use syn::{Attribute, ItemFn, ReturnType, Type};
 
 pub(crate) struct InitFunc {
