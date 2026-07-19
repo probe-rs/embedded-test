@@ -1,0 +1,10 @@
+{
+  "rust-analyzer.linkedProjects": [
+    "examples/esp32c6/Cargo.toml",
+    "examples/stm32f767/Cargo.toml",
+    "examples/std/Cargo.toml",
+    "macros/Cargo.toml",
+    "tests-build/Cargo.toml",
+    "linker-script/Cargo.toml"
+  ]
+}

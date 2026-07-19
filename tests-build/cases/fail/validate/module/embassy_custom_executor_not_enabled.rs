@@ -3,7 +3,7 @@
 [dependencies]
 embassy-executor = { version = "0.9", features = ["executor-thread","arch-riscv32"] }
 esp-rtos = { version = "0.2.0", features = ["embassy", "esp32c6", "log-04"] }
-esp-hal = { version = "1.0.0", features = ["esp32c6", "unstable"] }
+esp-hal = { version = "=1.0.0", features = ["esp32c6", "unstable"] }
 embedded-test = { path = "../../../../..", features = ["embassy"] }
 
 [lib]
