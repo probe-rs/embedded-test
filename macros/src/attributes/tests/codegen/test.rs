@@ -42,7 +42,7 @@ pub(crate) fn test(test: &TestFunc, module: &ValidatedModule) -> TokenStream {
     let sym = export_sym(test, ident_entrypoint, module.macro_args.default_timeout);
 
     quote! {
-
+        #[cfg_attr(rust_analyzer, ::core::prelude::v1::test)]
         #test_func
 
         #embassy_task
