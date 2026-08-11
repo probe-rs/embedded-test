@@ -1,5 +1,4 @@
 use proc_macro::TokenStream;
-use proc_macro_error3::abort;
 use quote::{format_ident, quote};
 use syn::{parse_macro_input, ItemMod};
 
@@ -10,11 +9,18 @@ mod validate;
 pub(crate) fn expand(args: TokenStream, input: TokenStream) -> TokenStream {
     let macro_args = match parse::MacroArgs::parse(args) {
         Ok(args) => args,
-        Err(e) => abort!(e.span(), "{}", e),
+        Err(e) => return syn::Error::new(e.span(), e).into_compile_error().into(),
     };
 
-    let module = parse::Module::from(parse_macro_input!(input as ItemMod));
-    let validated_module = validate::ValidatedModule::from_module_and_args(module, macro_args);
+    let module = match parse::Module::try_from(parse_macro_input!(input as ItemMod)) {
+        Ok(module) => module,
+        Err(err) => return err.into_compile_error().into(),
+    };
+    let validated_module = match validate::ValidatedModule::from_module_and_args(module, macro_args)
+    {
+        Ok(valid_mod) => valid_mod,
+        Err(err) => return err.into_compile_error().into(),
+    };
 
     let untouched_tokens = &validated_module.untouched_tokens;
     let tests = validated_module
