@@ -1,7 +1,7 @@
 // File copied and adapted from https://github.com/knurling-rs/defmt/blob/main/macros/src/attributes/panic_handler.rs
 use proc_macro::TokenStream;
 use proc_macro_error3::{abort, abort_call_site};
-use quote::quote;
+use quote::{format_ident, quote};
 use syn::{parse_macro_input, Attribute, ItemFn, ReturnType, Safety};
 
 pub(crate) fn expand(args: TokenStream, item: TokenStream) -> TokenStream {
@@ -62,13 +62,30 @@ fn codegen(fun: &ItemFn) -> TokenStream {
     let block = &fun.block;
     let ident = &fun.sig.ident;
 
-    quote!(
-        #(#attrs)*
-        #[export_name = "_embedded_test_setup"]
-        #[inline(never)]
-        fn #ident() {
-            #block
-        }
-    )
+    if cfg!(feature = "std") {
+        // Export the setup function so that we can collect it using linkme when on std
+        let ident_var = format_ident!("__{}_SETUP_SYM", ident.to_string().to_uppercase());
+        quote!(
+            #(#attrs)*
+            #[inline(never)]
+            fn #ident() {
+                #block
+            }
+
+            #(#attrs)*
+            #[embedded_test::export::hosting::distributed_slice(embedded_test::export::hosting::SETUP)]
+            #[linkme(crate = embedded_test::export::hosting::linkme)]
+            static #ident_var: fn() = #ident;
+        )
+    } else {
+        quote!(
+            #(#attrs)*
+            #[export_name = "_embedded_test_setup"]
+            #[inline(never)]
+            fn #ident() {
+                #block
+            }
+        )
+    }
     .into()
 }

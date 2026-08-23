@@ -34,6 +34,18 @@ fn ser_test_name<S: serde::Serializer>(name: &'static str, s: S) -> Result<S::Ok
 #[distributed_slice]
 pub static TESTS: [Test];
 
+// Collected the same way as the tests, because there is no linker script to provide a default.
+#[distributed_slice]
+pub static SETUP: [fn()];
+
+pub fn setup() {
+    match &SETUP[..] {
+        [] => {}
+        [setup] => setup(),
+        _ => panic!("Multiple `#[embedded_test::setup]` functions in one test binary"),
+    }
+}
+
 type Args = Vec<Result<&'static str, Infallible>>;
 
 pub fn args() -> Result<Args, Infallible> {

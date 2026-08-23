@@ -237,7 +237,6 @@ version = "0.1.0"
 dependencies = [
  "embassy-executor",
  "embedded-test",
- "embedded-test-linker-script",
  "env_logger",
  "log",
 ]
@@ -248,7 +247,7 @@ version = "0.1.0"
 
 [[package]]
 name = "embedded-test-macros"
-version = "0.8.2"
+version = "0.9.0"
 dependencies = [
  "darling 0.24.0",
  "proc-macro-error3",

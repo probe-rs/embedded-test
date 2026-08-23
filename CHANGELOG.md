@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The `std` feature no longer needs the `embedded-test.x` linker script, which makes it usable with linkers other
+  than GNU ld (e.g. MSVC) and on macOS. Adding the linker script anyway keeps working.
+
 ## [0.7.2]
 
 ### Added
