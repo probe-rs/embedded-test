@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- README table of the runners for QEMU, Renode and the host next to probe-rs.
+- Documentation of the `std` feature in the configuration feature table.
+
 ## [0.7.2]
 
 ### Added
