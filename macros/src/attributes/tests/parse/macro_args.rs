@@ -9,7 +9,7 @@ pub(crate) struct MacroArgs {
 }
 
 impl MacroArgs {
-    pub(crate) fn parse(args: TokenStream) -> Result<Self, syn::Error> {
+    pub(crate) fn parse(args: TokenStream) -> syn::Result<Self> {
         let attr_args = NestedMeta::parse_meta_list(args.into())?;
         let macro_args = MacroArgs::from_list(&attr_args)?;
         Ok(macro_args)
