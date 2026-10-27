@@ -4,7 +4,6 @@ use proc_macro2::Span;
 use quote::{format_ident, quote};
 use syn::{parse_macro_input, spanned::Spanned, Attribute, ItemFn, ReturnType, Safety};
 
-
 pub(crate) fn expand(args: TokenStream, item: TokenStream) -> TokenStream {
     if !args.is_empty() {
         return syn::Error::new(

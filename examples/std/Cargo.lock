@@ -220,7 +220,7 @@ checksum = "2fc328bf943af66b80b98755db9106bf7e7471b0cf47dc8559cd9a6be504cc9c"
 
 [[package]]
 name = "embedded-test"
-version = "0.7.2"
+version = "0.7.3"
 dependencies = [
  "embassy-executor",
  "embedded-test-linker-script",

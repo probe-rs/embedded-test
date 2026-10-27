@@ -7,11 +7,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.7.3]
+
 ### Changed
 
-- The `std` feature no longer needs the `embedded-test.x` linker script, which makes it usable with linkers other
-  than GNU ld (e.g. MSVC) and on macOS. Adding the linker script anyway keeps working.
-- The `std` example builds for the host platform instead of a hard-coded `x86_64-unknown-linux-gnu`.
+- The `std` feature no longer needs the `embedded-test.x` linker script, which makes it usable with linkers other than
+  GNU ld (e.g. MSVC) and on macOS. Adding the linker script anyway keeps working.
+- Replaced dependency to proc-macro-error3 in favor of `syn::Error`
 
 ## [0.7.2]
 
@@ -146,7 +148,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Initial release on crates.io
 
-[Unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.2...master
+[Unreleased]: https://github.com/probe-rs/embedded-test/compare/v0.7.3...master
+
+[0.7.3]: https://github.com/probe-rs/embedded-test/compare/v0.7.2...v0.7.3
 
 [0.7.2]: https://github.com/probe-rs/embedded-test/compare/v0.7.1...v0.7.2
 
