@@ -159,10 +159,21 @@ mod tests {
 | `embassy-09` or `embassy-010`   | No       | Enables async test and init functions. Note: You need to enable at least one executor feature on the embassy-executor crate unless you are using the `external-executor` feature.             |
 | `external-executor`             | No       | Allows you to bring your own embassy executor which you need to pass to the `#[tests]` macro (e.g. `#[embedded_test::tests(executor = esp_hal::embassy::executor::thread::Executor::new())]`) |
 | `xtensa-semihosting`            | No       | Enables semihosting for xtensa targets.                                                                                                                                                       |
+| `std`                           | No       | Builds the harness for a host target. Needs `default-features = false`.                                                                                                                       |
 | `ariel-os-09` or `ariel-os-010` | No       | Enables [Ariel OS](https://ariel-os.github.io/ariel-os/dev/docs/book/testing.html) integration.                                                                                               |
 
 Please also note the doc for
 the [Attribute Macro embedded_test::tests](https://docs.rs/embedded-test/latest/embedded_test/attr.tests.html).
+
+## Runners
+
+| Runner | Environment | `embedded-test` features |
+|---|---|---|
+| [`probe-rs`](https://crates.io/crates/probe-rs-tools) (official runner)| device | default (`semihosting`) |
+| [`embedded-test-qemu-runner`](https://crates.io/crates/embedded-test-qemu-runner) (community) | [QEMU](https://www.qemu.org) | default (`semihosting`) |
+| [`embedded-test-renode-runner`](https://crates.io/crates/embedded-test-renode-runner) (community) | [Renode](https://renode.io) | default (`semihosting`) |
+| [`embedded-test-std-runner`](https://crates.io/crates/embedded-test-std-runner) (community) | host process | `std` |
+| [`embedded-test-host-runner`](https://crates.io/crates/embedded-test-host-runner) (community)| host process | `std` |
 
 ## License
 
