@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The `std` example builds for the host platform instead of a hard-coded `x86_64-unknown-linux-gnu`.
+
 ## [0.7.2]
 
 ### Added
