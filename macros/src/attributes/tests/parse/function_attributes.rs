@@ -1,5 +1,4 @@
 use darling::FromMeta;
-use proc_macro_error3::abort;
 use syn::spanned::Spanned;
 use syn::{Attribute, ItemFn};
 
@@ -16,16 +15,22 @@ impl FuncAttribute {
     /// Tries to convert a `syn::Attribute` into a `FuncAttribute`.
     /// If the attribute is recognized, it returns `Some(FuncAttribute)`, otherwise `None`.
     /// Aborts with a compiler error if the attribute is malformed.
-    fn try_from_attr(attr: &Attribute) -> Option<Self> {
-        let ident = attr.path().get_ident()?.to_string();
-        Some(match ident.as_str() {
+    fn try_from_attr(attr: &Attribute) -> syn::Result<Option<Self>> {
+        let ident = attr
+            .path()
+            .get_ident()
+            .map(ToString::to_string)
+            .unwrap_or_default();
+        let attr = match ident.as_str() {
             "init" => FuncAttribute::Init,
-            "test" => FuncAttribute::Test(TestAttribute::from_attr(attr)),
+            "test" => FuncAttribute::Test(TestAttribute::from_attr(attr)?),
             "should_panic" => FuncAttribute::ShouldPanic,
             "ignore" => FuncAttribute::Ignore,
-            "timeout" => FuncAttribute::Timeout(TimeoutAttribute::from_attr(attr)),
-            _ => return None,
-        })
+            "timeout" => FuncAttribute::Timeout(TimeoutAttribute::from_attr(attr)?),
+            _ => return Ok(None),
+        };
+
+        Ok(Some(attr))
     }
 }
 
@@ -43,15 +48,16 @@ impl syn::parse::Parse for TimeoutAttribute {
 }
 
 impl TimeoutAttribute {
-    fn from_attr(attr: &Attribute) -> Self {
+    fn from_attr(attr: &Attribute) -> syn::Result<Self> {
         match attr.parse_args::<TimeoutAttribute>() {
-            Ok(timeout_attr) => timeout_attr,
+            Ok(timeout_attr) => Ok(timeout_attr),
             Err(e) => {
-                abort!(
-                    attr,
-                    "failed to parse `timeout` attribute. Must be of the form #[timeout(10)] where 10 is the timeout in seconds. Error: {}",
-                    e
-                );
+                Err(syn::Error::new(
+                    attr.span(),
+                    format!(
+                        "failed to parse `timeout` attribute. Must be of the form #[timeout(10)] where 10 is the timeout in seconds. Error: {}",
+                        e
+                )))
             }
         }
     }
@@ -64,12 +70,12 @@ pub(crate) struct TestAttribute {
 }
 
 impl TestAttribute {
-    pub fn from_attr(attr: &Attribute) -> Self {
+    pub fn from_attr(attr: &Attribute) -> syn::Result<Self> {
         match &attr.meta {
-            syn::Meta::Path(_) => TestAttribute::default(),
+            syn::Meta::Path(_) => Ok(TestAttribute::default()),
             meta => match TestAttribute::from_meta(meta) {
-                Ok(test_attr) => test_attr,
-                Err(e) => abort!(attr, "failed to parse `test` attribute. Must be of the form #[test(init = init_function)]: {}", e),
+                Ok(test_attr) => Ok(test_attr),
+                Err(e) => Err(syn::Error::new(attr.span(), format!("failed to parse `test` attribute. Must be of the form #[test(init = init_function)]: {}", e))),
             },
         }
     }
@@ -82,18 +88,28 @@ pub(crate) struct FunctionWithAttributes {
     pub attributes: Vec<(FuncAttribute, proc_macro2::Span)>,
 }
 
-impl From<ItemFn> for FunctionWithAttributes {
-    fn from(mut func: ItemFn) -> Self {
-        let mut attributes = vec![];
-        func.attrs.retain(|attr| {
-            if let Some(func_attr) = FuncAttribute::try_from_attr(attr) {
-                attributes.push((func_attr, attr.path().span()));
-                false
-            } else {
-                true
-            }
-        });
+impl TryFrom<ItemFn> for FunctionWithAttributes {
+    type Error = syn::Error;
 
-        Self { func, attributes }
+    fn try_from(mut func: ItemFn) -> syn::Result<Self> {
+        let mut attributes = vec![];
+
+        // Create a temporary array with the attributes that need to be kept
+        let mut func_attr_to_keep = vec![];
+
+        for attr in func.attrs {
+            // Remove attributes that can be turned into FuncAttribute
+            if let Some(func_attr) = FuncAttribute::try_from_attr(&attr)? {
+                attributes.push((func_attr, attr.path().span()));
+            }
+            // Keep the rest
+            else {
+                func_attr_to_keep.push(attr);
+            }
+        }
+        // Restore the attribute vector
+        func.attrs = func_attr_to_keep;
+
+        Ok(Self { func, attributes })
     }
 }
