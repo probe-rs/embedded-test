@@ -1,7 +1,6 @@
 mod attributes;
 
 use proc_macro::TokenStream;
-use proc_macro_error3::proc_macro_error;
 
 /// Attribute to be placed on the test suite's module.
 ///
@@ -52,7 +51,6 @@ use proc_macro_error3::proc_macro_error;
 /// }
 /// ```
 #[proc_macro_attribute]
-#[proc_macro_error]
 pub fn tests(args: TokenStream, input: TokenStream) -> TokenStream {
     attributes::tests::expand(args, input)
 }
@@ -72,7 +70,6 @@ pub fn tests(args: TokenStream, input: TokenStream) -> TokenStream {
 /// ```
 ///
 #[proc_macro_attribute]
-#[proc_macro_error]
 pub fn setup(args: TokenStream, input: TokenStream) -> TokenStream {
     attributes::setup::expand(args, input)
 }

@@ -14,7 +14,6 @@ proc-macro = true
 
 [dependencies]
 proc-macro2 = "1.0.79"
-proc-macro-error3 = { version = "=3.1.0", default-features = false } # disable syn-error feature to avoid a duplicate/mismatched syn dependency
 quote = "1.0.35"
 syn = { version = "3.0.3", features = ["extra-traits", "full"] }
 darling = "0.24.0"
