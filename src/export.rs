@@ -33,9 +33,17 @@ pub fn check_outcome<T: TestOutcome>(outcome: T) -> ! {
 // Otherwise we export it as `main` function.
 #[cfg_attr(not(feature = "_ariel"), export_name = "main")]
 pub unsafe extern "C" fn __embedded_test_entry() -> ! {
-    ensure_linker_file_was_added_to_rustflags();
+    // On std there is no linker script, so the start function is reached directly.
+    #[cfg(feature = "std")]
+    unsafe {
+        __embedded_test_start()
+    }
+
+    #[cfg(not(feature = "std"))]
+    ensure_linker_file_was_added_to_rustflags()
 }
 
+#[cfg(not(feature = "std"))]
 fn ensure_linker_file_was_added_to_rustflags() -> ! {
     // Try to access a symbol which we provide in the embedded-test.x linker script.
     // The linker script will redirect this call to the function below.
@@ -49,10 +57,7 @@ fn ensure_linker_file_was_added_to_rustflags() -> ! {
 #[no_mangle]
 unsafe extern "C" fn __embedded_test_start() -> ! {
     // Invoke the user provided setup function, if it exists or run a default (empty) setup function.
-    extern "Rust" {
-        fn _embedded_test_setup();
-    }
-    unsafe { _embedded_test_setup() }
+    hosting::setup();
 
     let args = &export::hosting::args().expect("Failed to get cmdline via semihosting");
     // this is an iterator already with semihosting, not on std
@@ -89,9 +94,7 @@ unsafe extern "C" fn __embedded_test_start() -> ! {
     }
 }
 
-#[export_name = "__embedded_test_default_setup"]
-fn default_setup() {}
-
+#[cfg(not(feature = "std"))]
 #[used]
 #[no_mangle]
 #[link_section = ".embedded_test.meta"]

@@ -1,8 +1,7 @@
 use std::env;
 
 fn main() {
-    // add linker script for embedded-test!!
-    println!("cargo::rustc-link-arg=-Tembedded-test.x");
+    // Note: no linker script is needed on std.
     println!("cargo::rustc-check-cfg=cfg(rust_analyzer)");
 
     // Check if the `defmt` feature is enabled, and if so link its linker script
