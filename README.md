@@ -32,16 +32,6 @@ with the click of a button.
 * Supports async test and init functions (needs feature `embassy`)
 * Support `#[should_panic]`, `#[ignore]` and `#[timeout(<seconds>)]` attributes for each test case
 
-## Runners
-
-| Runner | Environment | `embedded-test` features |
-|---|---|---|
-| [`probe-rs`](https://crates.io/crates/probe-rs-tools) | device | default (`semihosting`) |
-| [`embedded-test-qemu-runner`](https://crates.io/crates/embedded-test-qemu-runner) | [QEMU](https://www.qemu.org) | default (`semihosting`) |
-| [`embedded-test-renode-runner`](https://crates.io/crates/embedded-test-renode-runner) | [Renode](https://renode.io) | default (`semihosting`) |
-| [`embedded-test-std-runner`](https://crates.io/crates/embedded-test-std-runner) | host process | `std` |
-| [`embedded-test-host-runner`](https://crates.io/crates/embedded-test-host-runner) | host process | `std` |
-
 ## Usage
 
 Add the following to your `Cargo.toml`:
@@ -174,6 +164,16 @@ mod tests {
 
 Please also note the doc for
 the [Attribute Macro embedded_test::tests](https://docs.rs/embedded-test/latest/embedded_test/attr.tests.html).
+
+## Runners
+
+| Runner | Environment | `embedded-test` features |
+|---|---|---|
+| [`probe-rs`](https://crates.io/crates/probe-rs-tools) (official runner)| device | default (`semihosting`) |
+| [`embedded-test-qemu-runner`](https://crates.io/crates/embedded-test-qemu-runner) (community) | [QEMU](https://www.qemu.org) | default (`semihosting`) |
+| [`embedded-test-renode-runner`](https://crates.io/crates/embedded-test-renode-runner) (community) | [Renode](https://renode.io) | default (`semihosting`) |
+| [`embedded-test-std-runner`](https://crates.io/crates/embedded-test-std-runner) (community) | host process | `std` |
+| [`embedded-test-host-runner`](https://crates.io/crates/embedded-test-host-runner) (community)| host process | `std` |
 
 ## License
 
