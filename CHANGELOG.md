@@ -7,8 +7,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-- Fixed linking on Ariel OS for cases where no async was used.
-
 ## [0.7.3]
 
 ### Changed
