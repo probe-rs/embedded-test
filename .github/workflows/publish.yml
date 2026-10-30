@@ -9,7 +9,13 @@
 #   Repository owner: probe-rs
 #   Repository name:  embedded-test
 #   Workflow name:    publish.yml
-# A crate must be published manually once before trusted publishing can be configured for it.
+#   Environment:      crates-io
+# The environment name must match the `environment:` value below exactly, or crates.io rejects
+# the token exchange. A crate must be published manually once before trusted publishing can be
+# configured for it.
+#
+# The `crates-io` environment should be configured (Settings > Environments) with required
+# reviewers, so publishing needs their approval even from someone with repo write access.
 
 name: Publish to crates.io
 
@@ -37,6 +43,9 @@ jobs:
   publish:
     name: Publish ${{ inputs.crate }}
     runs-on: ubuntu-latest
+    # Gate releases behind an environment so protection rules (required reviewers) apply, and
+    # so the OIDC claim matches the trusted publisher configured on crates.io.
+    environment: crates-io
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
