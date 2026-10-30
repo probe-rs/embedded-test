@@ -23,6 +23,19 @@ pub(crate) fn expand(args: TokenStream, input: TokenStream) -> TokenStream {
     };
 
     let untouched_tokens = &validated_module.untouched_tokens;
+
+    let preamble = {
+        if cfg!(feature = "ariel-os") {
+            // Without this, nothing would link the Ariel OS startup code unless
+            // either `init()` or any of the tests is async. It then fails at link time.
+            quote!(
+                use ariel_os as _;
+            )
+        } else {
+            quote!()
+        }
+    };
+
     let tests = validated_module
         .tests
         .iter()
@@ -31,6 +44,8 @@ pub(crate) fn expand(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let mod_name = format_ident!("{}", validated_module.module_name);
     quote!(
+        #preamble
+
         mod #mod_name {
             #(#untouched_tokens)*
 
